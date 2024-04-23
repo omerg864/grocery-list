@@ -1,0 +1,13 @@
+.category-list {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.list-filters {
+    display: flex;
+    gap: 0.2rem;
+    padding: 0.5rem 0;
+    overflow: auto;
+    color: white;
+}

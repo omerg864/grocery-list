@@ -1,0 +1,31 @@
+.swipe-right, .swipe-left {
+    cursor: pointer;
+    display: none;
+    width: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.swipe-left {
+    right: 0;
+    justify-content: start;
+}
+
+.justify-end {
+    justify-content: end;
+}
+
+.justify-start {
+    justify-content: start;
+}
+
+.swipe-right {
+    left: 0;
+    justify-content: end;
+}
+
+.show {
+    display: flex;
+}

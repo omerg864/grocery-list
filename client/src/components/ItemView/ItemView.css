@@ -1,0 +1,56 @@
+.item-img {
+    width: 5rem;
+    height: 5rem;
+}
+
+.item-container {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: start !important;
+    padding: 1rem;
+    gap: 1rem;
+    background-color: white !important;
+    color: black !important;
+    z-index: 99;
+}
+
+.item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    flex: 1;
+}
+
+.item-view {
+    display: flex;
+    flex: 1;
+    gap: 0.5rem;
+}
+
+.item-buttons {
+    display: flex;
+    gap: 0.1rem;
+    padding: 0.5rem 0.5rem;
+}
+
+.item-div {
+    width: 100%;
+    z-index: 99;
+}
+
+.swipe-left-btn {
+    background-color: red;
+}
+
+.swipe-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.swipe-right-btn {
+    background-color: green;
+}
