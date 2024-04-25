@@ -11,6 +11,7 @@ interface ListHeaderProps {
   onBack?: () => void;
   buttonClick?: () => void;
   sideButton?: ReactNode|undefined;
+  buttonTitle?: string;
 }
 
 function ListHeader(props: ListHeaderProps) {
@@ -24,7 +25,7 @@ function ListHeader(props: ListHeaderProps) {
           <Typography variant='h4'>{props.title}</Typography>
           {props.sideButton ? props.sideButton : <div></div>}
         </div>
-        {props.buttonClick && <GlassButton endIcon={<IoMdAdd size={"1.5rem"} color='black'/>} text={"Add item"} style={{width: "80%", color: "black"}} onClick={props.buttonClick}/>}
+        {props.buttonClick && <GlassButton endIcon={<IoMdAdd size={"1.5rem"} color='black'/>} text={props.buttonTitle || ""} style={{width: "80%", color: "black"}} onClick={props.buttonClick}/>}
     </div>
   )
 }

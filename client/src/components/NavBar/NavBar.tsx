@@ -5,6 +5,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { FaListUl } from "react-icons/fa";
 import { MdFastfood } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface NavBarProps {
   selectedTab: number;
@@ -14,6 +15,7 @@ interface NavBarProps {
 function NavBar(props: NavBarProps) {
 
     const navigate = useNavigate();
+    const { t } = useTranslation('translation', { keyPrefix: 'NavBar' });
 
     const changeTab = (_e: React.SyntheticEvent, newValue: number) => {
         // TODO: navigate to the correct page
@@ -27,10 +29,10 @@ function NavBar(props: NavBarProps) {
     value={props.selectedTab}
     onChange={changeTab}
     >
-    <BottomNavigationAction sx={{color: props.selectedTab === 0 ? 'var(--color-primary) !important' : ''}} label="Lists" icon={<FaListUl />} />
-    <BottomNavigationAction sx={{color: props.selectedTab === 1 ? 'var(--color-primary) !important' : ''}} label="Items" icon={<MdFastfood />} />
-    <BottomNavigationAction sx={{color: props.selectedTab === 2 ? 'var(--color-primary) !important' : ''}} label="Notifications" icon={<IoMdNotifications />} />
-    <BottomNavigationAction sx={{color: props.selectedTab === 3 ? 'var(--color-primary) !important' : ''}} label="Profile" icon={<FaUserCircle />} />
+    <BottomNavigationAction sx={{color: props.selectedTab === 0 ? 'var(--color-primary) !important' : ''}} label={t("lists")} icon={<FaListUl size={"1.2rem"}/>} />
+    <BottomNavigationAction sx={{color: props.selectedTab === 1 ? 'var(--color-primary) !important' : ''}} label={t("items")} icon={<MdFastfood size={"1.2rem"}/>} />
+    <BottomNavigationAction sx={{color: props.selectedTab === 2 ? 'var(--color-primary) !important' : ''}} label={t("notifications")} icon={<IoMdNotifications size={"1.2rem"} />} />
+    <BottomNavigationAction sx={{color: props.selectedTab === 3 ? 'var(--color-primary) !important' : ''}} label={t("profile")} icon={<FaUserCircle size={"1.2rem"} />} />
     </BottomNavigation>
 </Paper>
   )

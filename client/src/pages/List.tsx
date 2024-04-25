@@ -9,20 +9,38 @@ import { RiFileList3Line } from "react-icons/ri";
 import { IconButton } from "@mui/material";
 import i18n from "i18next";
 import 'react-swipeable-list/dist/styles.css';
+import { useTranslation } from "react-i18next";
+import List from "../interface/ListInterface.ts";
+import SearchBar from "../components/SearchBar/SearchBar.tsx";
 
 function List() {
-    const [users, setUsers] = useState([ {id: 1, f_name: 'John', l_name: "Doe", avatar: "https://mui.com/static/images/avatar/1.jpg"}, {id: 2, f_name: 'Omer', l_name: "Gai", avatar: ""}]);
-    const [items, setItems] = useState<Item[]>([{id: 1, name: 'Item 1', img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc", amount: 2}, {id: 2, name: 'Item 2', img: "", description: "only shtraus", unit: "KG", amount: 2}]);
-    const [list, setList] = useState<{ title: string, categories: string[]}>({title: "Shopping List", categories: ["Fruits", "Vegetables", "Dairy", "Meat", "Bakery", "Canned Goods", "Frozen Foods", "Beverages", "Snacks", "Cleaning Supplies", "Personal Care", "Baby", "Pet"]});
+    const [users, setUsers] = useState([ {id: "1", f_name: 'John', l_name: "Doe", avatar: "https://mui.com/static/images/avatar/1.jpg"}, {id: "2", f_name: 'Omer', l_name: "Gai", avatar: ""}]);
+    const [items, setItems] = useState<Item[]>([{id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc", amount: 2}, {id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "KG", amount: 2}]);
+    const [deletedItems, setDeletedItems] = useState<Item[]>([]);
+    const [boughtItems, setBoughtItems] = useState<Item[]>([]);
+    const [list, setList] = useState<List>({
+        "id": "1",
+        "title": "Grocery Shopping",
+        "categories": ["Food", "Home Essentials"],
+        "items": [],
+        "users": ["user123", "user456"]
+    });
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [filterList, setFilterList] = useState<number>(0);
     const [displayList, setDisplayList] = useState<Item[]>(items);
     
+    const { t } = useTranslation('translation', { keyPrefix: 'List' });
     const navigate = useNavigate();
 
 
     const onSelect = (category: string) => {
-        setSelectedCategory((prev) => prev === category ? "All" : category);
+        const selected = selectedCategory === category ? "All" : category;
+        setSelectedCategory(selected);
+        if(selected == 'All'){
+            setDisplayList(items);
+        } else {
+            setDisplayList(items.filter((item) => item.category === category));
+        }
     }
 
     const backClick = () => {
@@ -35,23 +53,39 @@ function List() {
     }
 
     const clickFilter = () => {
-        setFilterList((prev) => {
-            if(prev == 2) {
-                return 0
-            }
-            return prev + 1;
-        });
+        const filter = filterList == 2 ? 0 : filterList + 1;
+        if (filter == 0) {
+            setDisplayList(items);
+        } else if(filter == 1) {
+            setDisplayList(boughtItems);
+        } else {
+            setDisplayList(deletedItems);
+        }
+        setFilterList(filter);
+    }
+
+    const onSwipeLeft = (id: string) => {
+        setDisplayList((prev) => prev.filter((item) => item.id !== id));
+        setItems((prev) => prev.filter((item) => item.id !== id));
+        setBoughtItems((prev) => [...prev, items.find((item) => item.id === id)!]);
+    }
+
+    const onSwipeRight = (id: string) => {
+        setDisplayList((prev) => prev.filter((item) => item.id !== id));
+        setItems((prev) => prev.filter((item) => item.id !== id));
+        setDeletedItems((prev) => [...prev, items.find((item) => item.id === id)!]);
     }
 
 
   return (
     <main>
-        <Header title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<IconButton>
+        <Header buttonTitle={t("addItem")} title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<IconButton>
             <RiFileList3Line color='white'/>
         </IconButton>} />
         <UsersList users={users} />
+        <SearchBar />
         <CategoryList categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>
-        <ItemsList items={items} />
+        <ItemsList items={displayList} onSwipeLeft={onSwipeLeft} onSwipeRight={onSwipeRight}/>
     </main>
   )
 }

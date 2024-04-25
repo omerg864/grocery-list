@@ -1,0 +1,50 @@
+.list-container {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: start !important;
+    padding: 1rem;
+    gap: 1rem;
+    background-color: white !important;
+    color: black !important;
+    z-index: 99;
+}
+
+.list-lists {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.4rem;
+}
+
+.list-div {
+    width: 100%;
+    z-index: 99;
+}
+
+.list-view {
+    width: 100%;
+    z-index: 99;
+    border-bottom: 1px solid lightgray;
+}
+
+.list-details {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    align-items: center;
+}
+
+.list-title {
+    flex: 1;
+    text-align: start;
+    padding: 0 0 0 0.3rem;
+}
+
+.list-amount {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.swipe-left-btn {
+    background-color: red;
+}

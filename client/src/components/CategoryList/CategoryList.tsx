@@ -20,7 +20,7 @@ function CategoryList(props: CategoryListProps) {
         <IconButton sx={{color: 'red'}} onClick={props.onFilter} ><IoIosCloseCircle /></IconButton>}
         <div className="category-list">
             {props.categories.map((category: string) => (
-                <Chip onClick={() => props.onSelect(category)} color={props.selectedCategory === category ? 'success' : 'default'} sx={{color: 'white'}}  label={category} variant={props.selectedCategory === category ? 'filled' : 'outlined'} />
+                <Chip key={category} onClick={() => props.onSelect(category)} color={props.selectedCategory === category ? 'success' : 'default'} sx={{color: 'white'}}  label={category} variant={props.selectedCategory === category ? 'filled' : 'outlined'} />
             ))}
         </div>
     </div>

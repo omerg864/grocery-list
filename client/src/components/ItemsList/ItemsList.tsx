@@ -4,15 +4,15 @@ import './ItemsList.css';
 
 interface ItemsListProps {
     items: Item[];
+    onSwipeRight: (id: string) => void
+    onSwipeLeft: (id: string) => void
 }
 
 function ItemsList(props: ItemsListProps) {
   return (
     <div className="items-list">
         {props.items.map((item: Item) => (
-          <>
-          <ItemView item={item} />
-          </>
+          <ItemView key={item.id} item={item} onSwipeRight={props.onSwipeRight} onSwipeLeft={props.onSwipeLeft}/>
         ))}
     </div>
   )

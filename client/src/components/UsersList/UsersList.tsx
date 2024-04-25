@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 
 interface UsersListProps {
-    users: {id: number, f_name: string, l_name: string, avatar: string}[];
+    users: {id: string, f_name: string, l_name: string, avatar: string}[];
 }
 function UsersList(props: UsersListProps) {
     
@@ -17,7 +17,7 @@ function UsersList(props: UsersListProps) {
         <div className='users'>
             {props.users.map(user => {
                 return (
-                    <IconButton>
+                    <IconButton key={user.id}>
                         {user.avatar ? <Avatar sx={{ width: 50, height: 50 }} src={user.avatar} /> :
                      <Avatar sx={{ width: 50, height: 50 }}>{user.f_name[0] + user.l_name[0]}</Avatar>}
                      </IconButton>

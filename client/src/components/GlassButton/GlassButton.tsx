@@ -15,8 +15,15 @@ interface GlassButtonProps {
 
 }
 function GlassButton(props: GlassButtonProps) {
+
+  const handleClick = () => {
+    if (!props.disabled) {
+        props.onClick();
+    }
+  }
+  
   return (
-    <Button size={props.size ? props.size : "small"} sx={props.style ? props.style : {}} className='glass'>
+    <Button onClick={handleClick} size={props.size ? props.size : "small"} sx={props.style ? props.style : {}} className='glass'>
         {props.startIcon &&<div style={{ display: 'flex'}}>
             {props.startIcon}
         </div>}

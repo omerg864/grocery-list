@@ -7,6 +7,7 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './translations/en.json';
 import he from './translations/he.json';
+import { RecoilRoot } from "recoil";
 
 i18n
 .use(initReactI18next) // passes i18n down to react-i18next
@@ -32,6 +33,8 @@ const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <React.StrictMode>
-    <App />
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
   </React.StrictMode>,
 )
