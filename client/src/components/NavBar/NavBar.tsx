@@ -19,12 +19,28 @@ function NavBar(props: NavBarProps) {
 
     const changeTab = (_e: React.SyntheticEvent, newValue: number) => {
         // TODO: navigate to the correct page
-        navigate(`/lists/32ufwoeubf`);
         props.setSelectedTab(newValue);
+        switch(newValue){
+            case 0:
+                navigate('/');
+                break;
+            case 1:
+                navigate('/items');
+                break;
+            case 2:
+                navigate('/notifications');
+                break;
+            case 3:
+                navigate('/profile');
+                break;
+            default:
+                navigate('/');
+                break;
+        }
     }
 
   return (
-    <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+    <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 99 }} elevation={3}>
         <BottomNavigation
     value={props.selectedTab}
     onChange={changeTab}

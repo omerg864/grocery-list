@@ -1,0 +1,20 @@
+.list-form {
+    box-sizing: border-box;
+    /* From https://css.glass */
+    background: rgba(0, 0, 0, 0.13);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.3px);
+    -webkit-backdrop-filter: blur(9.3px);
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    padding: 0.5rem 1rem;
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.white-color-input > label {
+    color: white;
+}

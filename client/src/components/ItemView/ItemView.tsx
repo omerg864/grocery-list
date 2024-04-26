@@ -46,7 +46,7 @@ function ItemView(props: ItemViewProps) {
     }
 
   return (
-    <SwipeItem onSwipedLeft={onSwipedLeft} onSwipedRight={onSwipedRight} id={props.item.id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
+    <SwipeItem fullSwipe={false} onSwipedLeft={onSwipedLeft} onSwipedRight={onSwipedRight} id={props.item.id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
     animateDivClass={"item-div"} rightBtnClass='swipe-right-btn' leftBtnClass='swipe-left-btn' rightBtnChildren={rightButton()} leftBtnChildren={leftButton()} 
     mainItemClick={onItemClick}>
         <CardActionArea className='item-container'>

@@ -20,6 +20,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
+  "rules": {
+    "no-unused-vars": "off"
+  },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

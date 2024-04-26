@@ -21,6 +21,12 @@ html, body, #root {
   min-height: 100dvh;
 }
 
+main {
+  min-height: calc(100dvh - 56px);
+  display: flex;
+  flex-direction: column;
+}
+
 #root {
   position: relative;
 }

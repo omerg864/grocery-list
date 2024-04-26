@@ -11,7 +11,7 @@
     gap: 1rem;
     background-color: white !important;
     color: black !important;
-    z-index: 99;
+    z-index: 50;
 }
 
 .item-details {
@@ -35,7 +35,8 @@
 
 .item-div {
     width: 100%;
-    z-index: 99;
+    z-index: 50;
+    position: relative;
 }
 
 .swipe-left-btn {

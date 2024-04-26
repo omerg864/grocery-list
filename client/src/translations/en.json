@@ -1,18 +1,27 @@
 {
     "List": {
-        "addItem": "Add Item"
+        "addItem": "Add Item",
+        "search": "Search"
     },
     "UsersList": {
         "sharedWith": "Shared with"
     },
     "Lists": {
         "lists": "Lists",
-        "addList": "Add List"
+        "addList": "Add List",
+        "search": "Search"
     },
     "NavBar": {
         "lists": "Lists",
         "items": "Items",
         "profile": "Profile",
         "notifications": "Notifications"
+    },
+    "NewList": {
+        "newList": "New List",
+        "name": "Name",
+        "description": "Description",
+        "shareWith": "Share with",
+        "create": "Create List"
     }
 }

@@ -1,9 +1,9 @@
 import { atom } from 'recoil';
 import List from '../interface/ListInterface';
 
-const listAtom = atom<List | null>({
+const listAtom = atom<List | undefined>({
 	key: 'listState',
-	default: null,
+	default: undefined,
 });
 
 const listsState = atom<List[]>({

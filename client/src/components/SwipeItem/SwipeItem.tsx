@@ -18,6 +18,7 @@ interface SwipeItemProps {
     rightBtnChildren?: React.ReactNode;
     leftBtnOpenWidth?: number;
     rightBtnOpenWidth?: number;
+    fullSwipe?: boolean;
 }
 function SwipeItem(props: SwipeItemProps) {
 
@@ -26,6 +27,7 @@ function SwipeItem(props: SwipeItemProps) {
     const threshold = props.threshold || 0.3;
     const leftBtnOpenWidth = props.leftBtnOpenWidth || 60;
     const rightBtnOpenWidth = props.rightBtnOpenWidth || 60;
+    const fullSwipe = props.fullSwipe === undefined ? true : props.fullSwipe;
 
     const [swipeState, setSwipeState] = useState<number>(0);
 
@@ -51,13 +53,13 @@ function SwipeItem(props: SwipeItemProps) {
             api.start({ x: down ? mx : 0, immediate: down })
           }
         },
-        onDragEnd: ({ _down, movement: [mx, _my] }) => {
-            if( mx > 0.8 * document.documentElement.clientWidth && props.onSwipedRight) {
+        onDragEnd: ({ movement: [mx, _my] }) => {
+            if( mx > 0.8 * document.documentElement.clientWidth && props.onSwipedRight && fullSwipe) {
                 props.onSwipedRight!(props.id);
                 api.start({x: 0 });
                 set2.start({ w2: 0 });
                 setSwipeState(0);
-            } else if (mx < -0.8 * document.documentElement.clientWidth && props.onSwipedLeft) {
+            } else if (mx < -0.8 * document.documentElement.clientWidth && props.onSwipedLeft && fullSwipe) {
                 props.onSwipedLeft!(props.id);
                 api.start({x: 0});
                 set.start({w: 0});
@@ -70,7 +72,7 @@ function SwipeItem(props: SwipeItemProps) {
                 api.start({ x: -rightBtnOpenWidth});
                 set.start({ w: rightBtnOpenWidth });
                 setSwipeState(2);
-            } else if(mx != 0) {
+            } else if(mx > 2 || mx < -2) {
                 api.start({ x: 0 });
                 set.start({ w: 0 });
                 set2.start({ w2: 0 });

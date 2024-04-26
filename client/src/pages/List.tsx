@@ -10,20 +10,25 @@ import { IconButton } from "@mui/material";
 import i18n from "i18next";
 import 'react-swipeable-list/dist/styles.css';
 import { useTranslation } from "react-i18next";
-import List from "../interface/ListInterface.ts";
+import ListInterface from "../interface/ListInterface.ts";
 import SearchBar from "../components/SearchBar/SearchBar.tsx";
+import User from "../interface/UserInterface.ts";
 
 function List() {
-    const [users, setUsers] = useState([ {id: "1", f_name: 'John', l_name: "Doe", avatar: "https://mui.com/static/images/avatar/1.jpg"}, {id: "2", f_name: 'Omer', l_name: "Gai", avatar: ""}]);
+    const [users, setUsers] = useState<User[]>([ {id: "1", f_name: 'John', l_name: "Doe", avatar: "https://mui.com/static/images/avatar/1.jpg"}, {id: "2", f_name: 'Omer', l_name: "Gai", avatar: ""}]);
     const [items, setItems] = useState<Item[]>([{id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc", amount: 2}, {id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "KG", amount: 2}]);
     const [deletedItems, setDeletedItems] = useState<Item[]>([]);
     const [boughtItems, setBoughtItems] = useState<Item[]>([]);
-    const [list, setList] = useState<List>({
+    const [list, setList] = useState<ListInterface>({
         "id": "1",
         "title": "Grocery Shopping",
         "categories": ["Food", "Home Essentials"],
         "items": [],
-        "users": ["user123", "user456"]
+        "users": ["user123", "user456"],
+        "createdAt": "2021-10-10T10:00:00.000Z",
+        "updatedAt": "2021-10-10T10:00:00.000Z",
+        boughtItems: [],
+        deletedItems: []
     });
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [filterList, setFilterList] = useState<number>(0);
@@ -76,14 +81,18 @@ function List() {
         setDeletedItems((prev) => [...prev, items.find((item) => item.id === id)!]);
     }
 
+    const deleteUser = (id: string) => {
+        setUsers((prev) => prev.filter((user) => user.id !== id));
+    }
+
 
   return (
     <main>
         <Header buttonTitle={t("addItem")} title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<IconButton>
             <RiFileList3Line color='white'/>
         </IconButton>} />
-        <UsersList users={users} />
-        <SearchBar />
+        <UsersList onDelete={deleteUser} users={users} />
+        <SearchBar placeholder={t("search")} />
         <CategoryList categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>
         <ItemsList items={displayList} onSwipeLeft={onSwipeLeft} onSwipeRight={onSwipeRight}/>
     </main>
