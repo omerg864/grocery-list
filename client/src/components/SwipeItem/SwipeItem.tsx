@@ -1,7 +1,7 @@
 import { useSpring, animated } from '@react-spring/web';
 import { useGesture } from '@use-gesture/react';
 import './SwipeItem.css';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 
 interface SwipeItemProps {
@@ -19,6 +19,8 @@ interface SwipeItemProps {
     leftBtnOpenWidth?: number;
     rightBtnOpenWidth?: number;
     fullSwipe?: boolean;
+    open?: string | null;
+    setOpen?: (id: string | null) => void;
 }
 function SwipeItem(props: SwipeItemProps) {
 
@@ -44,13 +46,19 @@ function SwipeItem(props: SwipeItemProps) {
             leftBtn.current?.classList.remove('show');
             rightBtn.current?.classList.add('show');
             w.set(-mx);
-            api.start({ x: down ? mx : 0, immediate: down })
+            api.start({ x: down ? mx : 0, immediate: down });
+            if (props.open !== props.id) {
+                props.setOpen!(null);
+            }
           }
           else if (down && mx > 0.5 && props.onSwipedRight) {
             rightBtn.current?.classList.remove('show');
             leftBtn.current?.classList.add('show');
             w2.set(mx);
-            api.start({ x: down ? mx : 0, immediate: down })
+            api.start({ x: down ? mx : 0, immediate: down });
+            if (props.open !== props.id) {
+                props.setOpen!(null);
+            }
           }
         },
         onDragEnd: ({ movement: [mx, _my] }) => {
@@ -59,47 +67,58 @@ function SwipeItem(props: SwipeItemProps) {
                 api.start({x: 0 });
                 set2.start({ w2: 0 });
                 setSwipeState(0);
+                props.setOpen!(null);
             } else if (mx < -0.8 * document.documentElement.clientWidth && props.onSwipedLeft && fullSwipe) {
                 props.onSwipedLeft!(props.id);
                 api.start({x: 0});
                 set.start({w: 0});
                 setSwipeState(0);
+                props.setOpen!(null);
             } else if (mx > threshold * document.documentElement.clientWidth && props.onSwipedRight) {
                 api.start({ x: leftBtnOpenWidth });
                 set2.start({ w2: leftBtnOpenWidth });
                 setSwipeState(1);
+                props.setOpen!(props.id);
             } else if (mx < -threshold * document.documentElement.clientWidth && props.onSwipedLeft) {
                 api.start({ x: -rightBtnOpenWidth});
                 set.start({ w: rightBtnOpenWidth });
                 setSwipeState(2);
+                props.setOpen!(props.id);
             } else if(mx > 2 || mx < -2) {
                 api.start({ x: 0 });
                 set.start({ w: 0 });
                 set2.start({ w2: 0 });
                 setSwipeState(0);
-            }
-        },
-      }))
-
-      const clickedMainDiv = () => {
-        if(props.mainItemClick) {
-            if (swipeState === 0) {
-                props.mainItemClick();
             } else {
+                if(props.mainItemClick) {
+                    if (swipeState === 0 && props.open === null) {
+                        props.mainItemClick();
+                    }
+                }
                 api.start({ x: 0 });
                 set.start({ w: 0 });
                 set2.start({ w2: 0 });
                 setSwipeState(0);
+                props.setOpen!(null);
             }
+        },
+    }))
+
+    useEffect(() => {
+        if (props.open !== props.id) {
+            api.start({ x: 0 });
+            set.start({ w: 0 });
+            set2.start({ w2: 0 });
+            setSwipeState(0);
         }
-      }
+    }, [props.open])
 
   return (
     <div style={{display: 'flex', position: 'relative', width: '100%', overflow: 'hidden'}}>
         {props.onSwipedRight && <animated.div style={{ width: w2, touchAction: 'none'}} ref={leftBtn} className={`swipe-right ${props.leftBtnClass}`} onClick={() => props.onSwipedRight!(props.id)}>
         {props.leftBtnChildren}
             </animated.div>}
-        <animated.div onClick={clickedMainDiv} className={props.animateDivClass} {...bind()} style={{ x, touchAction: 'none' }} >
+        <animated.div className={props.animateDivClass} {...bind()} style={{ x, touchAction: 'none' }} >
             {props.children}
         </animated.div>
         {props.onSwipedLeft && <animated.div style={{ width: w, touchAction: 'none'}} ref={rightBtn} className={`swipe-left ${props.rightBtnClass}`} onClick={() => props.onSwipedLeft!(props.id)}>

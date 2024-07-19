@@ -23,5 +23,12 @@
         "description": "Description",
         "shareWith": "Share with",
         "create": "Create List"
+    },
+    "ListForm": {
+        "title": "Title",
+        "previousListItems": "Add Previous List Items",
+        "defaultItems": "Add Default Items",
+        "addUsers": "Add Users",
+        "search": "Search"
     }
 }

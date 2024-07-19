@@ -1,0 +1,11 @@
+.users-display {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.user-details {
+    display: flex;
+    align-items: center;
+}

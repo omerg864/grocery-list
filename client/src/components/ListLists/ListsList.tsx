@@ -5,6 +5,7 @@ import './ListsList.css';
 import { FaTrash } from "react-icons/fa";
 import { useTranslation } from 'react-i18next';
 import { IoIosArrowForward } from "react-icons/io";
+import { useState } from 'react';
 
 
 interface ListsListProps {
@@ -15,6 +16,8 @@ interface ListsListProps {
 function ListsList(props: ListsListProps) {
 
     const { t } = useTranslation('translation', { keyPrefix: 'ListsList' });
+
+    const [open, setOpen] = useState<string | null>(null);
 
     const leftButton = (): React.ReactNode => {
         return (
@@ -27,7 +30,7 @@ function ListsList(props: ListsListProps) {
   return (
     <div className='list-lists'>
         {props.lists.map((list: List) => (
-            <SwipeItem fullSwipe={false} leftBtnClass='swipe-left-btn' animateDivClass='list-view' onSwipedRight={() => props.deleteList(list.id)} leftBtnChildren={leftButton()} leftBtnOpenWidth={80} mainItemClick={() => props.onClick(list.id)} key={list.id} id={list.id} >
+            <SwipeItem open={open} setOpen={setOpen} fullSwipe={false} leftBtnClass='swipe-left-btn' animateDivClass='list-view' threshold={0.06} onSwipedRight={() => props.deleteList(list.id)} leftBtnChildren={leftButton()} leftBtnOpenWidth={80} mainItemClick={() => props.onClick(list.id)} key={list.id} id={list.id} >
                 <CardActionArea className='list-container'>
                     <div className='list-view'>
                         <div className='list-details'>

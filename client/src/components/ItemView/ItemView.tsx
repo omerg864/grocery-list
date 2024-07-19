@@ -6,11 +6,14 @@ import SwipeItem from '../SwipeItem/SwipeItem';
 import { useTranslation } from 'react-i18next';
 import { FaTrash } from "react-icons/fa";
 import { MdAddShoppingCart } from "react-icons/md";
+import { useState } from 'react';
 
 interface ItemViewProps {
-    item: Item
-    onSwipeLeft: (id: string) => void
-    onSwipeRight: (id: string) => void
+    item: Item;
+    onSwipeLeft: (id: string) => void;
+    onSwipeRight: (id: string) => void;
+    open: string | null;
+    setOpen: (id: string | null) => void;
 }
 function ItemView(props: ItemViewProps) {
 
@@ -46,7 +49,7 @@ function ItemView(props: ItemViewProps) {
     }
 
   return (
-    <SwipeItem fullSwipe={false} onSwipedLeft={onSwipedLeft} onSwipedRight={onSwipedRight} id={props.item.id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
+    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedLeft={onSwipedLeft} onSwipedRight={onSwipedRight} id={props.item.id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
     animateDivClass={"item-div"} rightBtnClass='swipe-right-btn' leftBtnClass='swipe-left-btn' rightBtnChildren={rightButton()} leftBtnChildren={leftButton()} 
     mainItemClick={onItemClick}>
         <CardActionArea className='item-container'>

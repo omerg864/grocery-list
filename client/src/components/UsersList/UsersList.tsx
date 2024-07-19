@@ -1,9 +1,10 @@
-import { Avatar, Typography, IconButton, Badge } from '@mui/material';
+import { Avatar, Typography, IconButton, Badge, styled, BadgeProps } from '@mui/material';
 import './UsersList.css';
 import { IoMdAdd } from "react-icons/io";
 import { useTranslation } from 'react-i18next';
 import User from '../../interface/UserInterface';
-import React from 'react';
+import { IoMdClose } from "react-icons/io";
+import UserAvatar from '../UserAvatar/UserAvatar';
 
 
 interface UsersListProps {
@@ -16,16 +17,24 @@ function UsersList(props: UsersListProps) {
     
     const { t } = useTranslation('translation', { keyPrefix: 'UsersList' });
 
+    const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+        '& .MuiBadge-badge': {
+          padding: 0
+        },
+      }));
+
   return (
     <div className='users-list'>
         <Typography variant='subtitle2' className='users-title' style={{ left: "1rem"}} >{t("sharedWith")}</Typography>
         <div className='users'>
             {props.users.map(user => {
                 return (
-                    <IconButton onClick={() => props.onClick!(user.id)} key={user.id}>
-                        {user.avatar ? <Avatar sx={{ width: 50, height: 50 }} src={user.avatar} /> :
-                        <Avatar sx={{ width: 50, height: 50 }}>{user.f_name[0] + user.l_name[0]}</Avatar>}
-                    </IconButton>
+                    <StyledBadge style={{margin: '10px'}} color='error' badgeContent={<span style={{cursor: 'pointer', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex'}} 
+                    onClick={() => props.onDelete!(user.id)}><IoMdClose /></span>} >
+                        {props.onClick ? <IconButton style={{padding: 0}} onClick={() => props.onClick!(user.id)} key={user.id}>
+                        <UserAvatar user={user} />
+                        </IconButton> : <UserAvatar user={user} key={user.id} />}
+                    </StyledBadge>
                 )
             })}
             <IconButton onClick={props.onAdd}>

@@ -12,7 +12,7 @@ interface GlassButtonProps {
     startIcon?: React.ReactNode;
     endIcon?: React.ReactNode;
     style?: React.CSSProperties;
-
+    children?: React.ReactNode;
 }
 function GlassButton(props: GlassButtonProps) {
 
@@ -28,6 +28,7 @@ function GlassButton(props: GlassButtonProps) {
             {props.startIcon}
         </div>}
         {props.text}
+        {props.children}
         <div style={{display: 'flex'}}>
             {props.endIcon}
         </div>
