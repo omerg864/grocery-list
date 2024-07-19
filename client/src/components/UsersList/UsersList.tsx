@@ -1,6 +1,6 @@
 import { Avatar, Typography, IconButton, Badge, styled, BadgeProps } from '@mui/material';
 import './UsersList.css';
-import { IoMdAdd } from "react-icons/io";
+import { FiShare } from "react-icons/fi";
 import { useTranslation } from 'react-i18next';
 import User from '../../interface/UserInterface';
 import { IoMdClose } from "react-icons/io";
@@ -38,7 +38,7 @@ function UsersList(props: UsersListProps) {
                 )
             })}
             <IconButton onClick={props.onAdd}>
-                <Avatar className='glass-button' sx={{ width: 50, height: 50 }}><IoMdAdd size={"1.5rem"} color='black'/></Avatar>
+                <Avatar className='glass-button' sx={{ width: 50, height: 50 }}><FiShare size={"1.5rem"} color='black'/></Avatar>
             </IconButton>
         </div>
     </div>

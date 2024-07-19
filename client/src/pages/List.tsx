@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import ListInterface from "../interface/ListInterface.ts";
 import SearchBar from "../components/SearchBar/SearchBar.tsx";
 import User from "../interface/UserInterface.ts";
+import { toast } from "react-toastify";
 
 function List() {
     const [users, setUsers] = useState<User[]>([ {id: "1", f_name: 'John', l_name: "Doe", avatar: "https://mui.com/static/images/avatar/1.jpg"}, {id: "2", f_name: 'Omer', l_name: "Gai", avatar: ""}]);
@@ -85,13 +86,26 @@ function List() {
         setUsers((prev) => prev.filter((user) => user.id !== id));
     }
 
+    const addUser = () => {
+        if (navigator.share) {
+              navigator.share({
+                title: t('shareTitle'),
+                text: t('shareText'),
+                url: `${import.meta.env.VITE_API_URL}/join/${list.id}`, // Replace with your link
+              });
+          } else {
+            toast.info(t('linkCopied'));
+            navigator.clipboard.writeText(`${import.meta.env.VITE_API_URL}/join/${list.id}`); // Replace with your link
+          }
+    }
+
 
   return (
     <main>
         <Header buttonTitle={t("addItem")} title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<IconButton>
             <RiFileList3Line color='white'/>
         </IconButton>} />
-        <UsersList onDelete={deleteUser} users={users} />
+        <UsersList onAdd={addUser} onDelete={deleteUser} users={users} />
         <SearchBar placeholder={t("search")} />
         <CategoryList categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>
         <ItemsList items={displayList} onSwipeLeft={onSwipeLeft} onSwipeRight={onSwipeRight}/>
