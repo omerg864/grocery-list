@@ -11,6 +11,7 @@ interface List {
 	shared?: boolean;
     updatedAt: string;
     createdAt: string;
+	owner: boolean;
 }
 
 export default List;

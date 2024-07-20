@@ -19,6 +19,7 @@ const listsState = atom<List[]>({
 			createdAt: '2021-09-01',
 			boughtItems: [],
 			deletedItems: [],
+			owner: true,
 		},
 		{
 			id: '2',
@@ -30,6 +31,7 @@ const listsState = atom<List[]>({
 			createdAt: '2021-09-24',
 			boughtItems: [],
 			deletedItems: [],
+			owner: true,
 		},
 		{
 			id: '3',
@@ -41,6 +43,7 @@ const listsState = atom<List[]>({
 			createdAt: '2021-09-02',
 			boughtItems: [],
 			deletedItems: [],
+			owner: false,
 		},
 	],
 });

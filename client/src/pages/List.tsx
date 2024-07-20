@@ -14,6 +14,7 @@ import ListInterface from "../interface/ListInterface.ts";
 import SearchBar from "../components/SearchBar/SearchBar.tsx";
 import User from "../interface/UserInterface.ts";
 import { toast } from "react-toastify";
+import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDialog.tsx";
 
 function List() {
     const [users, setUsers] = useState<User[]>([ {id: "1", f_name: 'John', l_name: "Doe", avatar: "https://mui.com/static/images/avatar/1.jpg"}, {id: "2", f_name: 'Omer', l_name: "Gai", avatar: ""}]);
@@ -23,9 +24,10 @@ function List() {
     const [list, setList] = useState<ListInterface>({
         "id": "1",
         "title": "Grocery Shopping",
-        "categories": ["Food", "Home Essentials"],
+        "categories": ["Fruits", "Home Essentials"],
         "items": [],
         "users": ["user123", "user456"],
+        "owner": true,
         "createdAt": "2021-10-10T10:00:00.000Z",
         "updatedAt": "2021-10-10T10:00:00.000Z",
         boughtItems: [],
@@ -34,6 +36,8 @@ function List() {
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [filterList, setFilterList] = useState<number>(0);
     const [displayList, setDisplayList] = useState<Item[]>(items);
+    const [dialog, setDialog] = useState<boolean>(false);
+    const [userId, setUserId] = useState<string>('');
     
     const { t } = useTranslation('translation', { keyPrefix: 'List' });
     const navigate = useNavigate();
@@ -42,11 +46,7 @@ function List() {
     const onSelect = (category: string) => {
         const selected = selectedCategory === category ? "All" : category;
         setSelectedCategory(selected);
-        if(selected == 'All'){
-            setDisplayList(items);
-        } else {
-            setDisplayList(items.filter((item) => item.category === category));
-        }
+        applyFilters(selected, filterList);
     }
 
     const backClick = () => {
@@ -58,16 +58,19 @@ function List() {
         navigate('/select-item');
     }
 
+    const applyFilters = (selected: string, filter: number) => {
+        const listD = filter == 0 ? items : filter == 1 ? boughtItems : deletedItems;
+        if (selected === "All") {
+            setDisplayList(listD);
+        } else{
+            setDisplayList(listD.filter((item) => item.category === selected));
+        }
+    }
+
     const clickFilter = () => {
         const filter = filterList == 2 ? 0 : filterList + 1;
-        if (filter == 0) {
-            setDisplayList(items);
-        } else if(filter == 1) {
-            setDisplayList(boughtItems);
-        } else {
-            setDisplayList(deletedItems);
-        }
         setFilterList(filter);
+        applyFilters(selectedCategory, filter);
     }
 
     const onSwipeLeft = (id: string) => {
@@ -82,8 +85,19 @@ function List() {
         setDeletedItems((prev) => [...prev, items.find((item) => item.id === id)!]);
     }
 
-    const deleteUser = (id: string) => {
-        setUsers((prev) => prev.filter((user) => user.id !== id));
+    const deleteUser = () => {
+        setUsers((prev) => prev.filter((user) => user.id !== userId));
+        closeDialog();
+    }
+
+    const openDialog = (id: string) => {
+        setDialog(true);
+        setUserId(id);
+    }
+
+    const closeDialog = () => {
+        setDialog(false);
+        setUserId('');
     }
 
     const addUser = () => {
@@ -99,14 +113,26 @@ function List() {
           }
     }
 
+    const filterItems = (search: string) => {
+        setDisplayList(items.filter((item) => item.name.toLowerCase().includes(search)));
+    }
+    let deleteAction = {};
+
+    if (list.owner) {
+        deleteAction = { onDelete: openDialog };
+    } else {
+        deleteAction = {};
+    }
+
 
   return (
     <main>
         <Header buttonTitle={t("addItem")} title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<IconButton>
             <RiFileList3Line color='white'/>
         </IconButton>} />
-        <UsersList onAdd={addUser} onDelete={deleteUser} users={users} />
-        <SearchBar placeholder={t("search")} />
+        <ConfirmationDialog title={t('deleteUserTitle')} content={t('deleteUserContent')}  open={dialog} handleClose={closeDialog} handleConfirm={deleteUser}  />
+        <UsersList onAdd={addUser} {...deleteAction} users={users} />
+        <SearchBar onSearch={filterItems} placeholder={t("search")} />
         <CategoryList categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>
         <ItemsList items={displayList} onSwipeLeft={onSwipeLeft} onSwipeRight={onSwipeRight}/>
     </main>
