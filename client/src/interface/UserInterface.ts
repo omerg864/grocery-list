@@ -8,7 +8,6 @@ interface User {
 	email?: string;
 	password?: string;
 	lists?:  string | List[];
-
 }
 
 export default User;

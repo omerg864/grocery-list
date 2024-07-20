@@ -4,36 +4,8 @@ import './ListForm.css';
 import { IoAddCircleSharp } from "react-icons/io5";
 import { CiCircleMinus } from "react-icons/ci";
 import { useTranslation } from 'react-i18next';
-import { createTheme, ThemeProvider, Theme, useTheme } from '@mui/material/styles';
-import User from '../../interface/UserInterface';
-
-
-const customTheme = (outerTheme: Theme) =>
-    createTheme({
-      palette: {
-        mode: outerTheme.palette.mode,
-      },
-      components: {
-        MuiTextField: {
-          styleOverrides: {
-            root: {
-              '--TextField-brandBorderColor': 'white',
-              '--TextField-color': 'white',
-            },
-          },
-        },
-        MuiOutlinedInput: {
-          styleOverrides: {
-            notchedOutline: {
-              borderColor: 'var(--TextField-brandBorderColor)',
-            },
-            input: {
-              color: 'var(--TextField-color)',
-            },
-          },
-        },
-      },
-    });
+import { ThemeProvider, useTheme } from '@mui/material/styles';
+import FormTheme from '../../themes/formTheme';
 
 interface ListFormProps {
     form: ListFormInterface;
@@ -51,7 +23,7 @@ function ListForm(props: ListFormProps) {
 
   return (
     <form className='list-form' >
-        <ThemeProvider theme={customTheme(outerTheme)}>
+        <ThemeProvider theme={FormTheme(outerTheme)}>
             <TextField name="title" color='success' className='white-color-input' fullWidth onChange={props.onChange} value={props.form.title} label={t('title')} variant="outlined" />
             <FormControlLabel control={<Checkbox name="prevItems" onChange={props.onChecked} checked={props.form.prevItems} {...labelPrev} color="success" icon={<CiCircleMinus color='white' />} checkedIcon={<IoAddCircleSharp />} />} label={t("previousListItems")} />
             <FormControlLabel control={<Checkbox name="defaultItems" onChange={props.onChecked} checked={props.form.defaultItems} {...labelDefault} color="success" icon={<CiCircleMinus color='white' />} checkedIcon={<IoAddCircleSharp />} />} label={t("defaultItems")} />

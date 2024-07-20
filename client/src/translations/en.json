@@ -50,5 +50,21 @@
         "noUsers": "No users",
         "noNotifications": "No notifications",
         "confirm": "Confirm"
+    },
+    "Login": {
+        "login": "Login",
+        "email": "Email",
+        "password": "Password",
+        "forgotPassword": "Forgot password?",
+        "noAccount": "Don't have an account?"
+    },
+    "Register": {
+        "register": "Register",
+        "email": "Email",
+        "password": "Password",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "confirmPassword": "Confirm Password",
+        "haveAccount": "Already have an account?"
     }
 }
