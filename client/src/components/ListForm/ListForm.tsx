@@ -24,7 +24,7 @@ function ListForm(props: ListFormProps) {
   return (
     <form className='list-form' >
         <ThemeProvider theme={FormTheme(outerTheme)}>
-            <TextField name="title" color='success' className='white-color-input' fullWidth onChange={props.onChange} value={props.form.title} label={t('title')} variant="outlined" />
+            <TextField required name="title" color='success' className='white-color-input' fullWidth onChange={props.onChange} value={props.form.title} label={t('title')} variant="outlined" />
             <FormControlLabel control={<Checkbox name="prevItems" onChange={props.onChecked} checked={props.form.prevItems} {...labelPrev} color="success" icon={<CiCircleMinus color='white' />} checkedIcon={<IoAddCircleSharp />} />} label={t("previousListItems")} />
             <FormControlLabel control={<Checkbox name="defaultItems" onChange={props.onChecked} checked={props.form.defaultItems} {...labelDefault} color="success" icon={<CiCircleMinus color='white' />} checkedIcon={<IoAddCircleSharp />} />} label={t("defaultItems")} />
         </ThemeProvider>

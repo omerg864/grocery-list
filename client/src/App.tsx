@@ -15,7 +15,25 @@ import Register from './pages/Register.tsx';
 
 function App() {
 
-  const [selectedTab, setSelectedTab] = useState<number>(0);
+  const getSelectedTab = () => {
+    const path = window.location.pathname.split('/')[1];
+    switch(path) {
+      case '':
+        return 0;
+      case 'lists':
+          return 0;
+      case 'notifications':
+        return 2;
+      case 'profile':
+        return 3;
+      case 'items':
+        return 1;
+      default:
+        return 4;
+    }
+  }
+
+  const [selectedTab, setSelectedTab] = useState<number>(getSelectedTab());
 
   return (
     <>

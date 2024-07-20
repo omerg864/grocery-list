@@ -7,6 +7,8 @@ import ListsList from "../components/ListLists/ListsList.tsx";
 import SearchBar from "../components/SearchBar/SearchBar.tsx";
 import { useRecoilState } from "recoil";
 import { listsState, listAtom } from "../recoil/atoms.ts";
+import { MdOutlineAutoDelete } from "react-icons/md";
+import { IconButton, Tooltip } from "@mui/material";
 
 function Lists() {
 
@@ -40,7 +42,9 @@ function Lists() {
 
   return (
     <main>
-        <Header buttonTitle={t("addList")} title={t("lists")} buttonClick={newList} />
+        <Header buttonTitle={t("addList")} title={t("lists")} buttonClick={newList} sideButton={<Tooltip title={t('recentlyDeleted')}><IconButton >
+          <MdOutlineAutoDelete color="white"/>
+        </IconButton></Tooltip>} />
         <SearchBar placeholder={t("search")} onSearch={onSearch}/>
         <ListsList onClick={onClick} deleteList={deleteList} lists={listsDisplayed} />
     </main>
