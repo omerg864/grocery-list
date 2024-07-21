@@ -55,7 +55,7 @@ function List() {
     }
 
     const newSelectItem = () => {
-        navigate('/select-item');
+        navigate('/lists/selectItem');
     }
 
     const applyFilters = (selected: string, filter: number) => {
