@@ -4,7 +4,7 @@ import './GlassButton.css';
 
 interface GlassButtonProps {
     text: string;
-    onClick: () => void;
+    onClick?: () => void;
     disabled?: boolean;
     color?: 'primary' | 'secondary';
     size?: 'small' | 'medium' | 'large';
@@ -13,17 +13,25 @@ interface GlassButtonProps {
     endIcon?: React.ReactNode;
     style?: React.CSSProperties;
     children?: React.ReactNode;
+    type?: 'button' | 'submit' | 'reset';
 }
 function GlassButton(props: GlassButtonProps) {
 
   const handleClick = () => {
     if (!props.disabled) {
-        props.onClick();
+        props.onClick!();
     }
   }
+
+  let click = {};
+  if(props.onClick) {
+    click = {onClick: handleClick};
+  }
+
+  const type = props.type ? props.type : 'button';
   
   return (
-    <Button onClick={handleClick} size={props.size ? props.size : "small"} sx={props.style ? props.style : {}} className='glass'>
+    <Button {...click} type={type} size={props.size ? props.size : "small"} sx={props.style ? props.style : {}} className='glass'>
         {props.startIcon &&<div style={{ display: 'flex'}}>
             {props.startIcon}
         </div>}

@@ -1,9 +1,10 @@
 import Header from "../components/Header/Header";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import ListFormInterface from "../interface/ListForm";
 import ListForm from "../components/ListForm/ListForm";
+import Loading from "../components/Loading/Loading";
 
 function NewList() {
 
@@ -11,18 +12,28 @@ function NewList() {
   const [form, setForm] = useState<ListFormInterface>({ title: '', prevItems: true, defaultItems: true})
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const backClick = () => {
     navigate(-1);
   }
 
-  const createList = () => {
+  const submitForm = () => {
+    if (formRef.current?.checkValidity()) {
+      formRef.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }else {
+      formRef.current?.reportValidity();
+    }
+  }
+
+  const createList = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     // Create list
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
       navigate(-1);
-    }, 1000);
+    }, 2000);
   }
 
   const onChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,11 +44,15 @@ function NewList() {
     setForm({ ...form, [event.target.name]: event.target.value });
   }
 
+  if (isLoading) {
+    return <Loading />;
+  }
+
 
   return (
     <main>
-      <Header title={t('newList')} onBack={backClick} buttonTitle={t('create')} buttonClick={createList}/>
-      <ListForm form={form} onChange={onChange} onChecked={onChecked} />
+      <Header title={t('newList')} onBack={backClick} buttonTitle={t('create')} buttonClick={submitForm}/>
+      <ListForm submit={createList} formRef={formRef}  form={form} onChange={onChange} onChecked={onChecked} />
     </main>
   )
 }

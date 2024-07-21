@@ -73,7 +73,16 @@
         "personalDetails": "Personal Details",
         "password": "Password",
         "preferences": "Preferences",
-        "logout": "Logout"
+        "logout": "Logout",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "update": "Update",
+        "change": "Change",
+        "fullSwipe": "Full Swipe items",
+        "language": "Language",
+        "english": "English",
+        "hebrew": "Hebrew"
     },
     "Notifications": {
         "notifications": "Notifications",
@@ -83,5 +92,24 @@
     "Items": {
         "items": "Items",
         "newItem": "New Item"
+    },
+    "ForgotPassword": {
+        "resetPasswordRequest": "Reset Password Request",
+        "email": "Email",
+        "sendEmail": "Send Email",
+        "rememberPassword": "I remembered my password"
+    },
+    "PasswordRules" : {
+        "start": "Password must be:",
+        "english": "In English",
+        "smallLetter": "At least 1 small letter",
+        "capitalLetter": "At least 1 capital letter",
+        "number": "At least 1 number",
+        "length": "Between 8 and 24 characters"
+    },
+    "ResetPassword": {
+        "resetPassword": "Reset Password",
+        "password": "Password",
+        "confirmPassword": "Confirm Password"
     }
 }

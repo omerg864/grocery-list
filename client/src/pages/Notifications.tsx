@@ -25,7 +25,7 @@ function Notifications() {
       message: 'Hadar has changed the list',
       createdAt: new Date().toISOString(),
       read: false,
-      id: '1'
+      id: '2'
     }
   ]);
 

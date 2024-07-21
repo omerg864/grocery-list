@@ -9,6 +9,7 @@ import listTheme from '../themes/listTheme';
 import PersonalDetails from '../components/PersonalDetails/PersonalDetails';
 import PasswordChange from '../components/PasswordChange/PasswordChange';
 import Preferences from '../components/Preferences/Preferences';
+import Loading from '../components/Loading/Loading';
 
 
 function Profile() {
@@ -47,6 +48,9 @@ function Profile() {
 
   const tabs = [{title: t('personalDetails'), icon: <CgProfile color='white'/>}, {title: t('password'), icon: <RiLockPasswordLine color='white'/>}, {title: t('preferences'), icon: <GiSettingsKnobs color='white'/>}];
 
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <main>
@@ -65,9 +69,9 @@ function Profile() {
               </ListItem>
             ))}
           </List>}
-        {tab === 1 && <PersonalDetails />}
-        {tab === 2 && <PasswordChange />}
-        {tab === 3 && <Preferences />}
+        {tab === 1 && <PersonalDetails setTab={setTab} setIsLoading={setIsLoading} />}
+        {tab === 2 && <PasswordChange setTab={setTab} setIsLoading={setIsLoading} />}
+        {tab === 3 && <Preferences setTab={setTab} setIsLoading={setIsLoading} />}
       </ThemeProvider>
   </div>
   </main>

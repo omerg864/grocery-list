@@ -8,6 +8,7 @@ import formTheme from '../themes/formTheme';
 import GlassButton from '../components/GlassButton/GlassButton';
 import { CiLogin } from "react-icons/ci";
 import User from '../interface/UserInterface';
+import PasswordRules from '../components/PasswordRules/PasswordRules';
 
 function Register() {
   const { t } = useTranslation('translation', { keyPrefix: 'Register' });
@@ -36,14 +37,15 @@ function Register() {
   return (
     <main>
     <Header title={t('register')} buttonClick={goToLogin} buttonTitle={t('haveAccount')} endIcon={<CiLogin size={"1.5rem"} color='black'/>}  />
-      <form className='list-form' >
+      <form className='list-form' onSubmit={register}>
       <ThemeProvider theme={formTheme(outerTheme)}>
         <TextField name="f_name" required  color='success' className='white-color-input' fullWidth onChange={onChange} value={form.f_name} label={t('firstName')} variant="outlined" />
         <TextField name="l_name" required color='success' className='white-color-input' fullWidth onChange={onChange} value={form.l_name} label={t('lastName')} variant="outlined" />
         <TextField name="email" required type="email" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.email} label={t('email')} variant="outlined" />
         <TextField name="password" required type="password" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.password} label={t('password')} variant="outlined" />
-        <TextField name="password2" required type="password" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.password} label={t('confirmPassword')} variant="outlined" />
-        <GlassButton endIcon={<FiUserPlus size={"1.5rem"} color='white'/>} text={t('register')} style={{width: "100%", color: "white"}} onClick={register}/>
+        <PasswordRules color='white'/>
+        <TextField name="password2" required type="password" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.password2} label={t('confirmPassword')} variant="outlined" />
+        <GlassButton endIcon={<FiUserPlus size={"1.5rem"} color='white'/>} text={t('register')} style={{width: "100%", color: "white"}} type='submit'/>
       </ThemeProvider>
     </form>
   </main>

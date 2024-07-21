@@ -4,7 +4,7 @@ import UsersList from "../components/UsersList/UsersList.tsx";
 import ItemsList from "../components/ItemsList/ItemsList.tsx";
 import Item from "../interface/ItemInterface.ts";
 import CategoryList from "../components/CategoryList/CategoryList.tsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { RiFileList3Line } from "react-icons/ri";
 import { IconButton } from "@mui/material";
 import i18n from "i18next";
@@ -38,6 +38,7 @@ function List() {
     const [displayList, setDisplayList] = useState<Item[]>(items);
     const [dialog, setDialog] = useState<boolean>(false);
     const [userId, setUserId] = useState<string>('');
+    let { id } = useParams();
     
     const { t } = useTranslation('translation', { keyPrefix: 'List' });
     const navigate = useNavigate();
@@ -55,7 +56,8 @@ function List() {
     }
 
     const newSelectItem = () => {
-        navigate('/lists/selectItem');
+        
+        navigate(`/lists/${id}/selectItem`);
     }
 
     const applyFilters = (selected: string, filter: number) => {

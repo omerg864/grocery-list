@@ -1,10 +1,10 @@
 interface Item {
 	id: string;
 	name: string;
-	description: string;
+	description?: string;
 	amount: number;
 	unit: string;
-	img: string;
+	img?: string;
 	category?: string;
 }
 

@@ -13,7 +13,7 @@ const listsState = atom<List[]>({
 			id: '1',
 			title: 'Grocery Shopping',
 			categories: ['Food', 'Home Essentials'],
-			items: [],
+			items: [{ id: '1', name: 'Apples', category: 'Fruits', amount: 2, unit: 'kg' , description: 'Green apples' }],
 			users: ['user123', 'user456'],
 			updatedAt: '2021-10-01',
 			createdAt: '2021-09-01',
