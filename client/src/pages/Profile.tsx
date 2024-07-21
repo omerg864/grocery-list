@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import Header from '../components/Header/Header';
 import { useState } from 'react';
-import { Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField, ThemeProvider, useTheme } from '@mui/material';
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, ThemeProvider, useTheme } from '@mui/material';
 import { CgProfile } from "react-icons/cg";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { GiSettingsKnobs } from "react-icons/gi";
@@ -10,6 +10,7 @@ import PersonalDetails from '../components/PersonalDetails/PersonalDetails';
 import PasswordChange from '../components/PasswordChange/PasswordChange';
 import Preferences from '../components/Preferences/Preferences';
 import Loading from '../components/Loading/Loading';
+import { CiLogout } from "react-icons/ci";
 
 
 function Profile() {
@@ -54,7 +55,7 @@ function Profile() {
 
   return (
     <main>
-    <Header title={title()} {...back} buttonTitle={t('logout')} buttonClick={logout}  />
+    <Header title={title()} {...back} buttonTitle={t('logout')} endIcon={<CiLogout size={"1.5rem"} color='black'/>} buttonClick={logout}   />
     <div className='list-form' >
       <ThemeProvider theme={listTheme(outerTheme)}>
       {tab === 0 && <List>
