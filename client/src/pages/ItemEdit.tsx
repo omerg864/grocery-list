@@ -2,13 +2,13 @@ import Item from "../interface/ItemInterface";
 import Header from "../components/Header/Header";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { IconButton, SelectChangeEvent } from "@mui/material";
-import { MdModeEditOutline } from "react-icons/md";
+import { SelectChangeEvent, TextField, ThemeProvider, useTheme } from "@mui/material";
 import ItemDetails from "../components/ItemDetails/ItemDetails";
 import GlassButton from "../components/GlassButton/GlassButton";
 import Loading from "../components/Loading/Loading";
 import { useTranslation } from "react-i18next";
 import { HiOutlineSave } from "react-icons/hi";
+import formTheme from "../themes/formTheme";
 
 
 
@@ -20,6 +20,8 @@ function ItemEdit() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [itemState, setItemState] = useState<Item>({id: "1", name: 'Banana', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "only yellow ones", unit: "pc", amount: 2});
   const [img, setImg] = useState<string | null>(null);
+
+  const outerTheme = useTheme();
 
 
   let back: any = {};
@@ -45,11 +47,11 @@ function ItemEdit() {
   }
 
   const addCounter = () => {
-    setItemState(prev => ({...prev, amount: prev.amount + 1}));
+    setItemState(prev => ({...prev, amount: prev.amount! + 1}));
   }
 
   const removeCounter = () => {
-    setItemState(prev => ({...prev, amount: prev.amount - 1}));
+    setItemState(prev => ({...prev, amount: prev.amount! - 1}));
   }
 
   const updateItem = async () => {
@@ -84,6 +86,9 @@ function ItemEdit() {
     <main>
         <Header title={itemState.name} {...back} />
         <form className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}} onSubmit={updateItem}>
+          <ThemeProvider theme={formTheme(outerTheme)}>
+          <TextField required name="name" color='success' className='white-color-input' fullWidth value={itemState.name} label={t('name')} onChange={onChange} variant="outlined" />
+          </ThemeProvider>
           <ItemDetails onImgIconClick={onImgIconClick} img={img} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
           <GlassButton endIcon={<HiOutlineSave size={"1.5rem"} color='white'/>} text={t('save')} style={{width: "100%", color: "white"}} type="submit"/>
         </form>

@@ -115,7 +115,9 @@
     },
     "ItemDetails": {
         "category": "Category",
-        "unit": "Unit"
+        "unit": "Unit",
+        "description": "Description",
+        "amount": "Amount"
     },
     "ItemEdit": {
         "save": "Save"
@@ -125,5 +127,10 @@
         "linkCopied": "Link copied to clipboard. Share it with other users for them to get this item.",
         "shareTitle": "Item Sharing",
         "shareText": "Share this link with other users for them to get this item."
+    },
+    "ItemNew": {
+        "name": "Name",
+        "newItem": "New Item",
+        "create": "Create Item"
     }
 }

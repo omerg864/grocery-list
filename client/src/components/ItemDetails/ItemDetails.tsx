@@ -1,5 +1,5 @@
 import Item from "../../interface/ItemInterface";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import './ItemDetails.css';
 import { FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, ThemeProvider, useTheme } from "@mui/material";
 import { TextareaAutosize } from '@mui/base/TextareaAutosize';
@@ -13,7 +13,7 @@ import { IoIosShare } from "react-icons/io";
 
 
 interface ItemDetailsProps {
-    item: Item;
+    item: Item | Omit<Item, 'id'>;
     disabled?: boolean;
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     addCounter?: () => void;
@@ -26,7 +26,6 @@ interface ItemDetailsProps {
 function ItemDetails(props: ItemDetailsProps) {
 
     const { t } = useTranslation('translation', { keyPrefix: 'ItemDetails' });
-    const [full, setFull] = useState(false);
 
     const outerTheme = useTheme();
 
@@ -80,7 +79,7 @@ function ItemDetails(props: ItemDetailsProps) {
                 <TextareaAutosize placeholder={t('description')} name="description" value={props.item.description} onChange={props.onChange} disabled={props.disabled} />
                 <ThemeProvider theme={formTheme(outerTheme)}>
                 <TextField name="category" color='success' className='white-color-input' fullWidth value={props.item.category} label={t('category')} onChange={props.onChange} disabled={props.disabled} variant="outlined" />
-                {props.item.amount ? <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                {props.item.amount ? <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
                 {props.item.unit === 'pc' ? <Counter handleChange={props.onChange} addCounter={props.addCounter} removeCounter={props.removeCounter} count={props.item.amount} disabled={props.disabled} />: 
                         <TextField required name="amount" onChange={props.onChange} color='success' type="number" className='white-color-input' fullWidth value={props.item.amount} label={t('amount')} disabled={props.disabled} variant="outlined" />}
                         <FormControl fullWidth>
