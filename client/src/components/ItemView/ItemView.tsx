@@ -47,6 +47,14 @@ function ItemView(props: ItemViewProps) {
             </div>
         )
     }
+
+    let swipeLeft, rightButtonChild;
+
+    if (id) {
+        swipeLeft = onSwipedLeft;
+        rightButtonChild = rightButton();
+    }
+
     const onItemClick = () => {
         if (id) {
             navigate(`/lists/${id}/item/${props.item.id}`);
@@ -56,8 +64,8 @@ function ItemView(props: ItemViewProps) {
     }
 
   return (
-    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedLeft={onSwipedLeft} onSwipedRight={onSwipedRight} id={props.item.id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
-    animateDivClass={"item-div"} rightBtnClass='swipe-right-btn' leftBtnClass='swipe-left-btn' rightBtnChildren={rightButton()} leftBtnChildren={leftButton()} 
+    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedLeft={swipeLeft} onSwipedRight={onSwipedRight} id={props.item.id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
+    animateDivClass={"item-div"} rightBtnClass='swipe-right-btn' leftBtnClass='swipe-left-btn' rightBtnChildren={rightButtonChild} leftBtnChildren={leftButton()} 
     mainItemClick={onItemClick}>
         <ItemListDisplay item={props.item} />
     </SwipeItem>

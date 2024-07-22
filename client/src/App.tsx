@@ -18,6 +18,13 @@ import ResetPassword from './pages/ResetPassword.tsx';
 import Bundles from './pages/Bundles.tsx';
 import ItemDisplay from './pages/ItemDisplay.tsx';
 import ItemEdit from './pages/ItemEdit.tsx';
+import ItemNew from './pages/ItemNew.tsx';
+import BundleEdit from './pages/BundleEdit.tsx';
+import BundleNew from './pages/BundleNew.tsx';
+import BundleDisplay from './pages/BundleDisplay.tsx';
+import JoinList from './pages/JoinList.tsx';
+import ShareBundle from './pages/ShareBundle.tsx';
+import ShareItem from './pages/ShareItem.tsx';
 
 function App() {
 
@@ -48,21 +55,32 @@ function App() {
     <ToastContainer theme="colored" />
     <Router>
       <Routes>
+        {/* lists routes */}
         <Route path="/" element={<Lists />} />
         <Route path="/lists/new" element={<NewList />} />
         <Route path="/lists/:id" element={<List />} />
         <Route path="/lists/:id/item/:item" element={<ItemDisplay />} />
         <Route path="/lists/:id/item/:item/edit" element={<ItemEdit />} />
         <Route path="/lists/:id/selectItem" element={<SelectItem />} />
-
-        <Route path="/bundles" element={<Bundles />} />
-
-        <Route path="/notifications" element={<Notifications />} />
-
-        <Route path="/profile" element={<Profile />} />
-
-
+        {/* items routes */}
         <Route path="/items" element={<Items />} />
+        <Route path="/items/new" element={<ItemNew />} />
+        <Route path="/items/:id" element={<ItemDisplay />} />
+        <Route path="/items/:id/edit" element={<ItemEdit />} />
+        {/* bundles routes */}
+        <Route path="/bundles" element={<Bundles />} />
+        <Route path="/bundles/new" element={<BundleNew />} />
+        <Route path="/bundles/:id" element={<BundleDisplay />} />
+        <Route path="/bundles/:id/edit" element={<BundleEdit />} />
+        {/* share routes */}
+        <Route path="/join/:id" element={<JoinList />} />
+        <Route path="/share/bundle/:id" element={<ShareBundle />} />
+        <Route path="/share/item/:id" element={<ShareItem />} />
+        {/* notifications routes */}
+        <Route path="/notifications" element={<Notifications />} />
+        {/* profile routes */}
+        <Route path="/profile" element={<Profile />} />
+        {/* authentication routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

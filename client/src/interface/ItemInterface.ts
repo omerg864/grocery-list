@@ -4,7 +4,7 @@ interface Item {
 	id: string;
 	name: string;
 	description?: string;
-	amount: number;
+	amount?: number;
 	unit: string;
 	img?: string;
 	category?: string;

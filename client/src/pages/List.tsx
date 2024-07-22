@@ -3,7 +3,7 @@ import Header from "../components/Header/Header.tsx";
 import UsersList from "../components/UsersList/UsersList.tsx";
 import ItemsList from "../components/ItemsList/ItemsList.tsx";
 import Item from "../interface/ItemInterface.ts";
-import CategoryList from "../components/CategoryList/CategoryList.tsx";
+import ListFilters from "../components/ListFilters/ListFilters.tsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiFileList3Line } from "react-icons/ri";
 import { IconButton } from "@mui/material";
@@ -135,7 +135,7 @@ function List() {
         <ConfirmationDialog title={t('deleteUserTitle')} content={t('deleteUserContent')} open={dialog} handleClose={closeDialog} handleConfirm={deleteUser}  />
         <UsersList onAdd={addUser} {...deleteAction} users={users} />
         <SearchBar onSearch={filterItems} placeholder={t("search")} />
-        <CategoryList categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>
+        <ListFilters categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>
         <ItemsList items={displayList} onSwipeLeft={onSwipeLeft} onSwipeRight={onSwipeRight}/>
     </main>
   )

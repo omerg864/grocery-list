@@ -30,7 +30,7 @@ function ItemDisplay() {
     back = {
       onBack: () => navigate('/items')
     }
-    edit = () => navigate(`/items/${item}/edit`)
+    edit = () => navigate(`/items/${id}/edit`)
   }
 
   const onImgIconClick = () => {
