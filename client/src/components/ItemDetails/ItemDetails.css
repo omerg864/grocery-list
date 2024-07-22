@@ -2,9 +2,25 @@
     width: 10rem;
     height: 10rem;
     border-radius: 50%;
-    position: fixed;
+}
+
+.item-display-img-container {
+    position: absolute;
     top: -5rem;
     left: calc(50% - 5rem);
+    width: fit-content;
+    height: fit-content;
+    border-radius: 50%;
+    z-index: 9000;
+}
+
+.item-display-icon-button {
+    position: absolute;
+    bottom: calc(50% - 1rem);
+    background: var(--color-primary);
+    right: -1rem;
+    width: 2rem;
+    height: 2rem;
 }
 
 .item-display-details {

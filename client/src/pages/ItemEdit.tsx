@@ -19,6 +19,7 @@ function ItemEdit() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [itemState, setItemState] = useState<Item>({id: "1", name: 'Banana', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "only yellow ones", unit: "pc", amount: 2});
+  const [img, setImg] = useState<string | null>(null);
 
 
   let back: any = {};
@@ -62,6 +63,19 @@ function ItemEdit() {
     }
   }
 
+  const onImgIconClick = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.click();
+    input.onchange = (e) => {
+      const files = (e.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        setImg(URL.createObjectURL(files[0]));
+      }
+    }
+  }
+
   if (isLoading) {
     return <Loading />;
   }
@@ -70,7 +84,7 @@ function ItemEdit() {
     <main>
         <Header title={itemState.name} {...back} />
         <form className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}} onSubmit={updateItem}>
-          <ItemDetails onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
+          <ItemDetails onImgIconClick={onImgIconClick} img={img} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
           <GlassButton endIcon={<HiOutlineSave size={"1.5rem"} color='white'/>} text={t('save')} style={{width: "100%", color: "white"}} type="submit"/>
         </form>
     </main>
