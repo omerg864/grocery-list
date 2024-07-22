@@ -21,7 +21,8 @@
         "lists": "Lists",
         "items": "Items",
         "profile": "Profile",
-        "notifications": "Notifications"
+        "notifications": "Notifications",
+        "bundles": "Bundles"
     },
     "NewList": {
         "newList": "New List",

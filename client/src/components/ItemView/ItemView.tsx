@@ -6,7 +6,8 @@ import SwipeItem from '../SwipeItem/SwipeItem';
 import { useTranslation } from 'react-i18next';
 import { FaTrash } from "react-icons/fa";
 import { MdAddShoppingCart } from "react-icons/md";
-import { useState } from 'react';
+import ItemListDisplay from '../ItemListDisplay/ItemListDisplay';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface ItemViewProps {
     item: Item;
@@ -18,6 +19,8 @@ interface ItemViewProps {
 function ItemView(props: ItemViewProps) {
 
     const { t } = useTranslation('translation', { keyPrefix: 'ItemView' });
+    const navigate = useNavigate();
+    const { id } = useParams<{ id: string}>();
 
     const onSwipedLeft = () => {
         props.onSwipeLeft(props.item.id);
@@ -45,23 +48,18 @@ function ItemView(props: ItemViewProps) {
         )
     }
     const onItemClick = () => {
-            console.log("clicked");
+        if (id) {
+            navigate(`/lists/${id}/item/${props.item.id}`);
+        } else {
+            navigate(`/items/${props.item.id}`);
+        }
     }
 
   return (
     <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedLeft={onSwipedLeft} onSwipedRight={onSwipedRight} id={props.item.id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
     animateDivClass={"item-div"} rightBtnClass='swipe-right-btn' leftBtnClass='swipe-left-btn' rightBtnChildren={rightButton()} leftBtnChildren={leftButton()} 
     mainItemClick={onItemClick}>
-        <CardActionArea className='item-container'>
-            <div className='item-view'>
-                <img className='item-img' src={props.item.img? props.item.img : '/item.png'} alt={props.item.name} />
-                <div className="item-details">
-                    <Typography sx={{margin: 0, fontWeight: 700}} variant='h6'>{props.item.name}</Typography>
-                    <Typography sx={{minHeight: '1.245rem'}} variant='caption'>{props.item.description}</Typography>
-                    {props.item.amount && <Typography sx={{margin: 0, fontWeight: 700}} variant='h6'>{props.item.amount} {props.item.unit}</Typography>}
-                </div>
-            </div>
-        </CardActionArea>
+        <ItemListDisplay item={props.item} />
     </SwipeItem>
   )
 }

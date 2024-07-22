@@ -1,4 +1,3 @@
-import List from './ListInterface';
 
 interface User {
 	id: string;
@@ -7,7 +6,6 @@ interface User {
     avatar: string;
 	email?: string;
 	password?: string;
-	lists?:  string | List[];
 }
 
 export default User;

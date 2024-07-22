@@ -6,6 +6,7 @@ import { FaListUl } from "react-icons/fa";
 import { MdFastfood } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { GrBundle } from "react-icons/gr";
 
 interface NavBarProps {
   selectedTab: number;
@@ -28,9 +29,12 @@ function NavBar(props: NavBarProps) {
                 navigate('/items');
                 break;
             case 2:
-                navigate('/notifications');
+                navigate('/bundles');
                 break;
             case 3:
+                navigate('/notifications');
+                break;
+            case 4:
                 navigate('/profile');
                 break;
             default:
@@ -47,8 +51,9 @@ function NavBar(props: NavBarProps) {
     >
     <BottomNavigationAction sx={{color: props.selectedTab === 0 ? 'var(--color-primary) !important' : ''}} label={t("lists")} icon={<FaListUl size={"1.2rem"}/>} />
     <BottomNavigationAction sx={{color: props.selectedTab === 1 ? 'var(--color-primary) !important' : ''}} label={t("items")} icon={<MdFastfood size={"1.2rem"}/>} />
-    <BottomNavigationAction sx={{color: props.selectedTab === 2 ? 'var(--color-primary) !important' : ''}} label={t("notifications")} icon={<IoMdNotifications size={"1.2rem"} />} />
-    <BottomNavigationAction sx={{color: props.selectedTab === 3 ? 'var(--color-primary) !important' : ''}} label={t("profile")} icon={<FaUserCircle size={"1.2rem"} />} />
+    <BottomNavigationAction sx={{color: props.selectedTab === 2 ? 'var(--color-primary) !important' : ''}} label={t("bundles")} icon={<GrBundle size={"1.2rem"} />} />
+    <BottomNavigationAction sx={{color: props.selectedTab === 3 ? 'var(--color-primary) !important' : ''}} label={t("notifications")} icon={<IoMdNotifications size={"1.2rem"} />} />
+    <BottomNavigationAction sx={{color: props.selectedTab === 4 ? 'var(--color-primary) !important' : ''}} label={t("profile")} icon={<FaUserCircle size={"1.2rem"} />} />
     </BottomNavigation>
 </Paper>
   )

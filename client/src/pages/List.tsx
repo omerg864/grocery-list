@@ -132,7 +132,7 @@ function List() {
         <Header buttonTitle={t("addItem")} title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<IconButton>
             <RiFileList3Line color='white'/>
         </IconButton>} />
-        <ConfirmationDialog title={t('deleteUserTitle')} content={t('deleteUserContent')}  open={dialog} handleClose={closeDialog} handleConfirm={deleteUser}  />
+        <ConfirmationDialog title={t('deleteUserTitle')} content={t('deleteUserContent')} open={dialog} handleClose={closeDialog} handleConfirm={deleteUser}  />
         <UsersList onAdd={addUser} {...deleteAction} users={users} />
         <SearchBar onSearch={filterItems} placeholder={t("search")} />
         <CategoryList categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>

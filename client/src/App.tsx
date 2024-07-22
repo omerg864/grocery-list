@@ -15,6 +15,8 @@ import Register from './pages/Register.tsx';
 import SelectItem from './pages/SelectItem.tsx';
 import ForgotPassword from './pages/ForgotPassword.tsx';
 import ResetPassword from './pages/ResetPassword.tsx';
+import Bundles from './pages/Bundles.tsx';
+import ItemDisplay from './pages/ItemDisplay.tsx';
 
 function App() {
 
@@ -25,14 +27,16 @@ function App() {
         return 0;
       case 'lists':
           return 0;
-      case 'notifications':
+      case 'bundles':
         return 2;
-      case 'profile':
+      case 'notifications':
         return 3;
+      case 'profile':
+        return 4;
       case 'items':
         return 1;
       default:
-        return 4;
+        return 5;
     }
   }
 
@@ -46,12 +50,14 @@ function App() {
         <Route path="/" element={<Lists />} />
         <Route path="/lists/new" element={<NewList />} />
         <Route path="/lists/:id" element={<List />} />
+        <Route path="/lists/:id/item/:item" element={<ItemDisplay />} />
         <Route path="/lists/:id/selectItem" element={<SelectItem />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/items" element={<Items />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/bundles" element={<Bundles />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>

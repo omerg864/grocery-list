@@ -1,0 +1,14 @@
+.item-display-img {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    position: fixed;
+    top: -5rem;
+    left: calc(50% - 5rem);
+}
+
+.item-display-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
