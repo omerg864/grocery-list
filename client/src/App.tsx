@@ -72,6 +72,8 @@ function App() {
         <Route path="/bundles/new" element={<BundleNew />} />
         <Route path="/bundles/:id" element={<BundleDisplay />} />
         <Route path="/bundles/:id/edit" element={<BundleEdit />} />
+        <Route path="/bundles/:id/edit/item/:item" element={<ItemDisplay />} />
+        <Route path="/bundles/:id/item/:item" element={<ItemDisplay />} />
         {/* share routes */}
         <Route path="/join/:id" element={<JoinList />} />
         <Route path="/share/bundle/:id" element={<ShareBundle />} />

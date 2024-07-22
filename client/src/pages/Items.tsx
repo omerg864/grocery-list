@@ -44,8 +44,8 @@ function Items() {
     }, 1000);
   }
 
-  const onSwipeLeft = (id: string) => {
-    console.log('swiped left', id);
+  const onItemClicked = (id: string) => {
+    navigate(`/items/${id}`);
   }
 
   if (isLoading) {
@@ -57,7 +57,7 @@ function Items() {
     <Header title={t('items')} buttonClick={goToNewItem} buttonTitle={t('newItem')} />
     <SearchBar onSearch={filterItems} placeholder={t("search")} />
     <CategoryList containerStyle={{padding: '8px'}} categories={categories} selectedCategory={selectedCategory} onSelect={onSelect} />
-    <ItemsList items={displayedItems} onSwipeRight={onSwipeRight} onSwipeLeft={onSwipeLeft} />
+    <ItemsList onItemClicked={onItemClicked} items={displayedItems} onSwipeRight={onSwipeRight} />
   </main>
   )
 }

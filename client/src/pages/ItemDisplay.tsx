@@ -20,17 +20,41 @@ function ItemDisplay() {
 
   let back = {}
   let edit;
+  let side;
 
-  if (item) {
-    back = {
-      onBack: () => navigate(`/lists/${id}`)
-    }
-    edit = () => navigate(`/lists/${id}/item/${item}/edit`)
-  } else {
-    back = {
-      onBack: () => navigate('/items')
-    }
-    edit = () => navigate(`/items/${id}/edit`)
+  let path = window.location.pathname.split('/')[1];
+
+  switch (path) {
+    case 'lists':
+      back = {
+        onBack: () => navigate(`/lists/${id}`)
+      }
+      edit = () => navigate(`/lists/${id}/item/${item}/edit`)
+      side = {sideButton: <IconButton onClick={edit}>
+      <MdModeEditOutline color="white"/>
+    </IconButton>}
+      break;
+    case 'bundles':
+      let editPath = window.location.pathname.split('/')[3];
+      if (editPath === 'edit') {
+        back = {
+          onBack: () => navigate(`/bundles/${id}/edit`)
+        }
+      } else {
+        back = {
+          onBack: () => navigate(`/bundles/${id}/`)
+        }
+      }
+      break;
+    case 'items':
+      back = {
+        onBack: () => navigate('/items')
+      }
+      edit = () => navigate(`/items/${id}/edit`)
+      side = {sideButton: <IconButton onClick={edit}>
+      <MdModeEditOutline color="white"/>
+    </IconButton>}
+      break;
   }
 
   const onImgIconClick = () => {
@@ -48,9 +72,7 @@ function ItemDisplay() {
 
   return (
     <main>
-        <Header title={itemState.name} {...back} sideButton={<IconButton onClick={edit}>
-          <MdModeEditOutline color="white"/>
-        </IconButton>}/>
+        <Header title={itemState.name} {...back} {...side}/>
         <div className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}}>
           <ItemDetails onImgIconClick={onImgIconClick} disabled={true} item={itemState} />
         </div>

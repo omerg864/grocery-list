@@ -139,5 +139,10 @@
         "bundles": "Bundles",
         "newBundle": "New Bundle",
         "search": "Search"
+    },
+    "BundleEdit": {
+        "title": "Title",
+        "save": "Save",
+        "addItem": "Add Item"
     }
 }

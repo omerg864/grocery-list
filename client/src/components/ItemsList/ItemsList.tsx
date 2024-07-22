@@ -6,8 +6,9 @@ import './ItemsList.css';
 
 interface ItemsListProps {
     items: Item[];
-    onSwipeRight: (id: string) => void
-    onSwipeLeft: (id: string) => void
+    onSwipeRight?: (id: string) => void;
+    onSwipeLeft?: (id: string) => void;
+    onItemClicked?: (id: string) => void;
 }
 
 function ItemsList(props: ItemsListProps) {
@@ -18,7 +19,7 @@ function ItemsList(props: ItemsListProps) {
   return (
     <div className="items-list">
         {props.items.map((item: Item) => (
-          <ItemView open={open} setOpen={setOpen} key={item.id} item={item} onSwipeRight={props.onSwipeRight} onSwipeLeft={props.onSwipeLeft}/>
+          <ItemView onItemClicked={props.onItemClicked} open={open} setOpen={setOpen} key={item.id} item={item} onSwipeRight={props.onSwipeRight} onSwipeLeft={props.onSwipeLeft}/>
         ))}
     </div>
   )

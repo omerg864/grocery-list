@@ -102,6 +102,10 @@ function List() {
         setUserId('');
     }
 
+    const onItemClicked = (id: string) => {
+        navigate(`/lists/${list.id}/item/${id}`);
+    }
+
     const addUser = () => {
         if (navigator.share) {
               navigator.share({
@@ -136,7 +140,7 @@ function List() {
         <UsersList onAdd={addUser} {...deleteAction} users={users} />
         <SearchBar onSearch={filterItems} placeholder={t("search")} />
         <ListFilters categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>
-        <ItemsList items={displayList} onSwipeLeft={onSwipeLeft} onSwipeRight={onSwipeRight}/>
+        <ItemsList onItemClicked={onItemClicked} items={displayList} onSwipeLeft={onSwipeLeft} onSwipeRight={onSwipeRight}/>
     </main>
   )
 }

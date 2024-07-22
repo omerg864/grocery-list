@@ -5,29 +5,16 @@ import SwipeItem from '../SwipeItem/SwipeItem';
 import { FaTrash } from "react-icons/fa";
 import { MdAddShoppingCart } from "react-icons/md";
 import ItemListDisplay from '../ItemListDisplay/ItemListDisplay';
-import { useNavigate, useParams } from 'react-router-dom';
 
 interface ItemViewProps {
     item: Item;
-    onSwipeLeft: (id: string) => void;
-    onSwipeRight: (id: string) => void;
+    onSwipeLeft?: (id: string) => void;
+    onSwipeRight?: (id: string) => void;
     open: string | null;
     setOpen: (id: string | null) => void;
+    onItemClicked?: (id: string) => void;
 }
 function ItemView(props: ItemViewProps) {
-
-    const navigate = useNavigate();
-    const { id } = useParams<{ id: string}>();
-
-    const onSwipedLeft = () => {
-        props.onSwipeLeft(props.item.id);
-        console.log('swiped left');
-    }
-
-    const onSwipedRight = () => {
-        props.onSwipeRight(props.item.id);
-        console.log('swiped right');
-    }
 
     const leftButton = (): React.ReactNode => {
         return (
@@ -45,25 +32,20 @@ function ItemView(props: ItemViewProps) {
         )
     }
 
-    let swipeLeft, rightButtonChild;
+    let rightButtonChild, leftButtonChild;
 
-    if (id) {
-        swipeLeft = onSwipedLeft;
+    if (props.onSwipeLeft) {
         rightButtonChild = rightButton();
     }
 
-    const onItemClick = () => {
-        if (id) {
-            navigate(`/lists/${id}/item/${props.item.id}`);
-        } else {
-            navigate(`/items/${props.item.id}`);
-        }
+    if (props.onSwipeRight) {
+        leftButtonChild = leftButton();
     }
 
   return (
-    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedLeft={swipeLeft} onSwipedRight={onSwipedRight} id={props.item.id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
-    animateDivClass={"item-div"} rightBtnClass='swipe-right-btn' leftBtnClass='swipe-left-btn' rightBtnChildren={rightButtonChild} leftBtnChildren={leftButton()} 
-    mainItemClick={onItemClick}>
+    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedLeft={props.onSwipeLeft ? () => props.onSwipeLeft!(props.item.id) : undefined} onSwipedRight={props.onSwipeRight ? () => props.onSwipeRight!(props.item.id) : undefined} id={props.item.id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
+    animateDivClass={"item-div"} rightBtnClass='swipe-right-btn' leftBtnClass='swipe-left-btn' rightBtnChildren={rightButtonChild} leftBtnChildren={leftButtonChild} 
+    mainItemClick={() => props.onItemClicked!(props.item.id)}>
         <ItemListDisplay item={props.item} />
     </SwipeItem>
   )
