@@ -41,8 +41,14 @@ const formTheme = (outerTheme: Theme) =>
         MuiAutocomplete: {
           styleOverrides: {
             root: {
-              '--TextField-brandBorderColor': 'white',
-              '--TextField-color': 'white',
+              notchedOutline: {
+                borderColor: 'var(--TextField-brandBorderColor)',
+              },
+              input: {
+                color: 'var(--TextField-color)',
+              },
+              '--TextField-brandBorderColor': 'var(--TextField-color)',
+              '--TextField-color': 'var(--TextField-color)',
               '&.Mui-disabled .MuiAutocomplete-inputRoot': {
                 '--TextField-brandBorderColor': 'white',
                 '--TextField-color': 'white',
@@ -65,12 +71,34 @@ const formTheme = (outerTheme: Theme) =>
             }
           },
       },
+      MuiSelect: {
+        styleOverrides: {
+          icon: {
+            color: 'white',
+          },
+          select: {
+            color: 'white',
+          },
+          root: {
+            '--TextField-brandBorderColor': 'white',
+            '&.Mui-disabled': {
+              color: 'white',
+            },
+          },
+          iconOutlined: {
+            '&.Mui-disabled': {
+              color: 'white',
+            },
+          }
+        },
+      },
       MuiInputLabel: {
         styleOverrides: {
           root: {
             '&.Mui-disabled': {
               color: 'white',
             },
+            color: 'white',
           },
         },
       },

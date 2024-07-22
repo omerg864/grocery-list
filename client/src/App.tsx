@@ -17,6 +17,7 @@ import ForgotPassword from './pages/ForgotPassword.tsx';
 import ResetPassword from './pages/ResetPassword.tsx';
 import Bundles from './pages/Bundles.tsx';
 import ItemDisplay from './pages/ItemDisplay.tsx';
+import ItemEdit from './pages/ItemEdit.tsx';
 
 function App() {
 
@@ -51,13 +52,19 @@ function App() {
         <Route path="/lists/new" element={<NewList />} />
         <Route path="/lists/:id" element={<List />} />
         <Route path="/lists/:id/item/:item" element={<ItemDisplay />} />
+        <Route path="/lists/:id/item/:item/edit" element={<ItemEdit />} />
         <Route path="/lists/:id/selectItem" element={<SelectItem />} />
+
+        <Route path="/bundles" element={<Bundles />} />
+
         <Route path="/notifications" element={<Notifications />} />
+
         <Route path="/profile" element={<Profile />} />
+
+
         <Route path="/items" element={<Items />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/bundles" element={<Bundles />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>

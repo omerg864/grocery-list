@@ -36,7 +36,7 @@ function ItemDisplay() {
           <MdModeEditOutline color="white"/>
         </IconButton>}/>
         <div className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}}>
-          <ItemDetails item={itemState} />
+          <ItemDetails disabled={true} item={itemState} />
         </div>
     </main>
   )

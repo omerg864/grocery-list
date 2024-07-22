@@ -112,5 +112,12 @@
         "resetPassword": "Reset Password",
         "password": "Password",
         "confirmPassword": "Confirm Password"
+    },
+    "ItemDetails": {
+        "category": "Category",
+        "unit": "Unit"
+    },
+    "ItemEdit": {
+        "save": "Save"
     }
 }

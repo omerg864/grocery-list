@@ -39,7 +39,7 @@ interface CounterProps {
 export default function App(props: CounterProps) {
 
   return (
-    <Container sx={{flex: 0, paddingRight: 0}}>
+    <Container sx={{flex: 0, paddingLeft: 0}}>
       <ButtonGroup>
         <StyledButton
           onClick={props.removeCounter}

@@ -24,9 +24,9 @@ function ListHeader(props: ListHeaderProps) {
         <div className='list-header-title'>
           {props.onBack ? <IconButton onClick={props.onBack} > 
             <IoIosArrowBack color='white'/>
-          </IconButton> : <div></div>}
+          </IconButton> : (props.sideButton ? <div style={{width: '2.5rem'}}></div> : <div></div>)}
           <Typography variant='h4'>{props.title}</Typography>
-          {props.sideButton ? props.sideButton : <div></div>}
+          {props.sideButton ? props.sideButton : (props.onBack ? <div style={{width: '2.5rem'}}></div> : <div></div>)}
         </div>
         {props.buttonClick && <GlassButton endIcon={endIcon} text={props.buttonTitle || ""} style={{width: "80%", color: "black"}} onClick={props.buttonClick}/>}
     </div>
