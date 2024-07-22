@@ -1,0 +1,9 @@
+.bundle-list {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+    gap: 10px;
+}

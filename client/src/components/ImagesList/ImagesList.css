@@ -1,0 +1,15 @@
+.images-list {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    height: 5rem;
+}
+
+.bundle-item-img {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+}

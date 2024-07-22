@@ -27,8 +27,8 @@ function ListForm(props: ListFormProps) {
     <form className='list-form' onSubmit={props.submit} ref={props.formRef} >
         <ThemeProvider theme={FormTheme(outerTheme)}>
             <TextField required name="title" color='success' className='white-color-input' fullWidth onChange={props.onChange} value={props.form.title} label={t('title')} variant="outlined" />
-            <FormControlLabel control={<Checkbox name="prevItems" onChange={props.onChecked} checked={props.form.prevItems} {...labelPrev} color="success" icon={<CiCircleMinus color='white' />} checkedIcon={<IoAddCircleSharp />} />} label={t("previousListItems")} />
-            <FormControlLabel control={<Checkbox name="defaultItems" onChange={props.onChecked} checked={props.form.defaultItems} {...labelDefault} color="success" icon={<CiCircleMinus color='white' />} checkedIcon={<IoAddCircleSharp />} />} label={t("defaultItems")} />
+            <FormControlLabel control={<Checkbox name="prevItems" onChange={props.onChecked} checked={props.form.prevItems} {...labelPrev} color="success" icon={<CiCircleMinus size={'1.5rem'} color='white' />} checkedIcon={<IoAddCircleSharp size={'1.5rem'} />} />} label={t("previousListItems")} />
+            <FormControlLabel control={<Checkbox name="defaultItems" onChange={props.onChecked} checked={props.form.defaultItems} {...labelDefault} color="success" icon={<CiCircleMinus size={'1.5rem'} color='white' />} checkedIcon={<IoAddCircleSharp size={'1.5rem'} />} />} label={t("defaultItems")} />
         </ThemeProvider>
     </form>
   )

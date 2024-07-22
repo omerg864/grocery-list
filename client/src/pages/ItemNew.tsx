@@ -2,13 +2,15 @@ import Item from "../interface/ItemInterface";
 import Header from "../components/Header/Header";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { SelectChangeEvent, TextField, ThemeProvider, useTheme } from "@mui/material";
+import { Checkbox, FormControlLabel, SelectChangeEvent, TextField, ThemeProvider, useTheme } from "@mui/material";
 import ItemDetails from "../components/ItemDetails/ItemDetails";
 import GlassButton from "../components/GlassButton/GlassButton";
 import Loading from "../components/Loading/Loading";
 import { useTranslation } from "react-i18next";
 import { IoMdAdd } from "react-icons/io";
 import formTheme from "../themes/formTheme";
+import { IoAddCircleSharp } from "react-icons/io5";
+import { CiCircleMinus } from "react-icons/ci";
 
 
 
@@ -18,11 +20,13 @@ function ItemNew() {
   const { t } = useTranslation('translation', { keyPrefix: 'ItemNew' });
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  let defaultItem: Omit<Item, 'id'> = {name: '', category: "", img: "/item.png", description: "", unit: "pc"};
+  let defaultItem: Omit<Item, 'id'> & {saveItem?: boolean};
   if (id) {
     defaultItem = {name: '', category: "", img: "/item.png", description: "", unit: "pc", amount: 1};
+  } else {
+    defaultItem = {name: '', category: "", img: "/item.png", description: "", unit: "pc", saveItem: true};
   }
-  const [itemState, setItemState] = useState<Omit<Item, 'id'>>(defaultItem);
+  const [itemState, setItemState] = useState<Omit<Item, 'id'> & {saveItem?: boolean}>(defaultItem);
   const [img, setImg] = useState<string | null>(null);
 
   const outerTheme = useTheme();
@@ -43,6 +47,11 @@ function ItemNew() {
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setItemState(prev => ({...prev, [name]: value}));
+  }
+
+  const onChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setItemState(prev => ({...prev, [name]: checked}));
   }
 
   const onSelectionChange = (e: SelectChangeEvent) => {
@@ -82,6 +91,8 @@ function ItemNew() {
     }
   }
 
+  const label = { inputProps: { 'aria-label': t("saveItem") } };
+
   if (isLoading) {
     return <Loading />;
   }
@@ -94,6 +105,7 @@ function ItemNew() {
             <TextField required name="name" color='success' className='white-color-input' fullWidth value={itemState.name} label={t('name')} onChange={onChange} variant="outlined" />
           </ThemeProvider>
           <ItemDetails onImgIconClick={onImgIconClick} img={img} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
+          {!id && <FormControlLabel control={<Checkbox name="saveItem" onChange={onChecked} checked={itemState.saveItem} {...label} color="success" icon={<CiCircleMinus size={'1.5rem'} color='white' />} checkedIcon={<IoAddCircleSharp size={'1.5rem'} />} />} label={t("saveItem")} />}
           <GlassButton endIcon={<IoMdAdd size={"1.5rem"} color='white'/>} text={t('create')} style={{width: "100%", color: "white"}} type="submit"/>
         </form>
     </main>

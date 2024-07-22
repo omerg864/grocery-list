@@ -13,6 +13,7 @@ function Items() {
   const { t } = useTranslation('translation', { keyPrefix: 'Items' });
   const navigate = useNavigate();
   const [items, setItems] = useState<Item[]>([{id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"}, {id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "KG"}]);
+  const [displayedItems, setDisplayedItems] = useState<Item[]>(items);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [categories, setCategories] = useState<string[]>(["Fruits", "Home Essentials"]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -23,7 +24,7 @@ function Items() {
 
   const filterItems = (search: string) => {
     const filteredItems = items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
-    setItems(filteredItems);
+    setDisplayedItems(filteredItems);
   }
 
   const onSelect = (category: string) => {
@@ -56,7 +57,7 @@ function Items() {
     <Header title={t('items')} buttonClick={goToNewItem} buttonTitle={t('newItem')} />
     <SearchBar onSearch={filterItems} placeholder={t("search")} />
     <CategoryList containerStyle={{padding: '8px'}} categories={categories} selectedCategory={selectedCategory} onSelect={onSelect} />
-    <ItemsList items={items} onSwipeRight={onSwipeRight} onSwipeLeft={onSwipeLeft} />
+    <ItemsList items={displayedItems} onSwipeRight={onSwipeRight} onSwipeLeft={onSwipeLeft} />
   </main>
   )
 }

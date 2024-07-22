@@ -92,7 +92,8 @@
     },
     "Items": {
         "items": "Items",
-        "newItem": "New Item"
+        "newItem": "New Item",
+        "search": "Search"
     },
     "ForgotPassword": {
         "resetPasswordRequest": "Reset Password Request",
@@ -131,6 +132,12 @@
     "ItemNew": {
         "name": "Name",
         "newItem": "New Item",
-        "create": "Create Item"
+        "create": "Create Item",
+        "saveItem": "Save Item"
+    },
+    "Bundles": {
+        "bundles": "Bundles",
+        "newBundle": "New Bundle",
+        "search": "Search"
     }
 }

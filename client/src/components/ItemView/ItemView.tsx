@@ -1,9 +1,7 @@
 import React from 'react'
 import './ItemView.css';
 import Item from '../../interface/ItemInterface';
-import { CardActionArea, Typography } from '@mui/material';
 import SwipeItem from '../SwipeItem/SwipeItem';
-import { useTranslation } from 'react-i18next';
 import { FaTrash } from "react-icons/fa";
 import { MdAddShoppingCart } from "react-icons/md";
 import ItemListDisplay from '../ItemListDisplay/ItemListDisplay';
@@ -18,7 +16,6 @@ interface ItemViewProps {
 }
 function ItemView(props: ItemViewProps) {
 
-    const { t } = useTranslation('translation', { keyPrefix: 'ItemView' });
     const navigate = useNavigate();
     const { id } = useParams<{ id: string}>();
 
