@@ -37,13 +37,20 @@ function ItemSelect() {
 
     const onItemClicked = (id: string) => {
         let path = window.location.pathname.split('/')[1];
+        let edit = window.location.pathname.split('/')[3];
         switch (path) {
             case 'bundles':
                 setBundle((prevBundle) => ({
                     ...prevBundle!,
                     items: [...prevBundle!.items, items.find((item) => item.id === id)!]
                 }))
-                navigate(`/bundles/${id}/edit`);
+                if (edit === 'edit') {
+                    navigate(`/bundles/${id}/edit`);
+                    return;
+                } else {
+                    navigate(`/bundles/new`);
+                    return;
+                }
                 break;
             case 'lists':
                 navigate(`/lists/${id}/add/item/${id}`);
@@ -68,7 +75,13 @@ function ItemSelect() {
     switch (path) {
         case 'bundles':
             back = {
-                onBack: () => navigate(`/bundles/${id}/edit`)
+                onBack: () => {
+                    if (window.location.pathname.split('/')[3] === 'edit') {
+                        navigate(`/bundles/${id}/edit`)
+                    } else {
+                        navigate(`/bundles/new`)
+                    }
+            }
             }
             break;
         case 'lists':

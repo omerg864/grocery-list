@@ -69,6 +69,7 @@ function App() {
         <Route path="/lists/:id/select/bundle" element={<BundleSelect />} />
         <Route path="/lists/:id/select/item" element={<ItemSelect />} />
         <Route path="/lists/:id/add/item/:item" element={<ItemAdd />} />
+        <Route path="/lists/:id/new/item" element={<ItemNew />} />
         <Route path="/lists/:id/add/bundle/:bundle" element={<BundleAdd />} />
         {/* items routes */}
         <Route path="/items" element={<Items />} />
@@ -78,6 +79,7 @@ function App() {
         {/* bundles routes */}
         <Route path="/bundles" element={<Bundles />} />
         <Route path="/bundles/new" element={<BundleNew />} />
+        <Route path="/bundles/new/items" element={<ItemSelect />} />
         <Route path="/bundles/:id" element={<BundleDisplay />} />
         <Route path="/bundles/:id/edit" element={<BundleEdit />} />
         <Route path="/bundles/:id/edit/items" element={<ItemSelect />} />

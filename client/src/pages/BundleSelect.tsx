@@ -1,8 +1,64 @@
+import { useTranslation } from 'react-i18next';
+import Header from '../components/Header/Header';
+import { useNavigate, useParams } from 'react-router-dom';
+import SearchBar from '../components/SearchBar/SearchBar';
+import Bundle from '../interface/BundleInterface';
+import { useState } from 'react';
+import BundleList from '../components/BundleList/BundleList';
+import { useRecoilState } from 'recoil';
+import { bundleAtom } from '../recoil/atoms';
 
 
 function BundleSelect() {
+
+  const { t } = useTranslation('translation', { keyPrefix: 'BundleSelect' });
+  const [bundles, setBundles] = useState<Bundle[]>([
+    {
+      id: "1",
+      title: 'Bundle 1',
+      items: [
+        {id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"},
+        {id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"}
+      ]
+    },
+    {
+      id: "2",
+      title: 'Bundle 2',
+      items: [
+        {id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"},
+        {id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"},
+        {id: "3", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"},
+        {id: "4", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"},
+        {id: "5", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"}
+      ]
+    }
+  ]);
+  const { id } = useParams();
+  const [_, setBundle] = useRecoilState<Bundle>(bundleAtom);
+  const [displayedBundles, setDisplayedBundles] = useState<Bundle[]>(bundles);
+  const navigate = useNavigate();
+
+  const filterBundles = (search: string) => {
+    const filteredBundles = bundles.filter(bundle => bundle.title.toLowerCase().includes(search.toLowerCase()));
+    setDisplayedBundles(filteredBundles);
+  }
+
+  const onItemClicked = (bundleId: string) => {
+    const bundle = bundles.find(bundle => bundle.id === bundleId);
+    setBundle(bundle!);
+    navigate(`/lists/${id}/add/bundle/${bundleId}`);
+  }
+
+  const back = () => {
+    navigate(`/lists/${id}/select`);
+  }
+
   return (
-    <div>BundleSelect</div>
+    <main>
+      <Header title={t('selectBundle')} onBack={back}  />
+      <SearchBar onSearch={filterBundles} placeholder={t('search')} />
+      <BundleList onItemClick={onItemClicked} bundles={displayedBundles} />
+    </main>
   )
 }
 

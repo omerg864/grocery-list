@@ -42,7 +42,6 @@ function List() {
     }
 
     const backClick = () => {
-        i18n.changeLanguage('en');
         navigate('/');
     }
 

@@ -22,12 +22,12 @@ const listAtom = atom<List>({
 const itemAtom = atom<Item>({
 	key: 'itemState',
 	default: {
-		id: '1',
-		name: 'Item 1',
-		category: 'Fruits',
-		amount: 2,
-		unit: 'kg',
-		description: 'Green apples',
+		id: '',
+		name: '',
+		category: '',
+		amount: 0,
+		unit: 'pc',
+		description: '',
 	},
 });
 

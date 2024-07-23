@@ -23,16 +23,23 @@ function Items() {
   }
 
   const filterItems = (search: string) => {
-    const filteredItems = items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
+    let filteredItems = items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
+    if (selectedCategory !== "All") {
+      filteredItems = filteredItems.filter(item => item.category === selectedCategory);
+      setDisplayedItems(filteredItems);
+    }
     setDisplayedItems(filteredItems);
   }
 
   const onSelect = (category: string) => {
-    if (category === selectedCategory) {
-      setSelectedCategory("All");
-      return;
+    const filter = category === selectedCategory ? "All" : category;
+    setSelectedCategory(filter);
+    if (filter === "All") {
+      setDisplayedItems(items);
+    } else {
+      const filteredItems = items.filter(item => item.category === category);
+      setDisplayedItems(filteredItems);
     }
-    setSelectedCategory(category);
   }
 
   const onSwipeRight = async (id: string) => {

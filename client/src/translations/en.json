@@ -150,5 +150,26 @@
         "noItems": "No items",
         "noResults": "No results",
         "selectItem": "Select Item"
+    },
+    "BundleNew": {
+        "newBundle": "New Bundle",
+        "title": "Title",
+        "description": "Description",
+        "addItem":"Add Item",
+        "create": "Create Bundle"
+    },
+    "BundleSelect": {
+        "search": "Search",
+        "noBundles": "No bundles",
+        "noResults": "No results",
+        "selectBundle": "Select Bundle"
+    },
+    "Selection": {
+        "selectItem": "Select Item",
+        "newItem": "New Item",
+        "allItems": "All Items",
+        "allBundles": "All Bundles",
+        "items": "Items",
+        "bundles": "Bundles"
     }
 }

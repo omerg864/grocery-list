@@ -36,7 +36,7 @@ function ItemNew() {
 
   if (id) {
     back = {
-      onBack: () => navigate(`/lists/${id}`)
+      onBack: () => navigate(`/lists/${id}/select`)
     }
   } else {
     back = {
