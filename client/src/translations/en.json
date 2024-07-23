@@ -144,5 +144,11 @@
         "title": "Title",
         "save": "Save",
         "addItem": "Add Item"
+    },
+    "ItemSelect": {
+        "search": "Search",
+        "noItems": "No items",
+        "noResults": "No results",
+        "selectItem": "Select Item"
     }
 }

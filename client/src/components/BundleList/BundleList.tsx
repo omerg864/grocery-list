@@ -7,6 +7,7 @@ import './BundleList.css';
 interface BundleListProps {
   bundles: Bundle[];
   onSwipeRight?: (id: string) => void;
+  onItemClick?: (id: string) => void;
 }
 
 function BundleList(props: BundleListProps) {
@@ -16,7 +17,7 @@ function BundleList(props: BundleListProps) {
   return (
     <div className="bundle-list">
       {props.bundles.map(bundle => (
-        <BundleViewList onSwipeRight={props.onSwipeRight} open={open} setOpen={setOpen} key={bundle.id} bundle={bundle} />
+        <BundleViewList onItemClick={props.onItemClick} onSwipeRight={props.onSwipeRight} open={open} setOpen={setOpen} key={bundle.id} bundle={bundle} />
       ))}
     </div>
   )

@@ -1,7 +1,6 @@
 import { CardActionArea, Typography } from "@mui/material";
 import Bundle from "../../interface/BundleInterface";
 import SwipeItem from "../SwipeItem/SwipeItem";
-import { useNavigate, useParams } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import ImagesList from "../ImagesList/ImagesList";
 import './BundleViewList.css';
@@ -13,17 +12,10 @@ interface BundleViewListProps {
   setOpen: (id: string | null) => void;
   delete?: boolean;
   onSwipeRight?: (id: string) => void;
+  onItemClick?: (id: string) => void;
 }
 
 function BundleViewList(props: BundleViewListProps) {
-
-  const navigate = useNavigate();
-    const { id } = useParams<{ id: string}>();
-
-    const onSwipedRight = () => {
-        props.onSwipeRight!(props.bundle.id);
-        console.log('swiped right');
-    }
 
     const leftButton = (): React.ReactNode => {
         return (
@@ -33,18 +25,16 @@ function BundleViewList(props: BundleViewListProps) {
         )
     }
 
-    const onItemClick = () => {
-        if (id) {
-            navigate(`/lists/${id}/bundle/${props.bundle.id}`);
-        } else {
-            navigate(`/bundles/${props.bundle.id}`);
-        }
+    let leftButtonChild;
+
+    if (props.onSwipeRight) {
+        leftButtonChild = leftButton();
     }
 
   return (
-    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedRight={onSwipedRight} id={props.bundle.id} leftBtnOpenWidth={80}
-    animateDivClass={"item-div"} leftBtnClass='swipe-left-btn' leftBtnChildren={leftButton()} 
-    mainItemClick={onItemClick}>
+    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedRight={props.onSwipeRight ? () => props.onSwipeRight!(props.bundle.id) : undefined} id={props.bundle.id} leftBtnOpenWidth={80}
+    animateDivClass={"item-div"} leftBtnClass='swipe-left-btn' leftBtnChildren={leftButtonChild} 
+    mainItemClick={() => props.onItemClick!(props.bundle.id)}>
       <CardActionArea className='item-container'>
         <div style={{minHeight: '5rem'}} className='bundle-view'>
           <Typography variant='h6'>{props.bundle.title}</Typography>

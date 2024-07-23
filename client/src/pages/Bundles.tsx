@@ -49,11 +49,15 @@ function Bundles() {
     setDisplayedBundles((prevBundles) => prevBundles.filter(bundle => bundle.id !== id));
   }
 
+  const onItemClicked = (id: string) => {
+    navigate(`/bundles/${id}`);
+  }
+
   return (
     <main>
       <Header title={t('bundles')} buttonTitle={t('newBundle')} buttonClick={goToNewBundle} />
       <SearchBar onSearch={filterBundles} placeholder={t('search')} />
-      <BundleList onSwipeRight={onSwipeRight} bundles={displayedBundles} />
+      <BundleList onItemClick={onItemClicked} onSwipeRight={onSwipeRight} bundles={displayedBundles} />
     </main>
   )
 }

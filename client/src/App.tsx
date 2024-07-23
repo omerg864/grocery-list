@@ -12,7 +12,7 @@ import Profile from './pages/Profile.tsx';
 import Items from './pages/Items.tsx';
 import Login from './pages/Login.tsx';
 import Register from './pages/Register.tsx';
-import SelectItem from './pages/SelectItem.tsx';
+import Selection from './pages/Selection.tsx';
 import ForgotPassword from './pages/ForgotPassword.tsx';
 import ResetPassword from './pages/ResetPassword.tsx';
 import Bundles from './pages/Bundles.tsx';
@@ -25,6 +25,10 @@ import BundleDisplay from './pages/BundleDisplay.tsx';
 import JoinList from './pages/JoinList.tsx';
 import ShareBundle from './pages/ShareBundle.tsx';
 import ShareItem from './pages/ShareItem.tsx';
+import BundleSelect from './pages/BundleSelect.tsx';
+import ItemSelect from './pages/ItemSelect.tsx';
+import BundleAdd from './pages/BundleAdd.tsx';
+import ItemAdd from './pages/ItemAdd.tsx';
 
 function App() {
 
@@ -61,7 +65,11 @@ function App() {
         <Route path="/lists/:id" element={<List />} />
         <Route path="/lists/:id/item/:item" element={<ItemDisplay />} />
         <Route path="/lists/:id/item/:item/edit" element={<ItemEdit />} />
-        <Route path="/lists/:id/selectItem" element={<SelectItem />} />
+        <Route path="/lists/:id/select" element={<Selection />} />
+        <Route path="/lists/:id/select/bundle" element={<BundleSelect />} />
+        <Route path="/lists/:id/select/item" element={<ItemSelect />} />
+        <Route path="/lists/:id/add/item/:item" element={<ItemAdd />} />
+        <Route path="/lists/:id/add/bundle/:bundle" element={<BundleAdd />} />
         {/* items routes */}
         <Route path="/items" element={<Items />} />
         <Route path="/items/new" element={<ItemNew />} />
@@ -72,6 +80,7 @@ function App() {
         <Route path="/bundles/new" element={<BundleNew />} />
         <Route path="/bundles/:id" element={<BundleDisplay />} />
         <Route path="/bundles/:id/edit" element={<BundleEdit />} />
+        <Route path="/bundles/:id/edit/items" element={<ItemSelect />} />
         <Route path="/bundles/:id/edit/item/:item" element={<ItemDisplay />} />
         <Route path="/bundles/:id/item/:item" element={<ItemDisplay />} />
         {/* share routes */}

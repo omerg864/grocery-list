@@ -3,9 +3,9 @@ import Header from '../components/Header/Header';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
-function SelectItem() {
+function Selection() {
 
-    const { t } = useTranslation('translation', { keyPrefix: 'SelectItem' });
+    const { t } = useTranslation('translation', { keyPrefix: 'Selection' });
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const { id } = useParams();
@@ -21,4 +21,4 @@ function SelectItem() {
   )
 }
 
-export default SelectItem
+export default Selection

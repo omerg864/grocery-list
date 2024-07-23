@@ -15,7 +15,7 @@ function Lists() {
     const navigate = useNavigate();
     const { t } = useTranslation('translation', { keyPrefix: 'Lists' });
     const [lists, setLists] = useRecoilState<List[]>(listsState);
-    const [_, setList] = useRecoilState<List | undefined>(listAtom);
+    const [_, setList] = useRecoilState<List>(listAtom);
     const [listsDisplayed, setListsDisplayed] = useState<List[]>(lists);
 
 
@@ -36,7 +36,7 @@ function Lists() {
 
     const onClick = (id: string) => {
       const selectedList = lists.find((list) => list.id === id);
-      setList(selectedList);
+      setList(selectedList!);
       navigate(`/lists/${id}`);
     }
 
