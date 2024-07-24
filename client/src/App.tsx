@@ -7,7 +7,6 @@ import NavBar from './components/NavBar/NavBar.tsx';
 import { useState } from 'react';
 import Lists from './pages/Lists.tsx';
 import NewList from './pages/NewList.tsx';
-import Notifications from './pages/Notifications.tsx';
 import Profile from './pages/Profile.tsx';
 import Items from './pages/Items.tsx';
 import Login from './pages/Login.tsx';
@@ -90,8 +89,6 @@ function App() {
         <Route path="/join/:id" element={<JoinList />} />
         <Route path="/share/bundle/:id" element={<ShareBundle />} />
         <Route path="/share/item/:id" element={<ShareItem />} />
-        {/* notifications routes */}
-        <Route path="/notifications" element={<Notifications />} />
         {/* profile routes */}
         <Route path="/profile" element={<Profile />} />
         {/* authentication routes */}
