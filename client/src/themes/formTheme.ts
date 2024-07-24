@@ -13,8 +13,8 @@ const formTheme = (outerTheme: Theme) =>
               '--TextField-brandBorderColor': 'white',
               '--TextField-color': 'white',
               '&.Mui-disabled': {
-                '--TextField-brandBorderColor': 'white',
-                '--TextField-color': 'white',
+                '--TextField-brandBorderColor': 'var(--color-secondary)',
+                '--TextField-color': 'var(--color-secondary)',
               },
             },
           },
@@ -29,11 +29,11 @@ const formTheme = (outerTheme: Theme) =>
             },
             root: {
               '&.Mui-disabled .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white',
+                borderColor: 'var(--color-secondary)',
               },
               '&.Mui-disabled .MuiOutlinedInput-input': {
-                color: 'white',
-                WebkitTextFillColor: 'white',
+                color: 'var(--color-secondary)',
+                WebkitTextFillColor: 'var(--color-secondary)',
               },
             },
           },
@@ -50,23 +50,23 @@ const formTheme = (outerTheme: Theme) =>
               '--TextField-brandBorderColor': 'var(--TextField-color)',
               '--TextField-color': 'var(--TextField-color)',
               '&.Mui-disabled .MuiAutocomplete-inputRoot': {
-                '--TextField-brandBorderColor': 'white',
-                '--TextField-color': 'white',
+                '--TextField-brandBorderColor': 'var(--color-secondary)',
+                '--TextField-color': 'var(--color-secondary)',
               },
               '&.Mui-disabled .MuiAutocomplete-input': {
-                color: 'var(--TextField-color)',
-                WebkitTextFillColor: 'var(--TextField-color)', // Fix for certain browsers
+                color: 'var(--color-secondary)',
+                WebkitTextFillColor: 'var(--color-secondary)',
               },
               '&.Mui-disabled .MuiAutocomplete-clearIndicator': {
-                color: 'white',
+                color: 'var(--color-secondary)',
               },
               '&.Mui-disabled .MuiIconButton-root': {
-                color: 'var(--TextField-color)',
+                color: 'var(--color-secondary)',
               },
             },
             popupIndicator: {
               '&.Mui-disabled': {
-                color: "white"
+                color: "var(--color-secondary)"
               }
             }
           },
@@ -82,12 +82,12 @@ const formTheme = (outerTheme: Theme) =>
           root: {
             '--TextField-brandBorderColor': 'white',
             '&.Mui-disabled': {
-              color: 'white',
+              color: 'var(--color-secondary)',
             },
           },
           iconOutlined: {
             '&.Mui-disabled': {
-              color: 'white',
+              color: 'var(--color-secondary)',
             },
           }
         },
@@ -96,7 +96,7 @@ const formTheme = (outerTheme: Theme) =>
         styleOverrides: {
           root: {
             '&.Mui-disabled': {
-              color: 'white',
+              color: 'var(--color-secondary)',
             },
             color: 'white',
           },

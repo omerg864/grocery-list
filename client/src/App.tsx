@@ -71,6 +71,7 @@ function App() {
         <Route path="/lists/:id/add/item/:item" element={<ItemAdd />} />
         <Route path="/lists/:id/new/item" element={<ItemNew />} />
         <Route path="/lists/:id/add/bundle/:bundle" element={<BundleAdd />} />
+        <Route path="/lists/:id/add/bundle/:bundle/item/:item" element={<ItemDisplay />} />
         {/* items routes */}
         <Route path="/items" element={<Items />} />
         <Route path="/items/new" element={<ItemNew />} />

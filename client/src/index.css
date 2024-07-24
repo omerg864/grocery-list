@@ -13,7 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   --color-primary: #9DC183;
-  --color-secondary: #8B4513;
+  --color-secondary: #aaa321;
   --color-accent: #F5DEB3;
 }
 
@@ -22,9 +22,9 @@ html, body, #root {
 }
 
 main {
-  min-height: calc(100dvh - 56px);
   display: flex;
   flex-direction: column;
+  padding-bottom: 56px;
 }
 
 #root {

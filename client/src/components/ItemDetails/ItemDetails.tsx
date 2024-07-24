@@ -13,7 +13,7 @@ import { IoIosShare } from "react-icons/io";
 
 
 interface ItemDetailsProps {
-    item: Item | Omit<Item, 'id'>;
+    item: Item | Omit<Item, 'id'> | Omit<Item, 'amount'> & {amount: number | string};
     disabled?: boolean;
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     addCounter?: () => void;
@@ -21,6 +21,7 @@ interface ItemDetailsProps {
     onSelectionChange?: (e: SelectChangeEvent) => void;
     onImgIconClick: () => void;
     img?: string | null;
+    enableAmount?: boolean;
 }
 
 function ItemDetails(props: ItemDetailsProps) {
@@ -78,19 +79,19 @@ function ItemDetails(props: ItemDetailsProps) {
             <div className="item-display-details">
                 <TextareaAutosize placeholder={t('description')} name="description" value={props.item.description} onChange={props.onChange} disabled={props.disabled} />
                 <ThemeProvider theme={formTheme(outerTheme)}>
-                <TextField name="category" color='success' className='white-color-input' fullWidth value={props.item.category} label={t('category')} onChange={props.onChange} disabled={props.disabled} variant="outlined" />
+                <TextField name="category" color='success' className='white-color-input' fullWidth value={props.item.category} InputLabelProps={{ disabled: props.disabled}} label={t('category')} onChange={props.onChange} disabled={props.disabled} variant="outlined" />
                 {props.item.amount ? <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
-                {props.item.unit === 'pc' ? <Counter handleChange={props.onChange} addCounter={props.addCounter} removeCounter={props.removeCounter} count={props.item.amount} disabled={props.disabled} />: 
-                        <TextField required name="amount" onChange={props.onChange} color='success' type="number" className='white-color-input' fullWidth value={props.item.amount} label={t('amount')} disabled={props.disabled} variant="outlined" />}
+                {props.item.unit === 'pc' ? <Counter handleChange={props.onChange} addCounter={props.addCounter} removeCounter={props.removeCounter} count={props.item.amount} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false} />: 
+                        <TextField required name="amount" onChange={props.onChange} color='success' type="number" className='white-color-input' fullWidth value={props.item.amount} label={t('amount')} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false}  variant="outlined" />}
                         <FormControl fullWidth>
-                            <InputLabel color="success" id="unit-label">{t('unit')}</InputLabel>
+                            <InputLabel disabled={props.disabled} color="success" id="unit-label">{t('unit')}</InputLabel>
                             <Select
                                 labelId="unit-label"
                                 id="unit"
                                 disabled={props.disabled}
                                 color="success"
                                 value={props.item.unit}
-                                label="Age"
+                                label={t('unit')}
                                 onChange={props.onSelectionChange}
                             >
                                 {units.map((unit) => (
@@ -99,14 +100,14 @@ function ItemDetails(props: ItemDetailsProps) {
                             </Select>
                         </FormControl>
                 </div>: <FormControl fullWidth>
-                            <InputLabel color="success" id="unit-label">{t('unit')}</InputLabel>
+                            <InputLabel disabled={props.disabled} color="success" id="unit-label">{t('unit')}</InputLabel>
                             <Select
                                 labelId="unit-label"
                                 id="unit"
                                 disabled={props.disabled}
                                 color="success"
                                 value={props.item.unit}
-                                label="Age"
+                                label={t('unit')}
                                 onChange={props.onSelectionChange}
                             >
                                 {units.map((unit) => (

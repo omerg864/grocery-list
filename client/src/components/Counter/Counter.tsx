@@ -29,7 +29,7 @@ const StyledInput = styled(TextField)({
 });
 
 interface CounterProps {
-    count: number;
+    count: number | string;
     addCounter?: () => void;
     removeCounter?: () => void;
     handleChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;

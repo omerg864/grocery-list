@@ -38,7 +38,7 @@ function BundleViewList(props: BundleViewListProps) {
       <CardActionArea className='item-container'>
         <div style={{minHeight: '5rem'}} className='bundle-view'>
           <Typography variant='h6'>{props.bundle.title}</Typography>
-          <ImagesList images={props.bundle.items.map(item => item.img ? item.img : './item.png')} />
+          <ImagesList images={props.bundle.items.map(item => (item.img ? item.img : '/item.png'))} />
         </div>
       </CardActionArea>
     </SwipeItem>

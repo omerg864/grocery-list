@@ -3,10 +3,11 @@ import Header from '../components/Header/Header';
 import { useNavigate, useParams } from 'react-router-dom';
 import SearchBar from '../components/SearchBar/SearchBar';
 import Bundle from '../interface/BundleInterface';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BundleList from '../components/BundleList/BundleList';
 import { useRecoilState } from 'recoil';
 import { bundleAtom } from '../recoil/atoms';
+import Loading from '../components/Loading/Loading';
 
 
 function BundleSelect() {
@@ -37,6 +38,7 @@ function BundleSelect() {
   const [_, setBundle] = useRecoilState<Bundle>(bundleAtom);
   const [displayedBundles, setDisplayedBundles] = useState<Bundle[]>(bundles);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const filterBundles = (search: string) => {
     const filteredBundles = bundles.filter(bundle => bundle.title.toLowerCase().includes(search.toLowerCase()));
@@ -51,6 +53,17 @@ function BundleSelect() {
 
   const back = () => {
     navigate(`/lists/${id}/select`);
+  }
+
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  if (isLoading) {
+    return <Loading />;
   }
 
   return (

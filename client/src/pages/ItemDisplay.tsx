@@ -15,7 +15,7 @@ import { itemAtom } from "../recoil/atoms";
 
 function ItemDisplay() {
 
-  const { id, item } = useParams<{ id: string, item: string }>();
+  const { id, item, bundle } = useParams<{ id: string, item: string, bundle: string }>();
   const { t } = useTranslation('translation', { keyPrefix: 'ItemDisplay' });
   const navigate = useNavigate();
   const [itemState, setItemState] = useState<Item>({
@@ -39,16 +39,22 @@ function ItemDisplay() {
 
   switch (path) {
     case 'lists':
-      back = {
-        onBack: () => navigate(`/lists/${id}`)
+      if (bundle) {
+        back = {
+          onBack: () => navigate(`/lists/${id}/add/bundle/${bundle}`)
+        }
+      } else {
+        back = {
+          onBack: () => navigate(`/lists/${id}`)
+        }
+        edit = () => {
+          setItem(itemState);
+          navigate(`/lists/${id}/item/${item}/edit`)
+        }
+        side = {sideButton: <IconButton onClick={edit}>
+        <MdModeEditOutline color="white"/>
+      </IconButton>}
       }
-      edit = () => {
-        setItem(itemState);
-        navigate(`/lists/${id}/item/${item}/edit`)
-      }
-      side = {sideButton: <IconButton onClick={edit}>
-      <MdModeEditOutline color="white"/>
-    </IconButton>}
       break;
     case 'bundles':
       let editPath = window.location.pathname.split('/')[3];

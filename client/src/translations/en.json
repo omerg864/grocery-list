@@ -171,5 +171,12 @@
         "allBundles": "All Bundles",
         "items": "Items",
         "bundles": "Bundles"
+    },
+    "ItemsList": {
+        "amount": "Amount",
+        "unit": "Unit"
+    },
+    "BundleAdd": {
+        "addBundle": "Add Bundle"
     }
 }

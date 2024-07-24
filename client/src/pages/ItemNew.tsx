@@ -72,6 +72,7 @@ function ItemNew() {
     try {
         // await updateItem(itemState);
         setIsLoading(false);
+        // change to navigate to the list
         (back.onBack as Function)();
     } catch (error) {
       setIsLoading(false);

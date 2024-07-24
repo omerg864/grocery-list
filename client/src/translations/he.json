@@ -1,5 +1,11 @@
 {
     "List": {
-        
+        "addItem": "הוסף פריט",
+        "search": "חיפוש",
+        "deleteUserTitle": "האם אתה בטוח שברצונך למחוק משתמש זה?",
+        "deleteUserContent": "משתמש זה לא יוכל יותר לגשת לרשימה זו.",
+        "shareTitle": "שיתוף רשימה",
+        "shareText": "Share this link with other users to give them access to this list.",
+        "linkCopied": "Link copied to clipboard. Share it with other users to give them access to this list."
     }
 }
