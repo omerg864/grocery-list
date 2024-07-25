@@ -1,11 +1,10 @@
-import { Badge, CardActionArea, Typography } from '@mui/material';
+import { CardActionArea, Typography } from '@mui/material';
 import List from '../../interface/ListInterface';
 import SwipeItem from '../SwipeItem/SwipeItem';
 import './ListsList.css';
 import { FaTrash } from "react-icons/fa";
-import { useTranslation } from 'react-i18next';
-import { IoIosArrowForward } from "react-icons/io";
 import { useState } from 'react';
+import ArrowForward from '../ArrowForward/ArrowForward';
 
 
 interface ListsListProps {
@@ -14,8 +13,6 @@ interface ListsListProps {
     onClick: (id: string) => void
 }
 function ListsList(props: ListsListProps) {
-
-    const { t } = useTranslation('translation', { keyPrefix: 'ListsList' });
 
     const [open, setOpen] = useState<string | null>(null);
 
@@ -40,7 +37,7 @@ function ListsList(props: ListsListProps) {
                             </div>
                             <div className="list-amount" >
                                 <Typography variant='body1'>{list.boughtItems.length}/{list.items.length}</Typography>
-                                <IoIosArrowForward size={"1.2rem"}/>
+                                <ArrowForward size='1.2rem'/>
                             </div>
                         </div>
                     </div>

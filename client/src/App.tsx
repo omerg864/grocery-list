@@ -40,18 +40,17 @@ function App() {
           return 0;
       case 'bundles':
         return 2;
-      case 'notifications':
-        return 3;
       case 'profile':
-        return 4;
+        return 3;
       case 'items':
         return 1;
       default:
-        return 5;
+        return 4;
     }
   }
 
   const [selectedTab, setSelectedTab] = useState<number>(getSelectedTab());
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   return (
     <>

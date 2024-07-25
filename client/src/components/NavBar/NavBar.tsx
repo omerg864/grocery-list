@@ -1,6 +1,5 @@
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
 import './NavBar.css';
-import { IoMdNotifications } from "react-icons/io";
 import { FaUserCircle } from "react-icons/fa";
 import { FaListUl } from "react-icons/fa";
 import { MdFastfood } from "react-icons/md";
@@ -32,13 +31,10 @@ function NavBar(props: NavBarProps) {
                 navigate('/bundles');
                 break;
             case 3:
-                navigate('/notifications');
-                break;
-            case 4:
                 navigate('/profile');
                 break;
             default:
-                navigate('/');
+                navigate('/profile');
                 break;
         }
     }
@@ -52,8 +48,7 @@ function NavBar(props: NavBarProps) {
     <BottomNavigationAction sx={{color: props.selectedTab === 0 ? 'var(--color-primary) !important' : ''}} label={t("lists")} icon={<FaListUl size={"1.2rem"}/>} />
     <BottomNavigationAction sx={{color: props.selectedTab === 1 ? 'var(--color-primary) !important' : ''}} label={t("items")} icon={<MdFastfood size={"1.2rem"}/>} />
     <BottomNavigationAction sx={{color: props.selectedTab === 2 ? 'var(--color-primary) !important' : ''}} label={t("bundles")} icon={<GrBundle size={"1.2rem"} />} />
-    <BottomNavigationAction sx={{color: props.selectedTab === 3 ? 'var(--color-primary) !important' : ''}} label={t("notifications")} icon={<IoMdNotifications size={"1.2rem"} />} />
-    <BottomNavigationAction sx={{color: props.selectedTab === 4 ? 'var(--color-primary) !important' : ''}} label={t("profile")} icon={<FaUserCircle size={"1.2rem"} />} />
+    <BottomNavigationAction sx={{color: props.selectedTab === 3 ? 'var(--color-primary) !important' : ''}} label={t("profile")} icon={<FaUserCircle size={"1.2rem"} />} />
     </BottomNavigation>
 </Paper>
   )
