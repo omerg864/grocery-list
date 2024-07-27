@@ -178,5 +178,14 @@
     },
     "BundleAdd": {
         "addBundle": "Add Bundle"
+    },
+    "ListsDeleted": {
+        "recentlyDeleted": "Recently Deleted",
+        "deleteAll": "Delete All",
+        "deleteAllContent": "Are you sure you want to delete all these list? This action cannot be undone.",
+        "restoreList": "Restore List",
+        "restoreListContent": "Are you sure you want to restore this list?",
+        "deleteList": "Delete List",
+        "deleteListContent": "Are you sure you want to delete this list? This action cannot be undone."
     }
 }

@@ -1,6 +1,6 @@
 import './Header.css';
 import { Typography, IconButton } from '@mui/material';
-import { IoIosArrowBack, IoMdAdd } from "react-icons/io";
+import { IoMdAdd } from "react-icons/io";
 import GlassButton from '../GlassButton/GlassButton.tsx';
 import { ReactNode } from 'react';
 import ArrowBack from '../ArrowBack/ArrowBack.tsx';

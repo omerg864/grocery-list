@@ -9,8 +9,8 @@ import ArrowForward from '../ArrowForward/ArrowForward';
 
 interface ListsListProps {
     lists: List[];
-    deleteList: (id: string) => void
-    onClick: (id: string) => void
+    deleteList: (id: string) => void;
+    onClick: (id: string) => void;
 }
 function ListsList(props: ListsListProps) {
 

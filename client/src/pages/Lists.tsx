@@ -23,6 +23,10 @@ function Lists() {
       navigate('/lists/new');
     }
 
+    const goToDeleted = () => {
+      navigate('/lists/deleted');
+    }
+
     const onSearch = (search: string) => {
       // TODO: filter lists by search to:[user]
       const filteredLists = lists.filter((list: List) => list.title.toLowerCase().includes(search));
@@ -42,7 +46,7 @@ function Lists() {
 
   return (
     <main>
-        <Header buttonTitle={t("addList")} title={t("lists")} buttonClick={newList} sideButton={<Tooltip title={t('recentlyDeleted')}><IconButton >
+        <Header buttonTitle={t("addList")} title={t("lists")} buttonClick={newList} sideButton={<Tooltip title={t('recentlyDeleted')}><IconButton onClick={goToDeleted} >
           <MdOutlineAutoDelete color="white"/>
         </IconButton></Tooltip>} />
         <SearchBar placeholder={t("search")} onSearch={onSearch}/>

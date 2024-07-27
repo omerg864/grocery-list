@@ -28,6 +28,7 @@ import BundleSelect from './pages/BundleSelect.tsx';
 import ItemSelect from './pages/ItemSelect.tsx';
 import BundleAdd from './pages/BundleAdd.tsx';
 import ItemAdd from './pages/ItemAdd.tsx';
+import ListsDeleted from './pages/ListsDeleted.tsx';
 
 function App() {
 
@@ -60,6 +61,7 @@ function App() {
         {/* lists routes */}
         <Route path="/" element={<Lists />} />
         <Route path="/lists/new" element={<NewList />} />
+        <Route path="/lists/deleted" element={<ListsDeleted />} />
         <Route path="/lists/:id" element={<List />} />
         <Route path="/lists/:id/item/:item" element={<ItemDisplay />} />
         <Route path="/lists/:id/item/:item/edit" element={<ItemEdit />} />
