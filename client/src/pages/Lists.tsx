@@ -9,6 +9,7 @@ import { useRecoilState } from "recoil";
 import { listsState, listAtom } from "../recoil/atoms.ts";
 import { MdOutlineAutoDelete } from "react-icons/md";
 import { IconButton, Tooltip } from "@mui/material";
+import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDialog.tsx";
 
 function Lists() {
 
@@ -17,6 +18,8 @@ function Lists() {
     const [lists, setLists] = useRecoilState<List[]>(listsState);
     const [_, setList] = useRecoilState<List>(listAtom);
     const [listsDisplayed, setListsDisplayed] = useState<List[]>(lists);
+    const [dialog, setDialog] = useState<{open: boolean, id: string | null}>({open: false, id: null});
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
 
     const newList = () => {
@@ -25,6 +28,14 @@ function Lists() {
 
     const goToDeleted = () => {
       navigate('/lists/deleted');
+    }
+
+    const handleClose = () => {
+      setDialog({open: false, id: null});
+    }
+
+    const openDialog = (id: string) => {
+      setDialog({open: true, id: id});
     }
 
     const onSearch = (search: string) => {
@@ -36,6 +47,7 @@ function Lists() {
     const deleteList = (id: string) => {
       setLists((prev) => prev.filter((list) => list.id !== id));
       setListsDisplayed((prev) => prev.filter((list) => list.id !== id));
+      handleClose();
     }
 
     const onClick = (id: string) => {
@@ -49,8 +61,9 @@ function Lists() {
         <Header buttonTitle={t("addList")} title={t("lists")} buttonClick={newList} sideButton={<Tooltip title={t('recentlyDeleted')}><IconButton onClick={goToDeleted} >
           <MdOutlineAutoDelete color="white"/>
         </IconButton></Tooltip>} />
+        <ConfirmationDialog  handleClose={handleClose} open={dialog.open} title={t('deleteList')} content={t('deleteListContent')} handleConfirm={() => deleteList(dialog.id as string)}/>
         <SearchBar placeholder={t("search")} onSearch={onSearch}/>
-        <ListsList onClick={onClick} deleteList={deleteList} lists={listsDisplayed} />
+        <ListsList onClick={onClick} deleteList={openDialog} lists={listsDisplayed} />
     </main>
   )
 }
