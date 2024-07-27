@@ -5,11 +5,12 @@ import './ConfirmationDialog.css';
 interface ConfirmationDialogProps {
     open: boolean;
     handleClose: () => void;
-    handleConfirm: () => void;
+    handleConfirm?: () => void;
     title: string;
     content: string;
     maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
     fullWidth?: boolean;
+    buttons?: React.ReactNode;
 }
 
 function ConfirmationDialog(props: ConfirmationDialogProps) {
@@ -33,10 +34,10 @@ function ConfirmationDialog(props: ConfirmationDialogProps) {
         {props.content}
       </DialogContentText>
     </DialogContent>
-    <div className='dialog-buttons'>
+    {props.buttons ? props.buttons :<div className='dialog-buttons'>
       <Button onClick={props.handleClose} variant='outlined' color="primary">{t('cancel')}</Button>
       <Button onClick={props.handleConfirm} variant='outlined' color="error" autoFocus>{t('confirm')}</Button>
-    </div>
+    </div>}
   </Dialog>
   )
 }

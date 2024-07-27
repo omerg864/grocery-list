@@ -8,7 +8,7 @@ import SearchBar from "../components/SearchBar/SearchBar.tsx";
 import { useRecoilState } from "recoil";
 import { listsState, listAtom } from "../recoil/atoms.ts";
 import { MdOutlineAutoDelete } from "react-icons/md";
-import { IconButton, Tooltip } from "@mui/material";
+import { Button, IconButton, Tooltip } from "@mui/material";
 import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDialog.tsx";
 
 function Lists() {
@@ -44,7 +44,13 @@ function Lists() {
       setListsDisplayed(filteredLists);
     }
 
-    const deleteList = (id: string) => {
+    const deleteListForAll = (id: string) => {
+      setLists((prev) => prev.filter((list) => list.id !== id));
+      setListsDisplayed((prev) => prev.filter((list) => list.id !== id));
+      handleClose();
+    }
+
+    const deleteListForMe = (id: string) => {
       setLists((prev) => prev.filter((list) => list.id !== id));
       setListsDisplayed((prev) => prev.filter((list) => list.id !== id));
       handleClose();
@@ -61,7 +67,14 @@ function Lists() {
         <Header buttonTitle={t("addList")} title={t("lists")} buttonClick={newList} sideButton={<Tooltip title={t('recentlyDeleted')}><IconButton onClick={goToDeleted} >
           <MdOutlineAutoDelete color="white"/>
         </IconButton></Tooltip>} />
-        <ConfirmationDialog  handleClose={handleClose} open={dialog.open} title={t('deleteList')} content={t('deleteListContent')} handleConfirm={() => deleteList(dialog.id as string)}/>
+        <ConfirmationDialog  handleClose={handleClose} open={dialog.open} title={t('deleteList')} content={t('deleteListContent')} 
+          buttons={<div className='dialog-buttons'>
+            <Button onClick={handleClose} variant='outlined' color="primary">{t('cancel')}</Button>
+            <div style={{display: 'flex', gap: '10px'}}>
+              <Button onClick={() => deleteListForAll(dialog.id as string)} variant='outlined' color="error" autoFocus>{t('deleteForAll')}</Button>
+              <Button onClick={() => deleteListForMe(dialog.id as string)} variant='outlined' color="warning" autoFocus>{t('deleteForMe')}</Button>
+            </div>
+          </div>}/>
         <SearchBar placeholder={t("search")} onSearch={onSearch}/>
         <ListsList onClick={onClick} deleteList={openDialog} lists={listsDisplayed} />
     </main>
