@@ -11,6 +11,7 @@ interface ConfirmationDialogProps {
     maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
     fullWidth?: boolean;
     buttons?: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 function ConfirmationDialog(props: ConfirmationDialogProps) {
@@ -33,6 +34,7 @@ function ConfirmationDialog(props: ConfirmationDialogProps) {
       <DialogContentText id="alert-dialog-description">
         {props.content}
       </DialogContentText>
+      {props.children}
     </DialogContent>
     {props.buttons ? props.buttons :<div className='dialog-buttons'>
       <Button onClick={props.handleClose} variant='outlined' color="primary">{t('cancel')}</Button>

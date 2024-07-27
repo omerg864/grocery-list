@@ -6,7 +6,8 @@
         "deleteUserContent": "This user will no longer be able to access this list.",
         "shareTitle": "List Sharing",
         "shareText": "Share this link with other users to give them access to this list.",
-        "linkCopied": "Link copied to clipboard. Share it with other users to give them access to this list."
+        "linkCopied": "Link copied to clipboard. Share it with other users to give them access to this list.",
+        "receipts": "Receipts"
     },
     "UsersList": {
         "sharedWith": "Shared with"
@@ -192,5 +193,13 @@
         "restoreListContent": "Are you sure you want to restore this list?",
         "deleteList": "Delete List",
         "deleteListContent": "Are you sure you want to delete this list? This action cannot be undone."
+    },
+    "ListReceipts": {
+        "receipts": "Receipts",
+        "noReceipts": "No receipts",
+        "uploadReceipt": "Upload Receipt",
+        "upload": "Upload",
+        "cancel": "Cancel",
+        "delete": "Delete"
     }
 }

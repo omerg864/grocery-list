@@ -6,7 +6,7 @@ import Item from "../interface/ItemInterface.ts";
 import ListFilters from "../components/ListFilters/ListFilters.tsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiFileList3Line } from "react-icons/ri";
-import { IconButton } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import i18n from "i18next";
 import 'react-swipeable-list/dist/styles.css';
 import { useTranslation } from "react-i18next";
@@ -95,6 +95,10 @@ function List() {
         navigate(`/lists/${list.id}/item/${id}`);
     }
 
+    const goToReceipt = () => {
+        navigate(`/lists/${list.id}/receipts`);
+    }
+
     const addUser = () => {
         if (navigator.share) {
               navigator.share({
@@ -122,9 +126,9 @@ function List() {
 
   return (
     <main>
-        <Header buttonTitle={t("addItem")} title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<IconButton>
+        <Header buttonTitle={t("addItem")} title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<Tooltip title={t('receipts')}><IconButton onClick={goToReceipt}>
             <RiFileList3Line color='white'/>
-        </IconButton>} />
+        </IconButton></Tooltip>} />
         <ConfirmationDialog title={t('deleteUserTitle')} content={t('deleteUserContent')} open={dialog} handleClose={closeDialog} handleConfirm={deleteUser}  />
         <UsersList onAdd={addUser} {...deleteAction} users={users} />
         <SearchBar onSearch={filterItems} placeholder={t("search")} />
