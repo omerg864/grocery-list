@@ -5,6 +5,8 @@ import SearchBar from '../components/SearchBar/SearchBar';
 import Bundle from '../interface/BundleInterface';
 import { useState } from 'react';
 import BundleList from '../components/BundleList/BundleList';
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog';
+import Loading from '../components/Loading/Loading';
 
 
 function Bundles() {
@@ -32,6 +34,8 @@ function Bundles() {
     }
   ]);
   const [displayedBundles, setDisplayedBundles] = useState<Bundle[]>(bundles);
+  const [open, setOpen] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const filterBundles = (search: string) => {
@@ -45,18 +49,36 @@ function Bundles() {
 
   const onSwipeRight = (id: string) => {
     console.log('swiped right', id);
-    setBundles((prevBundles) => prevBundles.filter(bundle => bundle.id !== id));
-    setDisplayedBundles((prevBundles) => prevBundles.filter(bundle => bundle.id !== id));
+    setOpen(id);
+  }
+
+  const deleteBundle = (id: string) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      handleClose();
+      setBundles(bundles.filter(bundle => bundle.id !== id));
+      setDisplayedBundles(displayedBundles.filter(bundle => bundle.id !== id));
+      setIsLoading(false);
+    }, 1000);
   }
 
   const onItemClicked = (id: string) => {
     navigate(`/bundles/${id}`);
   }
 
+  const handleClose = () => {
+    setOpen('');
+  }
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <main>
       <Header title={t('bundles')} buttonTitle={t('newBundle')} buttonClick={goToNewBundle} />
       <SearchBar onSearch={filterBundles} placeholder={t('search')} />
+      <ConfirmationDialog open={open !== ''} content={t('deleteBundleContent')} title={t('deleteBundle')} handleClose={handleClose} handleConfirm={() => deleteBundle(open)} />
       <BundleList onItemClick={onItemClicked} onSwipeRight={onSwipeRight} bundles={displayedBundles} />
     </main>
   )

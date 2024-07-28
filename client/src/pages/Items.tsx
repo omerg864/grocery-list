@@ -7,6 +7,7 @@ import SearchBar from '../components/SearchBar/SearchBar';
 import CategoryList from '../components/CategoryList/CategoryList';
 import ItemsList from '../components/ItemsList/ItemsList';
 import Loading from '../components/Loading/Loading';
+import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog';
 
 function Items() {
 
@@ -17,6 +18,7 @@ function Items() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [categories, setCategories] = useState<string[]>(["Fruits", "Home Essentials"]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [open, setOpen] = useState<string>('');
 
   const goToNewItem = () => {
     navigate('/items/new');
@@ -44,15 +46,25 @@ function Items() {
 
   const onSwipeRight = async (id: string) => {
     console.log('swiped right', id);
+    setOpen(id);
+  }
+
+  const deleteItem = async (id: string) => {
     setIsLoading(true);
     setTimeout(() => {
+      handleClose();
       setItems(items.filter(item => item.id !== id));
+      setDisplayedItems(displayedItems.filter(item => item.id !== id));
       setIsLoading(false);
     }, 1000);
   }
 
   const onItemClicked = (id: string) => {
     navigate(`/items/${id}`);
+  }
+
+  const handleClose = () => {
+    setOpen('');
   }
 
   if (isLoading) {
@@ -64,6 +76,7 @@ function Items() {
     <Header title={t('items')} buttonClick={goToNewItem} buttonTitle={t('newItem')} />
     <SearchBar onSearch={filterItems} placeholder={t("search")} />
     <CategoryList containerStyle={{padding: '8px'}} categories={categories} selectedCategory={selectedCategory} onSelect={onSelect} />
+    <ConfirmationDialog open={open !== ''} content={t('deleteItemContent')} title={t('deleteItem')} handleClose={handleClose} handleConfirm={() => deleteItem(open)}/>
     <ItemsList onItemClicked={onItemClicked} items={displayedItems} onSwipeRight={onSwipeRight} />
   </main>
   )
