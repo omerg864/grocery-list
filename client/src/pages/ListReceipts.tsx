@@ -6,6 +6,7 @@ import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDia
 import { Button, TextField } from "@mui/material";
 import Loading from "../components/Loading/Loading.tsx";
 import ReceiptsList from "../components/ReceiptsList/ReceiptsList.tsx";
+import Receipt from "../interface/ReceiptInterface.ts";
 
 function ListReceipts() {
 
@@ -20,6 +21,7 @@ function ListReceipts() {
     const [open, setOpen] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [deleteDialog, setDeleteDialog] = useState<string>('');
 
     const back = () => {
         navigate(`/lists/${id}`);
@@ -43,13 +45,30 @@ function ListReceipts() {
         }, 1000);
     }
 
-    if (isLoading) {
-        return <Loading />;
+    const openDeleteDialog = (id: string) => {
+        setDeleteDialog(id);
+    }
+
+    const closeDeleteDialog = () => {
+        setDeleteDialog('');
+    }
+
+    const deleteReceipt = () => {
+        setIsLoading(true);
+        closeDeleteDialog();
+        setTimeout(() => {
+            setIsLoading(false);
+            setReceipts((prev) => prev.filter((receipt) => receipt.id !== deleteDialog));
+        }, 1000);
     }
 
     useEffect(() => {
         // TODO: fetch receipts
     }, []);
+
+    if (isLoading) {
+        return <Loading />;
+    }
 
   return (
     <main>
@@ -59,10 +78,11 @@ function ListReceipts() {
             <Button onClick={addReceipt} variant='outlined' color="primary" autoFocus>{t('upload')}</Button>
         </div>} >
             <div style={{marginTop: '1rem'}}>
-                <TextField type='file' value={file} onChange={(e) => setFile((e.target as HTMLInputElement).files![0])} />
+                <TextField type='file' onChange={(e) => setFile((e.target as HTMLInputElement).files![0])} />
             </div>
         </ConfirmationDialog>
-        <ReceiptsList />
+        <ConfirmationDialog open={deleteDialog !== ''} handleConfirm={deleteReceipt} handleClose={closeDeleteDialog} title={t('deleteReceipt')} content={t('deleteReceiptContent')} />
+        <ReceiptsList onDelete={openDeleteDialog} receipts={receipts}/>
     </main>
   )
 }

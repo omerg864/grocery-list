@@ -1,0 +1,33 @@
+.receipts-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.receipt {
+    position: relative;
+    width: 100%;
+    height: fit-content;
+}
+
+.receipt-details {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.receipt-img {
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+}

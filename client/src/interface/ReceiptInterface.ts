@@ -2,5 +2,7 @@
 interface Receipt {
     id: string;
     img: string;
-    createdAt: string | Date;
+    createdAt: Date;
 }
+
+export default Receipt;

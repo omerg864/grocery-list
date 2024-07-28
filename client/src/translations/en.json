@@ -200,6 +200,8 @@
         "uploadReceipt": "Upload Receipt",
         "upload": "Upload",
         "cancel": "Cancel",
-        "delete": "Delete"
+        "delete": "Delete",
+        "deleteReceipt": "Receipt will be deleted",
+        "deleteReceiptContent": "Are you sure you want to delete this receipt?"
     }
 }
