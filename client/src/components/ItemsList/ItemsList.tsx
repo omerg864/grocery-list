@@ -16,6 +16,8 @@ interface ItemsListProps {
     amounts?: {id: string, amount: number | ""}[];
     addCounter?: (id: string) => void;
     removeCounter?: (id: string) => void;
+    rightIcon?: React.ReactNode;
+    leftIcon?: React.ReactNode;
 }
 
 function ItemsList(props: ItemsListProps) {
@@ -31,7 +33,7 @@ function ItemsList(props: ItemsListProps) {
     <div className="items-list">
         {props.items.map((item: Item) => (
           <Fragment key={item.id} >
-          <ItemView onItemClicked={props.onItemClicked} open={open} setOpen={setOpen} item={item} onSwipeRight={props.onSwipeRight} onSwipeLeft={props.onSwipeLeft}/>
+          <ItemView rightIcon={props.rightIcon} leftIcon={props.leftIcon} onItemClicked={props.onItemClicked} open={open} setOpen={setOpen} item={item} onSwipeRight={props.onSwipeRight} onSwipeLeft={props.onSwipeLeft}/>
           {props.amounts && <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
             {item.unit === 'pc' ? <Counter handleChange={(e) => props.onAmountChanged!(item.id, e.target.value)} addCounter={() => props.addCounter!(item.id)} removeCounter={() => props.removeCounter!(item.id)} count={props.amounts?.find(obj => obj.id === item.id)!.amount!} />: 
                         <TextField required name="amount" onChange={(e) => props.onAmountChanged!(item.id, e.target.value)} color='success' type="number" className='white-color-input' fullWidth value={props.amounts?.find(obj => obj.id === item.id)!.amount!} label={t('amount')} variant="outlined" />}

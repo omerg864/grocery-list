@@ -7,8 +7,6 @@ import ListFilters from "../components/ListFilters/ListFilters.tsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiFileList3Line } from "react-icons/ri";
 import { IconButton, Tooltip } from "@mui/material";
-import i18n from "i18next";
-import 'react-swipeable-list/dist/styles.css';
 import { useTranslation } from "react-i18next";
 import ListInterface from "../interface/ListInterface.ts";
 import SearchBar from "../components/SearchBar/SearchBar.tsx";
@@ -17,6 +15,8 @@ import { toast } from "react-toastify";
 import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDialog.tsx";
 import { useRecoilState } from "recoil";
 import { listAtom } from "../recoil/atoms.ts";
+import { TbShoppingCartPlus } from "react-icons/tb";
+import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 
 function List() {
     const [list, setList] = useRecoilState<ListInterface>(listAtom);
@@ -64,16 +64,30 @@ function List() {
         applyFilters(selectedCategory, filter);
     }
 
-    const onSwipeLeft = (id: string) => {
+    const boughtItem = (id: string) => {
         setDisplayList((prev) => prev.filter((item) => item.id !== id));
         setItems((prev) => prev.filter((item) => item.id !== id));
         setBoughtItems((prev) => [...prev, items.find((item) => item.id === id)!]);
     }
 
-    const onSwipeRight = (id: string) => {
+    const deleteItem = (id: string) => {
         setDisplayList((prev) => prev.filter((item) => item.id !== id));
         setItems((prev) => prev.filter((item) => item.id !== id));
         setDeletedItems((prev) => [...prev, items.find((item) => item.id === id)!]);
+    }
+
+    const restoreItemDeleted = (id: string) => {
+        const item = deletedItems.find((item) => item.id === id);
+        setDisplayList((prev) => prev.filter((item) => item.id !== id));
+        setDeletedItems((prev) => prev.filter((item) => item.id !== id));
+        setItems((prev) => [...prev, item!]);
+    }
+
+    const restoreItemBought = (id: string) => {
+        const item = boughtItems.find((item) => item.id === id);
+        setDisplayList((prev) => prev.filter((item) => item.id !== id));
+        setBoughtItems((prev) => prev.filter((item) => item.id !== id));
+        setItems((prev) => [...prev, item!]);
     }
 
     const deleteUser = () => {
@@ -123,6 +137,32 @@ function List() {
         deleteAction = {};
     }
 
+    let swipeRight = {};
+
+    switch (filterList) {
+        case 0:
+            swipeRight = { onSwipeRight: deleteItem };
+            break;
+        case 1:
+            swipeRight = { onSwipeRight: restoreItemBought,
+                leftIcon: <MdOutlineRemoveShoppingCart size={"1.5rem"} color='white'/>
+             };
+            break;
+    }
+
+    let swipeLeft = {};
+
+    switch (filterList) {
+        case 0:
+            swipeLeft = { onSwipeLeft: boughtItem };
+            break;
+        case 2:
+            swipeLeft = { onSwipeLeft: restoreItemDeleted,
+                rightIcon: <TbShoppingCartPlus size={"1.5rem"} color='white'/> };
+            break;
+    }
+
+
 
   return (
     <main>
@@ -133,7 +173,7 @@ function List() {
         <UsersList onAdd={addUser} {...deleteAction} users={users} />
         <SearchBar onSearch={filterItems} placeholder={t("search")} />
         <ListFilters categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>
-        <ItemsList onItemClicked={onItemClicked} items={displayList} onSwipeLeft={onSwipeLeft} onSwipeRight={onSwipeRight}/>
+        <ItemsList onItemClicked={onItemClicked} items={displayList} {...swipeLeft} {...swipeRight}/>
     </main>
   )
 }

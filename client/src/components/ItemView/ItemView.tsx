@@ -13,13 +13,15 @@ interface ItemViewProps {
     open: string | null;
     setOpen: (id: string | null) => void;
     onItemClicked?: (id: string) => void;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
 }
 function ItemView(props: ItemViewProps) {
 
     const leftButton = (): React.ReactNode => {
         return (
             <div className='swipe-content'>
-            <FaTrash size={"1.5rem"} color='white' />
+            {props.leftIcon ? props.leftIcon : <FaTrash size={"1.5rem"} color='white' />}
             </div>
         )
     }
@@ -27,7 +29,7 @@ function ItemView(props: ItemViewProps) {
     const rightButton = (): React.ReactNode => {
         return (
             <div className='swipe-content'>
-            <MdAddShoppingCart size={"1.5rem"}  color='white' />
+            {props.rightIcon ? props.rightIcon : <MdAddShoppingCart size={"1.5rem"}  color='white' />}
             </div>
         )
     }
