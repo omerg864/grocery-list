@@ -207,5 +207,17 @@
         "delete": "Delete",
         "deleteReceipt": "Receipt will be deleted",
         "deleteReceiptContent": "Are you sure you want to delete this receipt?"
+    },
+    "VerifyEmail": {
+        "verifyEmail": "Verify Email",
+        "emailVerified": "Your email has been verified. You can now login to the app.",
+        "verifying": "Verifying email...",
+        "notVerified": "Your email has cannot be verified.",
+        "clickHereToSendAgain": "Click here to send the verification email again."
+    },
+    "VerifyEmailResend": {
+        "verifyEmailResend": "Verify Email Resend",
+        "email": "Email",
+        "send": "Send"
     }
 }

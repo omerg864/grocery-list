@@ -30,6 +30,8 @@ import BundleAdd from './pages/BundleAdd.tsx';
 import ItemAdd from './pages/ItemAdd.tsx';
 import ListsDeleted from './pages/ListsDeleted.tsx';
 import ListReceipts from './pages/ListReceipts.tsx';
+import VerifyEmail from './pages/VerifyEmail.tsx';
+import VerifyEmailResend from './pages/VerifyEmailResend.tsx';
 
 function App() {
 
@@ -99,6 +101,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/verify/send" element={<VerifyEmailResend />} />
+        <Route path="/verify/:token" element={<VerifyEmail />} />
       </Routes>
       <NavBar setSelectedTab={setSelectedTab} selectedTab={selectedTab} />
     </Router>
