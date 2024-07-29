@@ -11,3 +11,5 @@ export interface User {
     resetPasswordToken?: string;
     avatar?: string;
 }
+
+export interface UserDocument extends User, Document {}
