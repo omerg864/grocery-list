@@ -8,7 +8,6 @@ interface List {
 	deletedItems: Item[];
 	boughtItems: Item[];
 	users: string[];
-	shared?: boolean;
     updatedAt: string;
     createdAt: string;
 	owner: boolean;
