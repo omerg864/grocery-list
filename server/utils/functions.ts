@@ -1,6 +1,6 @@
 import { createTransport } from 'nodemailer';
 
-export const sendEmail = async (receiver: string, subject: string, text: string) => {
+export const sendEmail = async (receiver: string, subject: string, text: string): Promise<boolean> => {
     var transporter = createTransport({
         service: process.env.EMAIL_SERVICE,
         auth: {
