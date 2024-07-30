@@ -73,7 +73,11 @@
         "firstName": "First Name",
         "lastName": "Last Name",
         "confirmPassword": "Confirm Password",
-        "haveAccount": "Already have an account?"
+        "haveAccount": "Already have an account?",
+        "pleaseVerify": "Please verify your email address to login.",
+        "passwordsDontMatch": "Passwords don't match",
+        "invalidEmail": "Invalid email",
+        "invalidPassword": "Invalid password"
     },
     "Profile": {
         "profile": "Profile",

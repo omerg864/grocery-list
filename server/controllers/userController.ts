@@ -36,13 +36,14 @@ const login = asyncHandler(async (req:  Request, res: Response, next: NextFuncti
         res.status(400);
         throw new Error('Please verify your email');
     }
+    console.log(email, password);
     const isMatch = await bcrypt.compare(password, user.password!);
     if (!isMatch) {
         res.status(400);
         throw new Error('Invalid email or password');
     }
     const token = generateToken(user._id as string);
-    const userEx = User.findById(user._id).select(userExclude);
+    const userEx = await User.findById(user._id).select(userExclude);
     res.status(200).json({
         success: true,
         user: userEx,
@@ -51,8 +52,8 @@ const login = asyncHandler(async (req:  Request, res: Response, next: NextFuncti
 });
 
 const register = asyncHandler(async (req, res, next) => {
-    const {name, email, password} = req.body;
-    if(!name || !email || !password) {
+    const {f_name, l_name, email, password} = req.body;
+    if(!f_name || !l_name || !email || !password) {
         res.status(400);
         throw new Error('Please fill all the fields');
     }
@@ -72,7 +73,8 @@ const register = asyncHandler(async (req, res, next) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const user = await User.create({
-        name,
+        f_name,
+        l_name,
         email: email,
         password: hashedPassword
     });

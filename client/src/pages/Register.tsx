@@ -9,20 +9,51 @@ import GlassButton from '../components/GlassButton/GlassButton';
 import { CiLogin } from "react-icons/ci";
 import User from '../interface/UserInterface';
 import PasswordRules from '../components/PasswordRules/PasswordRules';
+import Loading from '../components/Loading/Loading';
+import { email_regex, password_regex } from '../utils/regex';
+import { toast } from 'react-toastify';
 
 function Register() {
   const { t } = useTranslation('translation', { keyPrefix: 'Register' });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const [form, setForm] = useState<User & {password2: string}>({email: '', password: '', password2: '', f_name: '', l_name: '', avatar: '', id: ''});
+  const [form, setForm] = useState<Omit<User & {password2: string, email: string, password: string}, 'id' | 'avatar'>>({email: '', password: '', password2: '', f_name: '', l_name: ''});
 
   const outerTheme = useTheme();
 
-  const register = async () => {
+  const register = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
+    if(form.password !== form.password2) {
       setIsLoading(false);
-    }, 1000);
+      toast.error(t('passwordsDontMatch'));
+      return;
+    }
+    if(!email_regex.test(form.email)) {
+      setIsLoading(false);
+      toast.error(t('invalidEmail'));
+      return;
+    }
+    if(!password_regex.test(form.password)) {
+      setIsLoading(false);
+      toast.error(t('invalidPassword'));
+      return;
+    }
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/register`, { headers: {
+          "Content-type": "application/json"
+      } ,method: 'POST', body: JSON.stringify(form)});
+      const data = await response.json();
+      if (!data.success) {
+        toast.error(data.message);
+      } else {
+        toast.success(t('pleaseVerify'));
+        navigate('/login');
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error('Internal Server Error');
+    }
   }
 
   const goToLogin = () => {
@@ -31,6 +62,10 @@ function Register() {
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [event.target.name]: event.target.value });
+  }
+
+  if (isLoading) {
+    return <Loading />;
   }
 
 

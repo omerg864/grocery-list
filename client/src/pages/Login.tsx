@@ -8,21 +8,47 @@ import { useNavigate } from "react-router-dom";
 import formTheme from "../themes/formTheme";
 import GlassButton from "../components/GlassButton/GlassButton";
 import { MdLockReset } from "react-icons/md";
+import { toast } from "react-toastify";
+import Cookies from "universal-cookie";
+import { addDays } from "../utils/functions";
+import Loading from "../components/Loading/Loading";
 
-function Login() {
+
+interface LoginProps {
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
+}
+
+function Login(props: LoginProps) {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Login' });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [form, setForm] = useState<{email: string, password: string}>({email: '', password: ''});
+  const cookies = new Cookies();
 
   const outerTheme = useTheme();
 
   const login = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/login`, { headers: {
+          "Content-type": "application/json"
+      } ,method: 'POST', body: JSON.stringify(form)});
+      const data = await response.json();
+      if (!data.success) {
+        toast.error(data.message);
+      } else {
+        let date30 = addDays(new Date(), 30);
+        cookies.set('userToken', data.token, { path: '/', secure: true, expires: date30 });
+        cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: date30 });
+        props.setIsAuthenticated(true);
+        navigate('/');
+      }
+    } catch (err) {
+        toast.error('Internal Server Error');
+        console.log(err);
+    }
+    setIsLoading(false);
   }
 
   const goToRegister = () => {
@@ -35,6 +61,10 @@ function Login() {
 
   const goToForgotPassword = () => {
     navigate('/forgot-password');
+  }
+
+  if (isLoading) {
+    return <Loading />;
   }
 
   return (

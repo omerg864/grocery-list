@@ -32,6 +32,9 @@ import ListsDeleted from './pages/ListsDeleted.tsx';
 import ListReceipts from './pages/ListReceipts.tsx';
 import VerifyEmail from './pages/VerifyEmail.tsx';
 import VerifyEmailResend from './pages/VerifyEmailResend.tsx';
+import UserRestrictedRoute from './components/UserRestrictedRoute/UserRestrictedRoute.tsx';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.tsx';
+import Cookies from 'universal-cookie';
 
 function App() {
 
@@ -52,9 +55,14 @@ function App() {
         return 4;
     }
   }
+  const cookies = new Cookies();
 
   const [selectedTab, setSelectedTab] = useState<number>(getSelectedTab());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  if (cookies.get('userToken') && !isAuthenticated) {
+    setIsAuthenticated(true);
+  }
 
   return (
     <>
@@ -62,46 +70,46 @@ function App() {
     <Router>
       <Routes>
         {/* lists routes */}
-        <Route path="/" element={<Lists />} />
-        <Route path="/lists/new" element={<NewList />} />
-        <Route path="/lists/deleted" element={<ListsDeleted />} />
-        <Route path="/lists/:id" element={<List />} />
-        <Route path="/lists/:id/receipts" element={<ListReceipts />} />
-        <Route path="/lists/:id/item/:item" element={<ItemDisplay />} />
-        <Route path="/lists/:id/item/:item/edit" element={<ItemEdit />} />
-        <Route path="/lists/:id/select" element={<Selection />} />
-        <Route path="/lists/:id/select/bundle" element={<BundleSelect />} />
-        <Route path="/lists/:id/select/item" element={<ItemSelect />} />
-        <Route path="/lists/:id/add/item/:item" element={<ItemAdd />} />
-        <Route path="/lists/:id/new/item" element={<ItemNew />} />
-        <Route path="/lists/:id/add/bundle/:bundle" element={<BundleAdd />} />
-        <Route path="/lists/:id/add/bundle/:bundle/item/:item" element={<ItemDisplay />} />
+        <Route path="/" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Lists /></ProtectedRoute>} />
+        <Route path="/lists/new" element={<ProtectedRoute isAuthenticated={isAuthenticated}><NewList /></ProtectedRoute>} />
+        <Route path="/lists/deleted" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListsDeleted /></ProtectedRoute>} />
+        <Route path="/lists/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><List /></ProtectedRoute>} />
+        <Route path="/lists/:id/receipts" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListReceipts /></ProtectedRoute>} />
+        <Route path="/lists/:id/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
+        <Route path="/lists/:id/item/:item/edit" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemEdit /></ProtectedRoute>} />
+        <Route path="/lists/:id/select" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Selection /></ProtectedRoute>} />
+        <Route path="/lists/:id/select/bundle" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleSelect /></ProtectedRoute>} />
+        <Route path="/lists/:id/select/item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemSelect /></ProtectedRoute>} />
+        <Route path="/lists/:id/add/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemAdd /></ProtectedRoute>} />
+        <Route path="/lists/:id/new/item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemNew /></ProtectedRoute>} />
+        <Route path="/lists/:id/add/bundle/:bundle" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleAdd /></ProtectedRoute>} />
+        <Route path="/lists/:id/add/bundle/:bundle/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         {/* items routes */}
-        <Route path="/items" element={<Items />} />
-        <Route path="/items/new" element={<ItemNew />} />
-        <Route path="/items/:id" element={<ItemDisplay />} />
-        <Route path="/items/:id/edit" element={<ItemEdit />} />
+        <Route path="/items" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Items /></ProtectedRoute>} />
+        <Route path="/items/new" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemNew /></ProtectedRoute>} />
+        <Route path="/items/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
+        <Route path="/items/:id/edit" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemEdit /></ProtectedRoute>} />
         {/* bundles routes */}
-        <Route path="/bundles" element={<Bundles />} />
-        <Route path="/bundles/new" element={<BundleNew />} />
-        <Route path="/bundles/new/items" element={<ItemSelect />} />
-        <Route path="/bundles/:id" element={<BundleDisplay />} />
-        <Route path="/bundles/:id/edit" element={<BundleEdit />} />
-        <Route path="/bundles/:id/edit/items" element={<ItemSelect />} />
-        <Route path="/bundles/:id/edit/item/:item" element={<ItemDisplay />} />
-        <Route path="/bundles/:id/item/:item" element={<ItemDisplay />} />
+        <Route path="/bundles" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Bundles /></ProtectedRoute>} />
+        <Route path="/bundles/new" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleNew /></ProtectedRoute>} />
+        <Route path="/bundles/new/items" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemSelect /></ProtectedRoute>} />
+        <Route path="/bundles/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleDisplay /></ProtectedRoute>} />
+        <Route path="/bundles/:id/edit" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleEdit /></ProtectedRoute>} />
+        <Route path="/bundles/:id/edit/items" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemSelect /></ProtectedRoute>} />
+        <Route path="/bundles/:id/edit/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
+        <Route path="/bundles/:id/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         {/* share routes */}
-        <Route path="/join/:id" element={<JoinList />} />
-        <Route path="/share/bundle/:id" element={<ShareBundle />} />
-        <Route path="/share/item/:id" element={<ShareItem />} />
+        <Route path="/join/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><JoinList /></ProtectedRoute>} />
+        <Route path="/share/bundle/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareBundle /></ProtectedRoute>} />
+        <Route path="/share/item/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} />
         {/* profile routes */}
         <Route path="/profile" element={<Profile />} />
         {/* authentication routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/verify/send" element={<VerifyEmailResend />} />
+        <Route path="/login" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><Login setIsAuthenticated={setIsAuthenticated}/> </UserRestrictedRoute> } />
+        <Route path="/register" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><Register /> </UserRestrictedRoute>} />
+        <Route path="/forgot-password" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><ForgotPassword /> </UserRestrictedRoute>} />
+        <Route path="/reset-password/:token" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><ResetPassword /> </UserRestrictedRoute>} />
+        <Route path="/verify/send" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><VerifyEmailResend /> </UserRestrictedRoute>} />
         <Route path="/verify/:token" element={<VerifyEmail />} />
       </Routes>
       <NavBar setSelectedTab={setSelectedTab} selectedTab={selectedTab} />

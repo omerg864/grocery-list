@@ -7,6 +7,7 @@ import rateLimiterMiddleware from './middleware/rateLimiterMiddleware';
 import colors from "colors";
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/userRoutes';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -24,6 +25,13 @@ app.use(mongoSanitize());
 app.use(errorHandler);
 app.use(rateLimiterMiddleware);
 app.use(cookieParser());
+app.use(cors(
+  {
+    origin: process.env.HOST_ADDRESS,
+    credentials: true,
+  }
+));
+
 
 
 

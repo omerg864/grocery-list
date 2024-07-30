@@ -5,6 +5,8 @@ import GlassButton from '../GlassButton/GlassButton';
 import { RxUpdate } from "react-icons/rx";
 import { MdEdit } from 'react-icons/md';
 import formTheme from '../../themes/formTheme';
+import { toast } from 'react-toastify';
+import Cookies from 'universal-cookie';
 
 
 interface PersonalDetailsProps {
@@ -15,8 +17,9 @@ function PersonalDetails(props: PersonalDetailsProps) {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Profile' });
   // TODO: get user details
-  const [form, setForm] = useState<{f_name: string, l_name: string, email: string, img: string}>({f_name: 'omer', l_name: 'gai', email: '', img: ''});
-  const [img, setImg] = useState<string | null>(null);
+  const [form, setForm] = useState<{f_name: string, l_name: string, email: string, avatar: string}>({f_name: 'omer', l_name: 'gai', email: '', avatar: ''});
+  const [img, setImg] = useState<File | null>(null);
+  const cookies = new Cookies();
 
   const outerTheme = useTheme();
 
@@ -26,10 +29,30 @@ function PersonalDetails(props: PersonalDetailsProps) {
 
   const changeDetails = async () => {
     props.setIsLoading(true);
-    setTimeout(() => {
-      props.setIsLoading(false);
-      props.setTab(0);
-    }, 1000);
+    let formData = new FormData();
+    formData.append('f_name', form.f_name);
+    formData.append('l_name', form.l_name);
+    formData.append('email', form.email);
+    if(img) {
+      formData.append('avatar', img);
+    }
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/`, { headers: {
+          authorization: `Bearer ${cookies.get('userToken')}`,
+          "Content-type": "multipart/form-data"
+      } ,method: 'PUT', body: formData});
+      const data = await response.json();
+      if (!data.success) {
+          toast.error(data.message);
+      } else {
+          toast.success(t('detailsUpdated'));
+      }
+    } catch (err) {
+        toast.error('Internal Server Error');
+        console.log(err);
+    }
+    props.setIsLoading(false);
+    props.setTab(0);
   }
 
   const onImgClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
@@ -65,7 +88,8 @@ function PersonalDetails(props: PersonalDetailsProps) {
     input.onchange = (e) => {
       const files = (e.target as HTMLInputElement).files;
       if (files && files.length > 0) {
-        setImg(URL.createObjectURL(files[0]));
+        setImg(files[0]);
+        setForm({...form, avatar: URL.createObjectURL(files[0])});
       }
     }
   }
@@ -75,7 +99,7 @@ function PersonalDetails(props: PersonalDetailsProps) {
       <ThemeProvider theme={formTheme(outerTheme)}>
       <form style={{display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '5.5rem', position: 'relative'}} onSubmit={changeDetails}>
       <div className="item-display-img-container">
-            {form.img ? <img onClick={onImgClick} className='item-display-img' src={form.img} alt={form.f_name} /> : <Avatar sx={{width: '10rem', height: '10rem', fontSize: '3.5rem'}} className='item-display-img'>
+            {form.avatar ? <img onClick={onImgClick} className='item-display-img' src={form.avatar} alt={form.f_name} /> : <Avatar sx={{width: '10rem', height: '10rem', fontSize: '3.5rem'}} className='item-display-img'>
               {form.f_name.charAt(0).toUpperCase() + form.l_name.charAt(0).toUpperCase()}
               </Avatar>}
             <IconButton onClick={onImgIconClick} style={{
