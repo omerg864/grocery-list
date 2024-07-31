@@ -14,6 +14,7 @@ import { CiLogout } from "react-icons/ci";
 import Cookies from 'universal-cookie';
 import { useNavigate } from 'react-router-dom';
 import { get } from '../utils/apiRequest';
+import PreferencesInterface from '../interface/PreferencesInterface';
 
 
 
@@ -25,7 +26,7 @@ function Profile(props: ProfileProps) {
   const { t } = useTranslation('translation', { keyPrefix: 'Profile' });
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<{f_name: string, l_name: string, email: string, avatar?: string}>({f_name: '', l_name: '', email: '', avatar: ''});
-  const [preferences, setPreferences] = useState<{fullSwipe: boolean, lang: string}>({fullSwipe: false, lang: 'en'});
+  const [preferences, setPreferences] = useState<PreferencesInterface>({fullSwipe: false, language: 'en'});
   const [tab, setTab] = useState(0);
   const cookies = new Cookies();
   const navigate = useNavigate();
@@ -101,7 +102,7 @@ function Profile(props: ProfileProps) {
           </List>}
         {tab === 1 && <PersonalDetails setUser={setUser} user={user} setTab={setTab} setIsLoading={setIsLoading} />}
         {tab === 2 && <PasswordChange setTab={setTab} setIsLoading={setIsLoading} />}
-        {tab === 3 && <Preferences setTab={setTab} setIsLoading={setIsLoading} />}
+        {tab === 3 && <Preferences preferences={preferences} setTab={setTab} setIsLoading={setIsLoading} />}
       </ThemeProvider>
   </div>
   </main>

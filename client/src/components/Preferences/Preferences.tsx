@@ -7,18 +7,20 @@ import i18next from 'i18next';
 import GlassButton from '../GlassButton/GlassButton';
 import { GiSettingsKnobs } from "react-icons/gi";
 import formTheme from '../../themes/formTheme';
+import PreferencesInterface from '../../interface/PreferencesInterface';
 
 
 interface PreferencesProps {
     setTab: (tab: number) => void;
     setIsLoading: (loading: boolean) => void;
+    preferences: PreferencesInterface;
 }
 
 function Preferences(props: PreferencesProps) {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Profile' });
 
-  const [form, setForm] = useState<{fullSwipe: boolean, language: string}>({fullSwipe: false, language: 'en'});
+  const [form, setForm] = useState<PreferencesInterface>({fullSwipe: false, language: 'en'});
 
   const outerTheme = useTheme();
 

@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import Cookies from 'universal-cookie';
 import { getCookieExpiration } from '../../utils/functions';
 import { put } from '../../utils/apiRequest';
+import useWindowDimensions from '../../hooks/useWindowDimensions';
 
 
 interface PersonalDetailsProps {
@@ -22,14 +23,20 @@ function PersonalDetails(props: PersonalDetailsProps) {
   const { t } = useTranslation('translation', { keyPrefix: 'Profile' });
   // TODO: get user details
   const [form, setForm] = useState<{f_name: string, l_name: string, email: string, avatar?: string}>(props.user);
+  const dimensions = useWindowDimensions();
   const image = useMemo(() => {
     let img = document.createElement('img');
-    img.style.width = '100%';
-    img.style.height = 'auto';
+    if (dimensions.height > dimensions.width) {
+      img.style.width = '100%';
+      img.style.height = 'auto';
+    } else {
+      img.style.width = 'auto';
+      img.style.height = '100%';
+    }
     img.style.borderRadius = '0';
     img.src = form.avatar || '';
     return img;
-  }, [form.avatar]);
+  }, [form.avatar, dimensions]);
   const [img, setImg] = useState<File | null>(null);
   const cookies = new Cookies();
 
