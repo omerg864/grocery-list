@@ -12,6 +12,8 @@ import { toast } from "react-toastify";
 import Cookies from "universal-cookie";
 import { addDays } from "../utils/functions";
 import Loading from "../components/Loading/Loading";
+import axios from "axios";
+import { post } from "../utils/apiRequest";
 
 
 interface LoginProps {
@@ -30,24 +32,13 @@ function Login(props: LoginProps) {
 
   const login = async () => {
     setIsLoading(true);
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/login`, { headers: {
-          "Content-type": "application/json"
-      } ,method: 'POST', body: JSON.stringify(form)});
-      const data = await response.json();
-      if (!data.success) {
-        toast.error(data.message);
-      } else {
-        let date30 = addDays(new Date(), 30);
-        cookies.set('userToken', data.token, { path: '/', secure: true, expires: date30 });
-        cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: date30 });
-        props.setIsAuthenticated(true);
-        navigate('/');
-      }
-    } catch (err) {
-        toast.error('Internal Server Error');
-        console.log(err);
-    }
+    await post('/api/user/login', form, (data) => {
+      let date30 = addDays(new Date(), 30);
+      cookies.set('userToken', data.token, { path: '/', secure: true, expires: date30 });
+      cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: date30 });
+      props.setIsAuthenticated(true);
+      navigate('/');
+    });
     setIsLoading(false);
   }
 

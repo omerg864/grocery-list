@@ -7,17 +7,22 @@ import { MdEdit } from 'react-icons/md';
 import formTheme from '../../themes/formTheme';
 import { toast } from 'react-toastify';
 import Cookies from 'universal-cookie';
+import axios from 'axios';
+import { getCookieExpiration } from '../../utils/functions';
+import { put } from '../../utils/apiRequest';
 
 
 interface PersonalDetailsProps {
   setTab: (tab: number) => void;
   setIsLoading: (loading: boolean) => void;
+  user: {f_name: string, l_name: string, email: string, avatar?: string};
+  setUser: (user: {f_name: string, l_name: string, email: string, avatar?: string}) => void;
 }
 function PersonalDetails(props: PersonalDetailsProps) {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Profile' });
   // TODO: get user details
-  const [form, setForm] = useState<{f_name: string, l_name: string, email: string, avatar: string}>({f_name: 'omer', l_name: 'gai', email: '', avatar: ''});
+  const [form, setForm] = useState<{f_name: string, l_name: string, email: string, avatar?: string}>(props.user);
   const [img, setImg] = useState<File | null>(null);
   const cookies = new Cookies();
 
@@ -30,29 +35,23 @@ function PersonalDetails(props: PersonalDetailsProps) {
   const changeDetails = async () => {
     props.setIsLoading(true);
     let formData = new FormData();
+    if(img) {
+      formData.append('file', img);
+    }
     formData.append('f_name', form.f_name);
     formData.append('l_name', form.l_name);
     formData.append('email', form.email);
-    if(img) {
-      formData.append('avatar', img);
-    }
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user/`, { headers: {
-          authorization: `Bearer ${cookies.get('userToken')}`,
-          "Content-type": "multipart/form-data"
-      } ,method: 'PUT', body: formData});
-      const data = await response.json();
-      if (!data.success) {
-          toast.error(data.message);
-      } else {
-          toast.success(t('detailsUpdated'));
-      }
-    } catch (err) {
-        toast.error('Internal Server Error');
-        console.log(err);
-    }
+    await put('/api/user', formData, (data) => {
+      toast.success(t('detailsUpdated'));
+      const cookieExp = getCookieExpiration('user');
+      cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: cookieExp });
+      props.setUser(data.user);
+      props.setTab(0);
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+      'Content-Type': 'multipart/form-data'
+    });
     props.setIsLoading(false);
-    props.setTab(0);
   }
 
   const onImgClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {

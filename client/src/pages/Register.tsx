@@ -12,6 +12,7 @@ import PasswordRules from '../components/PasswordRules/PasswordRules';
 import Loading from '../components/Loading/Loading';
 import { email_regex, password_regex } from '../utils/regex';
 import { toast } from 'react-toastify';
+import { post } from '../utils/apiRequest';
 
 function Register() {
   const { t } = useTranslation('translation', { keyPrefix: 'Register' });
@@ -39,21 +40,10 @@ function Register() {
       toast.error(t('invalidPassword'));
       return;
     }
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/register`, { headers: {
-          "Content-type": "application/json"
-      } ,method: 'POST', body: JSON.stringify(form)});
-      const data = await response.json();
-      if (!data.success) {
-        toast.error(data.message);
-      } else {
-        toast.success(t('pleaseVerify'));
-        navigate('/login');
-      }
-    } catch (err) {
-      console.log(err);
-      toast.error('Internal Server Error');
-    }
+    await post('/api/user/register', form, (_) => {
+      toast.success(t('pleaseVerify'));
+      navigate('/login');
+    });
   }
 
   const goToLogin = () => {

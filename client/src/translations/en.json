@@ -93,7 +93,8 @@
         "fullSwipe": "Full Swipe items",
         "language": "Language",
         "english": "English",
-        "hebrew": "Hebrew"
+        "hebrew": "Hebrew",
+        "detailsUpdated": "Details updated"
     },
     "Notifications": {
         "notifications": "Notifications",

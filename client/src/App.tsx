@@ -4,7 +4,7 @@ import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import List from './pages/List.tsx';
 import NavBar from './components/NavBar/NavBar.tsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Lists from './pages/Lists.tsx';
 import NewList from './pages/NewList.tsx';
 import Profile from './pages/Profile.tsx';
@@ -64,6 +64,10 @@ function App() {
     setIsAuthenticated(true);
   }
 
+  useEffect(() => {
+    setSelectedTab(getSelectedTab());
+  }, [window.location.pathname]);
+
   return (
     <>
     <ToastContainer theme="colored" />
@@ -103,7 +107,7 @@ function App() {
         <Route path="/share/bundle/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareBundle /></ProtectedRoute>} />
         <Route path="/share/item/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} />
         {/* profile routes */}
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Profile setIsAuthenticated={setIsAuthenticated}  /></ProtectedRoute>} />
         {/* authentication routes */}
         <Route path="/login" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><Login setIsAuthenticated={setIsAuthenticated}/> </UserRestrictedRoute> } />
         <Route path="/register" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><Register /> </UserRestrictedRoute>} />

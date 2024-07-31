@@ -1,6 +1,16 @@
 import express from 'express';
 import { protectUser } from '../middleware/authMiddleware';
-import { login, register, verify, getUser, resetPasswordEmail, resetPasswordToken, updateUserPassword } from '../controllers/userController';
+import {
+	login,
+	register,
+	verify,
+	getUser,
+	resetPasswordEmail,
+	resetPasswordToken,
+	updateUserPassword,
+	updateUser,
+} from '../controllers/userController';
+import { upload } from '../config/upload';
 
 const router = express.Router();
 
@@ -11,8 +21,6 @@ router.get('/', protectUser, getUser);
 router.post('/reset-password/email', resetPasswordEmail);
 router.post('/reset-password/:token', resetPasswordToken);
 router.put('/update-password', protectUser, updateUserPassword);
-
-
-
+router.put('/', protectUser, upload.single('file'), updateUser);
 
 export default router;

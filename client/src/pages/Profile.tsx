@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import Header from '../components/Header/Header';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, ThemeProvider, useTheme } from '@mui/material';
 import { CgProfile } from "react-icons/cg";
 import { RiLockPasswordLine } from "react-icons/ri";
@@ -11,18 +11,33 @@ import PasswordChange from '../components/PasswordChange/PasswordChange';
 import Preferences from '../components/Preferences/Preferences';
 import Loading from '../components/Loading/Loading';
 import { CiLogout } from "react-icons/ci";
+import Cookies from 'universal-cookie';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { get } from '../utils/apiRequest';
 
 
-function Profile() {
+
+interface ProfileProps {
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
+}
+function Profile(props: ProfileProps) {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Profile' });
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<{f_name: string, l_name: string, email: string, avatar?: string}>({f_name: '', l_name: '', email: '', avatar: ''});
+  const [preferences, setPreferences] = useState<{fullSwipe: boolean, lang: string}>({fullSwipe: false, lang: 'en'});
   const [tab, setTab] = useState(0);
+  const cookies = new Cookies();
+  const navigate = useNavigate();
 
   const outerTheme = useTheme();
 
   const logout = () => {
-    // TODO: logout
+    cookies.remove('userToken');
+    cookies.remove('user');
+    props.setIsAuthenticated(false);
+    navigate('/login');
   }
 
   const title = () => {
@@ -47,6 +62,21 @@ function Profile() {
     back = {onBack: backClick};
   }
 
+  const getUser = async () => {
+    setIsLoading(true);
+    await get('/api/user/', (data) => {
+      setUser(data.user);
+      setPreferences(data.preferences);
+    }, {
+      authorization: `Bearer ${cookies.get('userToken')}`
+    });
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   const tabs = [{title: t('personalDetails'), icon: <CgProfile color='white'/>}, {title: t('password'), icon: <RiLockPasswordLine color='white'/>}, {title: t('preferences'), icon: <GiSettingsKnobs color='white'/>}];
 
   if (isLoading) {
@@ -70,7 +100,7 @@ function Profile() {
               </ListItem>
             ))}
           </List>}
-        {tab === 1 && <PersonalDetails setTab={setTab} setIsLoading={setIsLoading} />}
+        {tab === 1 && <PersonalDetails setUser={setUser} user={user} setTab={setTab} setIsLoading={setIsLoading} />}
         {tab === 2 && <PasswordChange setTab={setTab} setIsLoading={setIsLoading} />}
         {tab === 3 && <Preferences setTab={setTab} setIsLoading={setIsLoading} />}
       </ThemeProvider>
