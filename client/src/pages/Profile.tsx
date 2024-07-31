@@ -13,7 +13,6 @@ import Loading from '../components/Loading/Loading';
 import { CiLogout } from "react-icons/ci";
 import Cookies from 'universal-cookie';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { get } from '../utils/apiRequest';
 
 

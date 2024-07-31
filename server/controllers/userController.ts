@@ -128,15 +128,21 @@ const updateUser = asyncHandler(
 			res.status(400);
 			throw new Error('Invalid email');
 		}
-        if (req.file && !req.file.mimetype.startsWith('image')) {
-            res.status(400);
-            throw new Error('Please upload an image file');
-        }
-        const userExists = await User.findOne({ email: { $regex: new RegExp(email, 'i') } });
-        if (userExists && (userExists._id as ObjectId).toString() !== ((req as RequestWithUser).user._id as ObjectId).toString()) {
-            res.status(400);
-            throw new Error('User with that email already exists');
-        }
+		if (req.file && !req.file.mimetype.startsWith('image')) {
+			res.status(400);
+			throw new Error('Please upload an image file');
+		}
+		const userExists = await User.findOne({
+			email: { $regex: new RegExp(email, 'i') },
+		});
+		if (
+			userExists &&
+			(userExists._id as ObjectId).toString() !==
+				((req as RequestWithUser).user._id as ObjectId).toString()
+		) {
+			res.status(400);
+			throw new Error('User with that email already exists');
+		}
 		const userReq = (req as RequestWithUser).user;
 		const user = await User.findById(userReq._id);
 		if (req.file) {
@@ -145,9 +151,17 @@ const updateUser = asyncHandler(
 				api_key: process.env.CLOUDINARY_API_KEY,
 				api_secret: process.env.CLOUDINARY_API_SECRET,
 			});
+            if (user!.avatar) {
+                const public_id = `SuperCart/${userReq._id}/avatar`;
+                cloudinary.uploader.destroy(public_id, (error, result) => {
+                    if (error) {
+                        console.log(error);
+                    }
+                });
+            }
 			const result = await cloudinary.uploader.upload(req.file.path, {
 				folder: 'SuperCart',
-				public_id: path.parse(req.file.originalname).name,
+				public_id: `${userReq._id}/avatar`,
 			});
 			// Delete the file from the server after uploading to Cloudinary
 			await unlinkAsync(req.file.path);

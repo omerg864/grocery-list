@@ -1,5 +1,5 @@
 import { Avatar, IconButton, TextField, ThemeProvider, useTheme } from '@mui/material';
-import { Fragment, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import GlassButton from '../GlassButton/GlassButton';
 import { RxUpdate } from "react-icons/rx";
@@ -7,7 +7,6 @@ import { MdEdit } from 'react-icons/md';
 import formTheme from '../../themes/formTheme';
 import { toast } from 'react-toastify';
 import Cookies from 'universal-cookie';
-import axios from 'axios';
 import { getCookieExpiration } from '../../utils/functions';
 import { put } from '../../utils/apiRequest';
 
@@ -23,6 +22,14 @@ function PersonalDetails(props: PersonalDetailsProps) {
   const { t } = useTranslation('translation', { keyPrefix: 'Profile' });
   // TODO: get user details
   const [form, setForm] = useState<{f_name: string, l_name: string, email: string, avatar?: string}>(props.user);
+  const image = useMemo(() => {
+    let img = document.createElement('img');
+    img.style.width = '100%';
+    img.style.height = 'auto';
+    img.style.borderRadius = '0';
+    img.src = form.avatar || '';
+    return img;
+  }, [form.avatar]);
   const [img, setImg] = useState<File | null>(null);
   const cookies = new Cookies();
 
@@ -57,11 +64,6 @@ function PersonalDetails(props: PersonalDetailsProps) {
   const onImgClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
     e.preventDefault();
     e.stopPropagation();
-    let image = e.target as HTMLImageElement;
-    let imageCopy = image.cloneNode() as HTMLImageElement;
-    imageCopy.style.width = '100%';
-    imageCopy.style.height = 'auto';
-    imageCopy.style.borderRadius = '0';
     let newDiv = document.createElement('div');
     newDiv.style.position = 'fixed';
     newDiv.style.top = '0';
@@ -72,7 +74,8 @@ function PersonalDetails(props: PersonalDetailsProps) {
     newDiv.style.display = 'flex';
     newDiv.style.alignItems = 'center';
     newDiv.style.justifyContent = 'center';
-    newDiv.appendChild(imageCopy);
+    newDiv.style.zIndex = '900';
+    newDiv.appendChild(image);
     document.body.appendChild(newDiv);
     newDiv.addEventListener('click', () => {
         newDiv.remove();

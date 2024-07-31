@@ -8,11 +8,9 @@ import { useNavigate } from "react-router-dom";
 import formTheme from "../themes/formTheme";
 import GlassButton from "../components/GlassButton/GlassButton";
 import { MdLockReset } from "react-icons/md";
-import { toast } from "react-toastify";
 import Cookies from "universal-cookie";
 import { addDays } from "../utils/functions";
 import Loading from "../components/Loading/Loading";
-import axios from "axios";
 import { post } from "../utils/apiRequest";
 
 
