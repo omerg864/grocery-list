@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 import Loading from "../components/Loading/Loading";
 import { useRecoilState } from "recoil";
 import { itemAtom } from "../recoil/atoms";
+import { get } from "../utils/apiRequest";
+import Cookies from "universal-cookie";
 
 
 
@@ -29,6 +31,7 @@ function ItemDisplay() {
   });
   const [_, setItem] = useRecoilState<Item>(itemAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const cookies = new Cookies();
 
 
   let back = {}
@@ -94,21 +97,19 @@ function ItemDisplay() {
         navigator.clipboard.writeText(`${import.meta.env.VITE_API_URL}/share/item/${itemState._id}`); // Replace with your link
       }
   }
+  
+  const getItem = async () => {
+    setIsLoading(true);
+    await get(`/api/item/${id}`, (data) => {
+      setItemState(data.item);
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    })
+    setIsLoading(false);
+  }
 
   useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setItemState({
-        _id: "1",
-        name: 'Banana',
-        category: "Fruits",
-        img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF",
-        description: "only yellow ones",
-        unit: "pc",
-        amount: 2
-      });
-      setIsLoading(false);
-    }, 1000);
+    getItem();
   }, []);
 
   if (isLoading) {

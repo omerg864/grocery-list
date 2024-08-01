@@ -7,6 +7,7 @@ import { RequestWithUser } from '../interface/requestInterface';
 import { itemExclude } from '../utils/modelsConst';
 import List from '../models/listModel';
 import { v2 as cloudinary } from 'cloudinary';
+import { unlinkAsync } from '../config/upload';
 
 const getItems = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -49,12 +50,33 @@ const addItem = asyncHandler(
 				folder: 'SuperCart/items',
 				public_id: `${user._id}/${item._id}`,
 			});
+			await unlinkAsync(req.file.path);
 			item.img = result.secure_url;
 			await item.save();
 		}
 		res.status(200).json({
 			success: true,
 			item,
+		});
+	}
+);
+
+const getItem = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id } = req.params;
+		const item = await Item.findById(id).select(itemExclude);
+		if (!item) {
+			res.status(404);
+			throw new Error('Item Not Found');
+		}
+		if (item.user.toString() !== (user._id as ObjectId).toString()) {
+			res.status(401);
+			throw new Error('Not authorized');
+		}
+		res.status(200).json({
+			success: true,
+			item
 		});
 	}
 );
@@ -95,6 +117,7 @@ const updateItem = asyncHandler(
 				folder: 'SuperCart/items',
 				public_id: `${user._id}/${item._id}`,
 			});
+			await unlinkAsync(req.file.path);
 			item.img = result.secure_url;
 		}
 		item.name = name;
@@ -155,4 +178,4 @@ const deleteItem = asyncHandler(
 	}
 );
 
-export { getItems, deleteItem, addItem, updateItem };
+export { getItems, deleteItem, addItem, updateItem, getItem };

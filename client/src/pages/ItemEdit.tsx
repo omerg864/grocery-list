@@ -11,6 +11,9 @@ import { HiOutlineSave } from "react-icons/hi";
 import formTheme from "../themes/formTheme";
 import { useRecoilState } from "recoil";
 import { itemAtom } from "../recoil/atoms";
+import { get, put } from "../utils/apiRequest";
+import Cookies from "universal-cookie";
+import { toast } from "react-toastify";
 
 
 
@@ -21,7 +24,8 @@ function ItemEdit() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [itemState, setItemState] = useRecoilState<Item>(itemAtom);
-  const [img, setImg] = useState<string | null>(null);
+  const [img, setImg] = useState<File | null>(null);
+  const cookies = new Cookies();
 
   const outerTheme = useTheme();
 
@@ -64,13 +68,21 @@ function ItemEdit() {
 
   const updateItem = async () => {
     setIsLoading(true);
-    try {
-        // await updateItem(itemState);
-        setIsLoading(false);
-        (back.onBack as Function)();
-    } catch (error) {
-      setIsLoading(false);
+    let formData = new FormData();
+    if(img) {
+      formData.append('file', img);
     }
+    formData.append('name', itemState.name);
+    formData.append('category', itemState.category ? itemState.category : "");
+    formData.append('description', itemState.description ? itemState.description : "");
+    formData.append('unit', itemState.unit ? itemState.unit : "");
+    await put(`/api/item/${id}`, formData, (_) => {
+      navigate(`/items/${id}`);
+      toast.success('itemUpdated')
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    })
+    setIsLoading(false);
   }
 
   const onImgIconClick = () => {
@@ -81,9 +93,20 @@ function ItemEdit() {
     input.onchange = (e) => {
       const files = (e.target as HTMLInputElement).files;
       if (files && files.length > 0) {
-        setImg(URL.createObjectURL(files[0]));
+        setItemState((prev) => ({...prev, img: URL.createObjectURL(files[0])}))
+        setImg(files[0]);
       }
     }
+  }
+
+  const getItem = async () => {
+    setIsLoading(true);
+    await get(`/api/item/${id}`, (data) => {
+      setItemState(data.item);
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    })
+    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -94,19 +117,7 @@ function ItemEdit() {
       itemId = id;
     }
     if (!itemState._id || itemState._id != itemId) {
-      setIsLoading(true);
-      setTimeout(() => {
-          setItemState({
-            _id: "1",
-            name: 'Item 2',
-            category: "Fruits",
-            img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF",
-            description: "",
-            unit: "pc",
-            amount: 0
-          });
-        setIsLoading(false);
-      }, 1000);
+      getItem();
     }
   }, []);
 
@@ -121,7 +132,7 @@ function ItemEdit() {
           <ThemeProvider theme={formTheme(outerTheme)}>
           <TextField required name="name" color='success' className='white-color-input' fullWidth value={itemState.name} label={t('name')} onChange={onChange} variant="outlined" />
           </ThemeProvider>
-          <ItemDetails onImgIconClick={onImgIconClick} img={img} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
+          <ItemDetails onImgIconClick={onImgIconClick} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
           <GlassButton endIcon={<HiOutlineSave size={"1.5rem"} color='white'/>} text={t('save')} style={{width: "100%", color: "white"}} type="submit"/>
         </form>
     </main>
