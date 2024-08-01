@@ -37,7 +37,7 @@ function BundleNew() {
   const onSwipedRight = (id: string) => {
     setBundle((prevBundle) => ({
       ...prevBundle,
-      items: prevBundle.items.filter(item => item.id !== id)
+      items: prevBundle.items.filter(item => item._id !== id)
     }));
   }
 

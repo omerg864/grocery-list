@@ -1,14 +1,14 @@
-import User from './UserInterface';
+import { ReactNode } from "react";
 
 interface Item {
-	id: string;
+	_id: string;
 	name: string;
 	description?: string;
 	amount?: number;
 	unit: string;
 	img?: string;
 	category?: string;
-	user?: string | User;
+	imageMemo?: ReactNode;
 }
 
 export default Item;

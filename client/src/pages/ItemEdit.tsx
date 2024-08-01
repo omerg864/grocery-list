@@ -31,14 +31,14 @@ function ItemEdit() {
   if (item) {
     back = {
       onBack: () => {
-        setItemState({id: "", name: '', category: "", img: "", description: "", unit: "", amount: 0});
+        setItemState({_id: "", name: '', category: "", img: "", description: "", unit: "", amount: 0});
         navigate(`/lists/${id}/item/${item}`)
       }
     }
   } else {
     back = {
       onBack: () => {
-        setItemState({id: "", name: '', category: "", img: "", description: "", unit: "", amount: 0});
+        setItemState({_id: "", name: '', category: "", img: "", description: "", unit: "", amount: 0});
         navigate(`/items/${id}`)
       }
     }
@@ -93,11 +93,11 @@ function ItemEdit() {
     } else {
       itemId = id;
     }
-    if (!itemState.id || itemState.id != itemId) {
+    if (!itemState._id || itemState._id != itemId) {
       setIsLoading(true);
       setTimeout(() => {
           setItemState({
-            id: "1",
+            _id: "1",
             name: 'Item 2',
             category: "Fruits",
             img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF",

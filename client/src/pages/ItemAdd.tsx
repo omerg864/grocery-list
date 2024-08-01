@@ -17,7 +17,7 @@ function ItemAdd() {
   const { t } = useTranslation('translation', { keyPrefix: 'ItemAdd' });
   const navigate = useNavigate();
   const [itemState, setItemState] = useState< Omit<Item, 'amount'> & {amount: number | string}>({
-    id: "",
+    _id: "",
     name: '',
     category: "",
     img: "",
@@ -36,11 +36,11 @@ function ItemAdd() {
           navigator.share({
             title: t('shareTitle'),
             text: t('shareText'),
-            url: `${import.meta.env.VITE_API_URL}/share/item/${itemState.id}`, // Replace with your link
+            url: `${import.meta.env.VITE_API_URL}/share/item/${itemState._id}`, // Replace with your link
           });
       } else {
         toast.info(t('linkCopied'));
-        navigator.clipboard.writeText(`${import.meta.env.VITE_API_URL}/share/item/${itemState.id}`); // Replace with your link
+        navigator.clipboard.writeText(`${import.meta.env.VITE_API_URL}/share/item/${itemState._id}`); // Replace with your link
       }
   }
 
@@ -88,7 +88,7 @@ function ItemAdd() {
     setIsLoading(true);
     setTimeout(() => {
       setItemState({
-        id: "1",
+        _id: "1",
         name: 'Banana',
         category: "Fruits",
         img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF",

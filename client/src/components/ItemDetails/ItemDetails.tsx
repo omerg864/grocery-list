@@ -13,7 +13,7 @@ import { IoIosShare } from "react-icons/io";
 
 
 interface ItemDetailsProps {
-    item: Item | Omit<Item, 'id'> | Omit<Item, 'amount'> & {amount: number | string};
+    item: Item | Omit<Item, '_id'> | Omit<Item, 'amount'> & {amount: number | string};
     disabled?: boolean;
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     addCounter?: () => void;

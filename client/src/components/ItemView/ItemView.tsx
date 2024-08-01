@@ -45,9 +45,9 @@ function ItemView(props: ItemViewProps) {
     }
 
   return (
-    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedLeft={props.onSwipeLeft ? () => props.onSwipeLeft!(props.item.id) : undefined} onSwipedRight={props.onSwipeRight ? () => props.onSwipeRight!(props.item.id) : undefined} id={props.item.id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
+    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedLeft={props.onSwipeLeft ? () => props.onSwipeLeft!(props.item._id) : undefined} onSwipedRight={props.onSwipeRight ? () => props.onSwipeRight!(props.item._id) : undefined} id={props.item._id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
     animateDivClass={"item-div"} rightBtnClass='swipe-right-btn' leftBtnClass='swipe-left-btn' rightBtnChildren={rightButtonChild} leftBtnChildren={leftButtonChild} 
-    mainItemClick={() => props.onItemClicked!(props.item.id)}>
+    mainItemClick={() => props.onItemClicked!(props.item._id)}>
         <ItemListDisplay item={props.item} />
     </SwipeItem>
   )

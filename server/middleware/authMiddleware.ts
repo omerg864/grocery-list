@@ -13,7 +13,11 @@ const protectUser = asyncHandler(async (req: Request, res: Response, next: NextF
         try{
             token = req.headers.authorization.split(' ')[1];
             const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-            (req as RequestWithUser).user = await User.findById(decoded.id).select(userExclude) as UserDocument;
+            (req as RequestWithUser).user = await User.findById(decoded.id) as UserDocument;
+            if (!(req as RequestWithUser).user) {
+                res.status(401);
+                throw new Error('Not authorized');
+            }
             next();
         } catch(error){
             console.log(error);

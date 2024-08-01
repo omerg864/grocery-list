@@ -42,7 +42,7 @@ function ItemSelect() {
             case 'bundles':
                 setBundle((prevBundle) => ({
                     ...prevBundle!,
-                    items: [...prevBundle!.items, items.find((item) => item.id === id)!]
+                    items: [...prevBundle!.items, items.find((item) => item._id === id)!]
                 }))
                 if (edit === 'edit') {
                     navigate(`/bundles/${id}/edit`);
@@ -61,8 +61,8 @@ function ItemSelect() {
     useEffect(() => {
         setIsLoading(true);
         setTimeout(() => {
-            let itemsTemp = [{id: "3", name: 'Item 3', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"}, {id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "KG"}];
-            itemsTemp = itemsTemp.filter(item => !bundle.items.find(bundleItem => bundleItem.id === item.id));
+            let itemsTemp = [{_id: "3", name: 'Item 3', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"}, {_id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "KG"}];
+            itemsTemp = itemsTemp.filter(item => !bundle.items.find(bundleItem => bundleItem._id === item._id));
             setItems(itemsTemp);
             setDisplayedItems(itemsTemp);
             setIsLoading(false);

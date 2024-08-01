@@ -9,8 +9,8 @@ import { sendEmail } from '../utils/functions';
 import { RequestWithUser } from '../interface/requestInterface';
 import { unlinkAsync } from '../config/upload';
 import { v2 as cloudinary } from 'cloudinary';
-import path from 'path';
 import { ObjectId } from 'mongoose';
+import { UserDocument } from '../interface/userInterface';
 
 const generateToken = (id: string) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET!, {
@@ -29,7 +29,7 @@ const login = asyncHandler(
 			res.status(400);
 			throw new Error('Invalid password');
 		}
-		var user = await User.findOne({
+		var user: UserDocument | null = await User.findOne({
 			email: { $regex: new RegExp(`^${email}$`, 'i') },
 		});
 		if (!user) {
@@ -79,7 +79,7 @@ const register = asyncHandler(async (req, res, next) => {
 	}
 	const salt = await bcrypt.genSalt(10);
 	const hashedPassword = await bcrypt.hash(password, salt);
-	const user = await User.create({
+	const user: UserDocument = await User.create({
 		f_name,
 		l_name,
 		email: email,
@@ -144,33 +144,32 @@ const updateUser = asyncHandler(
 			throw new Error('User with that email already exists');
 		}
 		const userReq = (req as RequestWithUser).user;
-		const user = await User.findById(userReq._id);
 		if (req.file) {
 			cloudinary.config({
 				cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
 				api_key: process.env.CLOUDINARY_API_KEY,
 				api_secret: process.env.CLOUDINARY_API_SECRET,
 			});
-            if (user!.avatar) {
-                const public_id = `SuperCart/${userReq._id}/avatar`;
-                cloudinary.uploader.destroy(public_id, (error, result) => {
-                    if (error) {
-                        console.log(error);
-                    }
-                });
-            }
+			if (userReq!.avatar) {
+				const public_id = `SuperCart/users/${userReq._id}/avatar`;
+				await cloudinary.uploader.destroy(public_id, (error, result) => {
+					if (error) {
+						console.log(error);
+					}
+				});
+			}
 			const result = await cloudinary.uploader.upload(req.file.path, {
-				folder: 'SuperCart',
+				folder: 'SuperCart/users',
 				public_id: `${userReq._id}/avatar`,
 			});
 			// Delete the file from the server after uploading to Cloudinary
 			await unlinkAsync(req.file.path);
-			user!.avatar = result.secure_url;
+			userReq!.avatar = result.secure_url;
 		}
-		user!.f_name = f_name;
-		user!.l_name = l_name;
-		user!.email = email;
-		await user!.save();
+		userReq!.f_name = f_name;
+		userReq!.l_name = l_name;
+		userReq!.email = email;
+		await userReq!.save();
 		const userEx = await User.findById(userReq._id).select(userExclude);
 		res.status(200).json({
 			success: true,
@@ -190,11 +189,10 @@ const updateUserPassword = asyncHandler(async (req, res, next) => {
 		res.status(400);
 		throw new Error('Invalid password');
 	}
-	const user = await User.findById(userReq._id);
 	const salt = await bcrypt.genSalt(10);
 	const hashedPassword = await bcrypt.hash(password, salt);
-	user!.password = hashedPassword;
-	await user!.save();
+	userReq.password = hashedPassword;
+	await userReq.save();
 	res.status(200).json({
 		success: true,
 	});

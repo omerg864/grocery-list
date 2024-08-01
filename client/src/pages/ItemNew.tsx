@@ -11,6 +11,8 @@ import { IoMdAdd } from "react-icons/io";
 import formTheme from "../themes/formTheme";
 import { IoAddCircleSharp } from "react-icons/io5";
 import { CiCircleMinus } from "react-icons/ci";
+import { post } from "../utils/apiRequest";
+import Cookies from "universal-cookie";
 
 
 
@@ -20,14 +22,15 @@ function ItemNew() {
   const { t } = useTranslation('translation', { keyPrefix: 'ItemNew' });
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  let defaultItem: Omit<Item, 'id'> & {saveItem?: boolean};
+  let defaultItem: Omit<Item, '_id'> & {saveItem?: boolean};
   if (id) {
     defaultItem = {name: '', category: "", img: "/item.png", description: "", unit: "pc", amount: 1};
   } else {
     defaultItem = {name: '', category: "", img: "/item.png", description: "", unit: "pc", saveItem: true};
   }
-  const [itemState, setItemState] = useState<Omit<Item, 'id'> & {saveItem?: boolean}>(defaultItem);
-  const [img, setImg] = useState<string | null>(null);
+  const [itemState, setItemState] = useState<Omit<Item, '_id'> & {saveItem?: boolean}>(defaultItem);
+  const [img, setImg] = useState<File | null>(null);
+  const cookies = new Cookies();
 
   const outerTheme = useTheme();
 
@@ -69,14 +72,20 @@ function ItemNew() {
 
   const createItem = async () => {
     setIsLoading(true);
-    try {
-        // await updateItem(itemState);
-        setIsLoading(false);
-        // change to navigate to the list
-        (back.onBack as Function)();
-    } catch (error) {
-      setIsLoading(false);
+    let formData = new FormData();
+    if(img) {
+      formData.append('file', img);
     }
+    formData.append('name', itemState.name);
+    formData.append('category', itemState.category ? itemState.category : "");
+    formData.append('description', itemState.description ? itemState.description : "");
+    formData.append('unit', itemState.unit ? itemState.unit : "");
+    await post('/api/item', formData, (_) => {
+      (back.onBack as Function)();
+    },{
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    });
+    setIsLoading(false);
   }
 
   const onImgIconClick = () => {
@@ -87,7 +96,8 @@ function ItemNew() {
     input.onchange = (e) => {
       const files = (e.target as HTMLInputElement).files;
       if (files && files.length > 0) {
-        setImg(URL.createObjectURL(files[0]));
+        setItemState((prev) => ({...prev, img: URL.createObjectURL(files[0])}))
+        setImg(files[0]);
       }
     }
   }
@@ -105,8 +115,8 @@ function ItemNew() {
           <ThemeProvider theme={formTheme(outerTheme)}>
             <TextField required name="name" color='success' className='white-color-input' fullWidth value={itemState.name} label={t('name')} onChange={onChange} variant="outlined" />
           </ThemeProvider>
-          <ItemDetails onImgIconClick={onImgIconClick} img={img} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
-          {!id && <FormControlLabel control={<Checkbox name="saveItem" onChange={onChecked} checked={itemState.saveItem} {...label} color="success" icon={<CiCircleMinus size={'1.5rem'} color='white' />} checkedIcon={<IoAddCircleSharp size={'1.5rem'} />} />} label={t("saveItem")} />}
+          <ItemDetails onImgIconClick={onImgIconClick} img={itemState.img} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
+          {id && <FormControlLabel control={<Checkbox name="saveItem" onChange={onChecked} checked={itemState.saveItem} {...label} color="success" icon={<CiCircleMinus size={'1.5rem'} color='white' />} checkedIcon={<IoAddCircleSharp size={'1.5rem'} />} />} label={t("saveItem")} />}
           <GlassButton endIcon={<IoMdAdd size={"1.5rem"} color='white'/>} text={t('create')} style={{width: "100%", color: "white"}} type="submit"/>
         </form>
     </main>

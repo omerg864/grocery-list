@@ -21,7 +21,7 @@ import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 function List() {
     const [list, setList] = useRecoilState<ListInterface>(listAtom);
     const [users, setUsers] = useState<User[]>([ {id: "1", f_name: 'John', l_name: "Doe", avatar: "https://mui.com/static/images/avatar/1.jpg"}, {id: "2", f_name: 'Omer', l_name: "Gai", avatar: ""}]);
-    const [items, setItems] = useState<Item[]>([{id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc", amount: 2}, {id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "KG", amount: 2}]);
+    const [items, setItems] = useState<Item[]>([{_id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc", amount: 2}, {_id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "KG", amount: 2}]);
     const [deletedItems, setDeletedItems] = useState<Item[]>(list.deletedItems);
     const [boughtItems, setBoughtItems] = useState<Item[]>(list.boughtItems);
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -65,28 +65,28 @@ function List() {
     }
 
     const boughtItem = (id: string) => {
-        setDisplayList((prev) => prev.filter((item) => item.id !== id));
-        setItems((prev) => prev.filter((item) => item.id !== id));
-        setBoughtItems((prev) => [...prev, items.find((item) => item.id === id)!]);
+        setDisplayList((prev) => prev.filter((item) => item._id !== id));
+        setItems((prev) => prev.filter((item) => item._id !== id));
+        setBoughtItems((prev) => [...prev, items.find((item) => item._id === id)!]);
     }
 
     const deleteItem = (id: string) => {
-        setDisplayList((prev) => prev.filter((item) => item.id !== id));
-        setItems((prev) => prev.filter((item) => item.id !== id));
-        setDeletedItems((prev) => [...prev, items.find((item) => item.id === id)!]);
+        setDisplayList((prev) => prev.filter((item) => item._id !== id));
+        setItems((prev) => prev.filter((item) => item._id !== id));
+        setDeletedItems((prev) => [...prev, items.find((item) => item._id === id)!]);
     }
 
     const restoreItemDeleted = (id: string) => {
-        const item = deletedItems.find((item) => item.id === id);
-        setDisplayList((prev) => prev.filter((item) => item.id !== id));
-        setDeletedItems((prev) => prev.filter((item) => item.id !== id));
+        const item = deletedItems.find((item) => item._id === id);
+        setDisplayList((prev) => prev.filter((item) => item._id !== id));
+        setDeletedItems((prev) => prev.filter((item) => item._id !== id));
         setItems((prev) => [...prev, item!]);
     }
 
     const restoreItemBought = (id: string) => {
-        const item = boughtItems.find((item) => item.id === id);
-        setDisplayList((prev) => prev.filter((item) => item.id !== id));
-        setBoughtItems((prev) => prev.filter((item) => item.id !== id));
+        const item = boughtItems.find((item) => item._id === id);
+        setDisplayList((prev) => prev.filter((item) => item._id !== id));
+        setBoughtItems((prev) => prev.filter((item) => item._id !== id));
         setItems((prev) => [...prev, item!]);
     }
 

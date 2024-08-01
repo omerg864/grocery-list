@@ -7,6 +7,7 @@ import rateLimiterMiddleware from './middleware/rateLimiterMiddleware';
 import colors from "colors";
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/userRoutes';
+import itemRouter from './routes/itemRoutes';
 import cors from 'cors';
 
 dotenv.config();
@@ -41,5 +42,6 @@ app.listen(port, () => {
 
 // Routes
 app.use('/api/user', userRouter);
+app.use('/api/item', itemRouter);
 
 app.use(errorHandler);

@@ -21,7 +21,6 @@ interface PersonalDetailsProps {
 function PersonalDetails(props: PersonalDetailsProps) {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Profile' });
-  // TODO: get user details
   const [form, setForm] = useState<{f_name: string, l_name: string, email: string, avatar?: string}>(props.user);
   const dimensions = useWindowDimensions();
   const image = useMemo(() => {

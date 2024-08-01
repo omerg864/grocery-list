@@ -32,11 +32,11 @@ function ItemsList(props: ItemsListProps) {
   return (
     <div className="items-list">
         {props.items.map((item: Item) => (
-          <Fragment key={item.id} >
+          <Fragment key={item._id} >
           <ItemView rightIcon={props.rightIcon} leftIcon={props.leftIcon} onItemClicked={props.onItemClicked} open={open} setOpen={setOpen} item={item} onSwipeRight={props.onSwipeRight} onSwipeLeft={props.onSwipeLeft}/>
           {props.amounts && <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
-            {item.unit === 'pc' ? <Counter handleChange={(e) => props.onAmountChanged!(item.id, e.target.value)} addCounter={() => props.addCounter!(item.id)} removeCounter={() => props.removeCounter!(item.id)} count={props.amounts?.find(obj => obj.id === item.id)!.amount!} />: 
-                        <TextField required name="amount" onChange={(e) => props.onAmountChanged!(item.id, e.target.value)} color='success' type="number" className='white-color-input' fullWidth value={props.amounts?.find(obj => obj.id === item.id)!.amount!} label={t('amount')} variant="outlined" />}
+            {item.unit === 'pc' ? <Counter handleChange={(e) => props.onAmountChanged!(item._id, e.target.value)} addCounter={() => props.addCounter!(item._id)} removeCounter={() => props.removeCounter!(item._id)} count={props.amounts?.find(obj => obj.id === item._id)!.amount!} />: 
+                        <TextField required name="amount" onChange={(e) => props.onAmountChanged!(item._id, e.target.value)} color='success' type="number" className='white-color-input' fullWidth value={props.amounts?.find(obj => obj.id === item._id)!.amount!} label={t('amount')} variant="outlined" />}
             <FormControl fullWidth>
                 <InputLabel disabled={true} color="success" id="unit-label">{t('unit')}</InputLabel>
                 <Select
