@@ -1,4 +1,4 @@
-import Item from "../interface/ItemInterface";
+import { ItemNew as ItemNewInterface } from "../interface/ItemInterface";
 import Header from "../components/Header/Header";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -13,6 +13,8 @@ import { IoAddCircleSharp } from "react-icons/io5";
 import { CiCircleMinus } from "react-icons/ci";
 import { post } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
+import { ListItemNew } from "../interface/ListItemInterface";
+import { toast } from "react-toastify";
 
 
 
@@ -22,13 +24,13 @@ function ItemNew() {
   const { t } = useTranslation('translation', { keyPrefix: 'ItemNew' });
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  let defaultItem: Omit<Item, '_id'> & {saveItem?: boolean};
+  let defaultItem: ItemNewInterface | ListItemNew;
   if (id) {
-    defaultItem = {name: '', category: "", img: "/item.png", description: "", unit: "pc", amount: 1};
+    defaultItem = {name: '', category: "", img: "/item.png", description: "", unit: "pc", amount: 1, saveItem: true};
   } else {
-    defaultItem = {name: '', category: "", img: "/item.png", description: "", unit: "pc", saveItem: true};
+    defaultItem = {name: '', category: "", img: "/item.png", description: "", unit: "pc"};
   }
-  const [itemState, setItemState] = useState<Omit<Item, '_id'> & {saveItem?: boolean}>(defaultItem);
+  const [itemState, setItemState] = useState<ItemNewInterface | ListItemNew>(defaultItem);
   const [img, setImg] = useState<File | null>(null);
   const cookies = new Cookies();
 
@@ -36,11 +38,13 @@ function ItemNew() {
 
 
   let back: any = {};
+  let api_url = '/api/item';
 
   if (id) {
     back = {
       onBack: () => navigate(`/lists/${id}/select`)
     }
+    api_url = `/api/list/${id}/item`;
   } else {
     back = {
       onBack: () => navigate(`/items`)
@@ -63,11 +67,11 @@ function ItemNew() {
   }
 
   const addCounter = () => {
-    setItemState(prev => ({...prev, amount: prev.amount! + 1}));
+    setItemState(prev => ({...prev, amount: (prev as ListItemNew).amount! + 1}));
   }
 
   const removeCounter = () => {
-    setItemState(prev => ({...prev, amount: prev.amount! - 1}));
+    setItemState(prev => ({...prev, amount: (prev as ListItemNew).amount! - 1}));
   }
 
   const createItem = async () => {
@@ -80,7 +84,12 @@ function ItemNew() {
     formData.append('category', itemState.category ? itemState.category : "");
     formData.append('description', itemState.description ? itemState.description : "");
     formData.append('unit', itemState.unit ? itemState.unit : "");
-    await post('/api/item', formData, (_) => {
+    if (id) {
+      formData.append('amount', (itemState as ListItemNew).amount ? (itemState as ListItemNew).amount!.toString() : "1");
+      formData.append('saveItem', (itemState as ListItemNew).saveItem ? (itemState as ListItemNew).saveItem.toString() : "true");
+    }
+    await post(api_url, formData, (_) => {
+      toast.success(t('itemAdded'));
       (back.onBack as Function)();
     },{
       'Authorization': `Bearer ${cookies.get('userToken')}`,

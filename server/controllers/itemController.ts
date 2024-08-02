@@ -12,15 +12,28 @@ import { unlinkAsync } from '../config/upload';
 const getItems = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
+		let { category, limit } = req.query;
+		let addCategories = true;
+		if (category) {
+			addCategories = false;
+		}
 		const items = await Item.find({
 			user: user._id,
-			deleted: false,
-		}).select(itemExclude);
-		const categories = [...new Set(items.map(item => item.category))];
+		})
+			.select(itemExclude)
+			.limit(limit ? parseInt(limit as string) : 0);
+		if (addCategories) {
+			const categories = [...new Set(items.map((item) => item.category))];
+			res.status(200).json({
+				success: true,
+				items,
+				categories,
+			});
+			return;
+		}
 		res.status(200).json({
 			success: true,
 			items,
-			categories
 		});
 	}
 );
@@ -76,7 +89,7 @@ const getItem = asyncHandler(
 		}
 		res.status(200).json({
 			success: true,
-			item
+			item,
 		});
 	}
 );
@@ -84,7 +97,7 @@ const getItem = asyncHandler(
 const updateItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
-		const { id } = req.params
+		const { id } = req.params;
 		const item: ItemDocument | null = await Item.findById(id);
 		if (!item) {
 			res.status(404);
@@ -107,11 +120,14 @@ const updateItem = asyncHandler(
 			});
 			const public_id = `SuperCart/items/${user._id}/${id}`;
 			if (item.img) {
-				await cloudinary.uploader.destroy(public_id, (error, result) => {
-					if (error) {
-						console.log(error);
+				await cloudinary.uploader.destroy(
+					public_id,
+					(error, result) => {
+						if (error) {
+							console.log(error);
+						}
 					}
-				})
+				);
 			}
 			const result = await cloudinary.uploader.upload(req.file.path, {
 				folder: 'SuperCart/items',
@@ -127,7 +143,7 @@ const updateItem = asyncHandler(
 		await item.save();
 		res.status(200).json({
 			success: true,
-			item
+			item,
 		});
 	}
 );

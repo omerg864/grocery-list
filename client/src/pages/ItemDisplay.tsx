@@ -12,6 +12,7 @@ import { useRecoilState } from "recoil";
 import { itemAtom } from "../recoil/atoms";
 import { get } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
+import ListItem from "../interface/ListItemInterface";
 
 
 
@@ -20,7 +21,7 @@ function ItemDisplay() {
   const { id, item, bundle } = useParams<{ id: string, item: string, bundle: string }>();
   const { t } = useTranslation('translation', { keyPrefix: 'ItemDisplay' });
   const navigate = useNavigate();
-  const [itemState, setItemState] = useState<Item>({
+  const [itemState, setItemState] = useState<Item | ListItem>({
     _id: "",
     name: '',
     category: "",
@@ -29,7 +30,7 @@ function ItemDisplay() {
     unit: "",
     amount: 0
   });
-  const [_, setItem] = useRecoilState<Item>(itemAtom);
+  const [_, setItem] = useRecoilState<Item | ListItem>(itemAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const cookies = new Cookies();
 
@@ -43,6 +44,7 @@ function ItemDisplay() {
 
   switch (path) {
     case 'lists':
+      url = `/api/listitem/${item}`;
       if (bundle) {
         back = {
           onBack: () => navigate(`/lists/${id}/add/bundle/${bundle}`)

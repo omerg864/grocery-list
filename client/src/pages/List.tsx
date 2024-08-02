@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header/Header.tsx";
 import UsersList from "../components/UsersList/UsersList.tsx";
 import ItemsList from "../components/ItemsList/ItemsList.tsx";
@@ -13,23 +13,29 @@ import SearchBar from "../components/SearchBar/SearchBar.tsx";
 import User from "../interface/UserInterface.ts";
 import { toast } from "react-toastify";
 import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDialog.tsx";
-import { useRecoilState } from "recoil";
-import { listAtom } from "../recoil/atoms.ts";
 import { TbShoppingCartPlus } from "react-icons/tb";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
+import Loading from "../components/Loading/Loading.tsx";
+import { get } from "../utils/apiRequest.ts";
+import Cookies from "universal-cookie";
+import { useRecoilState } from "recoil";
+import { listAtom } from "../recoil/atoms.ts";
+import ListItem from "../interface/ListItemInterface.ts";
 
 function List() {
     const [list, setList] = useRecoilState<ListInterface>(listAtom);
-    const [users, setUsers] = useState<User[]>([ {id: "1", f_name: 'John', l_name: "Doe", avatar: "https://mui.com/static/images/avatar/1.jpg"}, {id: "2", f_name: 'Omer', l_name: "Gai", avatar: ""}]);
-    const [items, setItems] = useState<Item[]>([{_id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc", amount: 2}, {_id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "KG", amount: 2}]);
-    const [deletedItems, setDeletedItems] = useState<Item[]>(list.deletedItems);
-    const [boughtItems, setBoughtItems] = useState<Item[]>(list.boughtItems);
+    const [users, setUsers] = useState<User[]>([ ]);
+    const [items, setItems] = useState<ListItem[]>([]);
+    const [deletedItems, setDeletedItems] = useState<ListItem[]>(list.deletedItems);
+    const [boughtItems, setBoughtItems] = useState<ListItem[]>(list.boughtItems);
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [filterList, setFilterList] = useState<number>(0);
     const [displayList, setDisplayList] = useState<Item[]>(items);
     const [dialog, setDialog] = useState<boolean>(false);
     const [userId, setUserId] = useState<string>('');
-    let { id } = useParams();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const cookies = new Cookies();
+    const { id } = useParams();
     
     const { t } = useTranslation('translation', { keyPrefix: 'List' });
     const navigate = useNavigate();
@@ -106,24 +112,24 @@ function List() {
     }
 
     const onItemClicked = (id: string) => {
-        navigate(`/lists/${list.id}/item/${id}`);
+        navigate(`/lists/${list._id}/item/${id}`);
     }
 
     const goToReceipt = () => {
-        navigate(`/lists/${list.id}/receipts`);
+        navigate(`/lists/${list._id}/receipts`);
     }
 
     const addUser = () => {
         if (navigator.share) {
-              navigator.share({
+            navigator.share({
                 title: t('shareTitle'),
                 text: t('shareText'),
-                url: `${import.meta.env.VITE_API_URL}/join/${list.id}`, // Replace with your link
-              });
-          } else {
+                url: `${import.meta.env.VITE_HOST_URL}/join/${list._id}`, // Replace with your link
+            });
+        } else {
             toast.info(t('linkCopied'));
-            navigator.clipboard.writeText(`${import.meta.env.VITE_API_URL}/join/${list.id}`); // Replace with your link
-          }
+            navigator.clipboard.writeText(`${import.meta.env.VITE_HOST_URL}/join/${list._id}`); // Replace with your link
+        }
     }
 
     const filterItems = (search: string) => {
@@ -146,7 +152,7 @@ function List() {
         case 1:
             swipeRight = { onSwipeRight: restoreItemBought,
                 leftIcon: <MdOutlineRemoveShoppingCart size={"1.5rem"} color='white'/>
-             };
+            };
             break;
     }
 
@@ -160,6 +166,29 @@ function List() {
             swipeLeft = { onSwipeLeft: restoreItemDeleted,
                 rightIcon: <TbShoppingCartPlus size={"1.5rem"} color='white'/> };
             break;
+    }
+
+    const getList = async () => {
+        setIsLoading(true);
+        await get(`/api/list/${id}`, (data) => {
+            setList(data.list);
+            setItems(data.list.items);
+            setDeletedItems(data.list.deletedItems);
+            setBoughtItems(data.list.boughtItems);
+            setUsers(data.list.users);
+            setDisplayList(data.list.items);
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        });
+        setIsLoading(false);
+    }
+
+    useEffect(() => {
+        getList();
+    }, []);
+
+    if (isLoading) {
+        return <Loading />
     }
 
 

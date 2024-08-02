@@ -6,7 +6,6 @@ export interface Item {
 	name: string;
 	deleted: boolean;
 	description?: string;
-	amount?: number;
 	unit: string;
 	img?: string;
 	category?: string;

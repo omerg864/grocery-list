@@ -9,6 +9,8 @@ import cookieParser from 'cookie-parser';
 import userRouter from './routes/userRoutes';
 import itemRouter from './routes/itemRoutes';
 import bundleRouter from './routes/bundleRoutes';
+import listRouter from './routes/listRoutes';
+import listItemRouter from './routes/listItemRoutes';
 import cors from 'cors';
 
 dotenv.config();
@@ -45,5 +47,7 @@ app.listen(port, () => {
 app.use('/api/user', userRouter);
 app.use('/api/item', itemRouter);
 app.use('/api/bundle', bundleRouter);
+app.use('/api/list', listRouter);
+app.use('/api/listItem', listItemRouter);
 
 app.use(errorHandler);

@@ -2,27 +2,29 @@ import { atom } from 'recoil';
 import List from '../interface/ListInterface';
 import Bundle from '../interface/BundleInterface';
 import Item from '../interface/ItemInterface';
+import Lists from '../interface/ListsInterface';
+import ListItem from '../interface/ListItemInterface';
 
 const listAtom = atom<List>({
 	key: 'listState',
 	default: {
-		id: '1',
-		title: 'Grocery Shopping',
-		categories: ['Food', 'Home Essentials'],
-		items: [{ id: '1', name: 'Apples', category: 'Fruits', amount: 2, unit: 'kg', description: 'Green apples' }],
-		users: ['user123', 'user456'],
-		updatedAt: '2021-10-01',
-		createdAt: '2021-09-01',
+		_id: '',
+		title: '',
+		categories: [],
+		items: [],
+		users: [],
+		updatedAt: '',
+		createdAt: '',
 		boughtItems: [],
 		deletedItems: [],
-		owner: true,
+		owner: false,
 	},
 });
 
-const itemAtom = atom<Item>({
+const itemAtom = atom<Item | ListItem>({
 	key: 'itemState',
 	default: {
-		id: '',
+		_id: '',
 		name: '',
 		category: '',
 		amount: 0,
@@ -34,52 +36,15 @@ const itemAtom = atom<Item>({
 const bundleAtom = atom<Bundle>({
 	key: 'bundleState',
 	default: {
-		id: '',
+		_id: '',
 		title: '',
 		items: [],
 	},
 });
 
-const listsState = atom<List[]>({
+const listsState = atom<Lists[]>({
 	key: 'listsState',
-	default: [
-		{
-			id: '1',
-			title: 'Grocery Shopping',
-			categories: ['Food', 'Home Essentials'],
-			items: [{ id: '1', name: 'Apples', category: 'Fruits', amount: 2, unit: 'kg' , description: 'Green apples' }],
-			users: ['user123', 'user456'],
-			updatedAt: '2021-10-01',
-			createdAt: '2021-09-01',
-			boughtItems: [],
-			deletedItems: [],
-			owner: true,
-		},
-		{
-			id: '2',
-			title: 'Book Club',
-			categories: ['Books', 'Entertainment'],
-			items: [],
-			users: ['user789', 'user234'],
-			updatedAt: '2021-10-01',
-			createdAt: '2021-09-24',
-			boughtItems: [],
-			deletedItems: [],
-			owner: true,
-		},
-		{
-			id: '3',
-			title: 'Hardware Supplies',
-			categories: ['Tools', 'Hardware'],
-			items: [],
-			users: ['user567', 'user890'],
-			updatedAt: '2021-11-01',
-			createdAt: '2021-09-02',
-			boughtItems: [],
-			deletedItems: [],
-			owner: false,
-		},
-	],
+	default: []
 });
 
 export { listAtom, listsState, bundleAtom, itemAtom };

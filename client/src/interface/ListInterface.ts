@@ -1,12 +1,12 @@
-import Item from './ItemInterface';
+import ListItem from './ListItemInterface';
 
 interface List {
-	id: string;
+	_id: string;
 	title: string;
 	categories: string[];
-	items: Item[];
-	deletedItems: Item[];
-	boughtItems: Item[];
+	items: ListItem[];
+	deletedItems: ListItem[];
+	boughtItems: ListItem[];
 	users: string[];
     updatedAt: string;
     createdAt: string;

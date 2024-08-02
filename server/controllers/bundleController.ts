@@ -7,7 +7,8 @@ import { RequestWithUser } from '../interface/requestInterface';
 
 const getBundles = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const user = (req as RequestWithUser).user;
-    const bundles = await Bundle.find({ user: user._id }).populate('items');
+    const { limit } = req.query;
+    const bundles = await Bundle.find({ user: user._id }).populate('items').limit(limit ? parseInt(limit as string) : 0);
     res.status(200).json({
         success: true,
         bundles

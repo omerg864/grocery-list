@@ -14,6 +14,7 @@ import { itemAtom } from "../recoil/atoms";
 import { get, put } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
 import { toast } from "react-toastify";
+import ListItem from "../interface/ListItemInterface";
 
 
 
@@ -23,7 +24,7 @@ function ItemEdit() {
   const { t } = useTranslation('translation', { keyPrefix: 'ItemEdit' });
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [itemState, setItemState] = useRecoilState<Item>(itemAtom);
+  const [itemState, setItemState] = useRecoilState<Item | ListItem>(itemAtom);
   const [img, setImg] = useState<File | null>(null);
   const cookies = new Cookies();
 
@@ -31,6 +32,7 @@ function ItemEdit() {
 
 
   let back: any = {};
+  let api_url = `/api/item/${id}`;
 
   if (item) {
     back = {
@@ -39,6 +41,7 @@ function ItemEdit() {
         navigate(`/lists/${id}/item/${item}`)
       }
     }
+    api_url = `/api/listitem/${item}`;
   } else {
     back = {
       onBack: () => {
@@ -59,11 +62,11 @@ function ItemEdit() {
   }
 
   const addCounter = () => {
-    setItemState(prev => ({...prev, amount: prev.amount! + 1}));
+    setItemState(prev => ({...prev, amount: (prev as ListItem).amount! + 1}));
   }
 
   const removeCounter = () => {
-    setItemState(prev => ({...prev, amount: prev.amount! - 1}));
+    setItemState(prev => ({...prev, amount: (prev as ListItem).amount! - 1}));
   }
 
   const updateItem = async () => {
@@ -76,11 +79,19 @@ function ItemEdit() {
     formData.append('category', itemState.category ? itemState.category : "");
     formData.append('description', itemState.description ? itemState.description : "");
     formData.append('unit', itemState.unit ? itemState.unit : "");
-    await put(`/api/item/${id}`, formData, (_) => {
-      navigate(`/items/${id}`);
+    if (typeof itemState === 'object' && 'amount' in itemState) {
+      formData.append('amount', itemState.amount ? itemState.amount.toString() : "");
+    }
+    await put(api_url, formData, (_) => {
+      if (item) {
+        navigate(`/lists/${id}/item/${item}`);
+      } else {
+        navigate(`/items/${id}`);
+      }
       toast.success('itemUpdated')
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,
+      'Content-Type': 'multipart/form-data',
     })
     setIsLoading(false);
   }

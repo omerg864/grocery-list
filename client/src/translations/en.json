@@ -134,7 +134,8 @@
         "amount": "Amount"
     },
     "ItemEdit": {
-        "save": "Save"
+        "save": "Save",
+        "name": "Item Name"
     },
     "ItemDisplay": {
         "edit": "Edit",
@@ -146,7 +147,8 @@
         "name": "Name",
         "newItem": "New Item",
         "create": "Create Item",
-        "saveItem": "Save Item"
+        "saveItem": "Save Item",
+        "itemAdded": "Item added to the list"
     },
     "Bundles": {
         "bundles": "Bundles",

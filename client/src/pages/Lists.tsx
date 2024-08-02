@@ -1,25 +1,30 @@
 import Header from "../components/Header/Header.tsx";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
-import List from "../interface/ListInterface.ts";
+import { useEffect, useState } from "react";
 import ListsList from "../components/ListLists/ListsList.tsx";
 import SearchBar from "../components/SearchBar/SearchBar.tsx";
 import { useRecoilState } from "recoil";
-import { listsState, listAtom } from "../recoil/atoms.ts";
+import { listsState } from "../recoil/atoms.ts";
 import { MdOutlineAutoDelete } from "react-icons/md";
 import { Button, IconButton, Tooltip } from "@mui/material";
 import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDialog.tsx";
+import Loading from "../components/Loading/Loading.tsx";
+import { get } from "../utils/apiRequest.ts";
+import Cookies from "universal-cookie";
+import ListsInterface from "../interface/ListsInterface.ts";
+import { getMinutesBetweenDates } from "../utils/functions.ts";
 
 function Lists() {
 
     const navigate = useNavigate();
     const { t } = useTranslation('translation', { keyPrefix: 'Lists' });
-    const [lists, setLists] = useRecoilState<List[]>(listsState);
-    const [_, setList] = useRecoilState<List>(listAtom);
-    const [listsDisplayed, setListsDisplayed] = useState<List[]>(lists);
+    const [lists, setLists] = useRecoilState<ListsInterface[]>(listsState);
+    const [updated, setUpdated] = useState<Date>(new Date());
+    const [listsDisplayed, setListsDisplayed] = useState<ListsInterface[]>(lists);
     const [dialog, setDialog] = useState<{open: boolean, id: string | null}>({open: false, id: null});
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const cookies = new Cookies();
 
 
     const newList = () => {
@@ -40,26 +45,48 @@ function Lists() {
 
     const onSearch = (search: string) => {
       // TODO: filter lists by search to:[user]
-      const filteredLists = lists.filter((list: List) => list.title.toLowerCase().includes(search));
+      const filteredLists = lists.filter((list: ListsInterface) => list.title.toLowerCase().includes(search));
       setListsDisplayed(filteredLists);
     }
 
     const deleteListForAll = (id: string) => {
-      setLists((prev) => prev.filter((list) => list.id !== id));
-      setListsDisplayed((prev) => prev.filter((list) => list.id !== id));
+      setLists((prev) => prev.filter((list) => list._id !== id));
+      setListsDisplayed((prev) => prev.filter((list) => list._id !== id));
       handleClose();
     }
 
     const deleteListForMe = (id: string) => {
-      setLists((prev) => prev.filter((list) => list.id !== id));
-      setListsDisplayed((prev) => prev.filter((list) => list.id !== id));
+      setLists((prev) => prev.filter((list) => list._id !== id));
+      setListsDisplayed((prev) => prev.filter((list) => list._id !== id));
       handleClose();
     }
 
     const onClick = (id: string) => {
-      const selectedList = lists.find((list) => list.id === id);
-      setList(selectedList!);
       navigate(`/lists/${id}`);
+    }
+
+    const getLists = async () => {
+      setIsLoading(true);
+      await get('/api/list', (data) => {
+        setLists(data.lists);
+        setListsDisplayed(data.lists);
+        setUpdated(new Date());
+      }, {
+        'Authorization': `Bearer ${cookies.get('userToken')}`,
+      });
+      setIsLoading(false);
+    }
+
+
+
+    useEffect(() => {
+      if (getMinutesBetweenDates(updated, new Date()) > 10 || lists.length === 0) {
+        getLists();
+      }
+    }, [])
+
+    if (isLoading) {
+      return <Loading />
     }
 
   return (

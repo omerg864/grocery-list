@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
-import { ItemDocument } from "../interface/itemInterface";
+import { ListItemDocument } from '../interface/listItemInterface';
 
-const ItemScheme = new mongoose.Schema<ItemDocument>({
+const ListItemScheme = new mongoose.Schema<ListItemDocument>({
     name: {
         type: String,
         required: true
@@ -19,11 +19,14 @@ const ItemScheme = new mongoose.Schema<ItemDocument>({
     category: {
         type: String
     },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+    amount: {
+        type: Number
     },
+    list: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'List',
+        required: true
+    }
 }, { timestamps: true });
 
-export default mongoose.model<ItemDocument>('Item', ItemScheme);
+export default mongoose.model<ListItemDocument>('ListItem', ListItemScheme);
