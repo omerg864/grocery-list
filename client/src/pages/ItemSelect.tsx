@@ -10,6 +10,8 @@ import { useRecoilState } from "recoil";
 import Bundle from '../interface/BundleInterface';
 import { bundleAtom } from '../recoil/atoms';
 import Loading from '../components/Loading/Loading';
+import Cookies from 'universal-cookie';
+import { get } from '../utils/apiRequest';
 
 function ItemSelect() {
     const { t } = useTranslation('translation', { keyPrefix: 'ItemSelect' });
@@ -21,6 +23,7 @@ function ItemSelect() {
     const [bundle, setBundle] = useRecoilState<Bundle>(bundleAtom);
     const [items, setItems] = useState<Item[]>([]);
     const [displayedItems, setDisplayedItems] = useState<Item[]>([]);
+    const cookies = new Cookies();
 
     const filterItems = (search: string) => {
         const filteredItems = items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
@@ -35,14 +38,14 @@ function ItemSelect() {
         setSelectedCategory(category);
     }
 
-    const onItemClicked = (id: string) => {
+    const onItemClicked = (itemId: string) => {
         let path = window.location.pathname.split('/')[1];
         let edit = window.location.pathname.split('/')[3];
         switch (path) {
             case 'bundles':
                 setBundle((prevBundle) => ({
                     ...prevBundle!,
-                    items: [...prevBundle!.items, items.find((item) => item._id === id)!]
+                    items: [...prevBundle!.items, items.find((item) => item._id === itemId)!]
                 }))
                 if (edit === 'edit') {
                     navigate(`/bundles/${id}/edit`);
@@ -53,20 +56,26 @@ function ItemSelect() {
                 }
                 break;
             case 'lists':
-                navigate(`/lists/${id}/add/item/${id}`);
+                navigate(`/lists/${id}/add/item/${itemId}`);
                 break;
         }
     }
 
-    useEffect(() => {
+    const getItems = async () => {
         setIsLoading(true);
-        setTimeout(() => {
-            let itemsTemp = [{_id: "3", name: 'Item 3', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"}, {_id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "KG"}];
-            itemsTemp = itemsTemp.filter(item => !bundle.items.find(bundleItem => bundleItem._id === item._id));
+        await get('/api/item', (data) => {
+            let itemsTemp = data.items.filter((item: Item) => !bundle.items.find(bundleItem => bundleItem._id === item._id));
             setItems(itemsTemp);
             setDisplayedItems(itemsTemp);
-            setIsLoading(false);
-        }, 1000);
+            setCategories(data.categories);
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        })
+        setIsLoading(false);
+    }
+
+    useEffect(() => {
+        getItems();
     }, []);
 
 

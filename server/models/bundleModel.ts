@@ -12,7 +12,12 @@ const BundleScheme = new mongoose.Schema<BundleDocument>({
     items: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Item'
-    }]
+    }],
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
 }, { timestamps: true });
 
 export default mongoose.model<BundleDocument>('Bundle', BundleScheme);

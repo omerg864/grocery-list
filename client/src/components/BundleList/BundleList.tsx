@@ -17,7 +17,7 @@ function BundleList(props: BundleListProps) {
   return (
     <div className="bundle-list">
       {props.bundles.map(bundle => (
-        <BundleViewList onItemClick={props.onItemClick} onSwipeRight={props.onSwipeRight} open={open} setOpen={setOpen} key={bundle.id} bundle={bundle} />
+        <BundleViewList onItemClick={props.onItemClick} onSwipeRight={props.onSwipeRight} open={open} setOpen={setOpen} key={bundle._id} bundle={bundle} />
       ))}
     </div>
   )

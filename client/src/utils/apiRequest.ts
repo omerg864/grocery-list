@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 
@@ -16,8 +16,12 @@ const post = async (url: string, data: any, success: (data: any) => void, header
         } else {
             success(response.data);
         }
-    } catch (err) {
-        toast.error('Internal Server Error');
+    } catch (err: AxiosError | any) {
+        if (err.response.data.message) {
+                toast.error(err.response.data.message);
+        } else {
+            toast.error('Internal Server Error');
+        }
         console.log(err);
     }
 }
@@ -36,8 +40,12 @@ const get = async (url: string, success: (data: any) => void, headers?: any) => 
         } else {
             success(response.data);
         }
-    } catch (err) {
-        toast.error('Internal Server Error');
+    } catch (err: AxiosError | any) {
+        if (err.response.data.message) {
+            toast.error(err.response.data.message);
+        } else {
+            toast.error('Internal Server Error');
+        }
         console.log(err);
     }
 }
@@ -56,8 +64,12 @@ const put = async (url: string, data: any, success: (data: any) => void, headers
         } else {
             success(response.data);
         }
-    } catch (err) {
-        toast.error('Internal Server Error');
+    } catch (err: AxiosError | any) {
+        if (err.response.data.message) {
+            toast.error(err.response.data.message);
+        } else {
+            toast.error('Internal Server Error');
+        }
         console.log(err);
     }
 }
@@ -76,8 +88,12 @@ const del = async (url: string, success: (data: any) => void, headers?: any) => 
         } else {
             success(response.data);
         }
-    } catch (err) {
-        toast.error('Internal Server Error');
+    } catch (err: AxiosError | any) {
+        if (err.response.data.message) {
+            toast.error(err.response.data.message);
+        } else {
+            toast.error('Internal Server Error');
+        }
         console.log(err);
     }
 }

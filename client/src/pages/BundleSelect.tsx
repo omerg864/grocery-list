@@ -15,7 +15,7 @@ function BundleSelect() {
   const { t } = useTranslation('translation', { keyPrefix: 'BundleSelect' });
   const [bundles, setBundles] = useState<Bundle[]>([
     {
-      id: "1",
+      _id: "1",
       title: 'Bundle 1',
       items: [
         {_id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"},
@@ -23,7 +23,7 @@ function BundleSelect() {
       ]
     },
     {
-      id: "2",
+      _id: "2",
       title: 'Bundle 2',
       items: [
         {_id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"},
@@ -46,7 +46,7 @@ function BundleSelect() {
   }
 
   const onItemClicked = (bundleId: string) => {
-    const bundle = bundles.find(bundle => bundle.id === bundleId);
+    const bundle = bundles.find(bundle => bundle._id === bundleId);
     setBundle(bundle!);
     navigate(`/lists/${id}/add/bundle/${bundleId}`);
   }

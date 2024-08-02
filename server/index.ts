@@ -8,6 +8,7 @@ import colors from "colors";
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/userRoutes';
 import itemRouter from './routes/itemRoutes';
+import bundleRouter from './routes/bundleRoutes';
 import cors from 'cors';
 
 dotenv.config();
@@ -43,5 +44,6 @@ app.listen(port, () => {
 // Routes
 app.use('/api/user', userRouter);
 app.use('/api/item', itemRouter);
+app.use('/api/bundle', bundleRouter);
 
 app.use(errorHandler);

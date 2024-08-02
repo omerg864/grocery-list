@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header/Header';
 import { useEffect, useState } from 'react';
 import Bundle from '../interface/BundleInterface';
@@ -8,6 +8,8 @@ import { IconButton } from '@mui/material';
 import { MdModeEditOutline } from 'react-icons/md';
 import { useRecoilState } from 'recoil';
 import { bundleAtom } from '../recoil/atoms';
+import { get } from '../utils/apiRequest';
+import Cookies from 'universal-cookie';
 
 
 
@@ -15,12 +17,14 @@ function BundleDisplay() {
 
   const navigate = useNavigate();
   const [bundle, setBundle] = useState<Bundle>({
-    id: "",
+    _id: "",
     title: '',
     items: []
   });
   const [_, setBundleState] = useRecoilState<Bundle>(bundleAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { id } = useParams();
+  const cookies = new Cookies();
 
   const goToBundles = () => {
     navigate('/bundles');
@@ -28,26 +32,25 @@ function BundleDisplay() {
 
   const edit = () => {
     setBundleState(bundle);
-    navigate(`/bundles/${bundle.id}/edit`);
+    navigate(`/bundles/${bundle._id}/edit`);
   }
 
   const onItemClicked = (id: string) => {
-    navigate(`/bundles/${bundle.id}/item/${id}`);
+    navigate(`/bundles/${bundle._id}/item/${id}`);
+  }
+
+  const getBundle = async () => {
+    setIsLoading(true);
+    await get(`/api/bundle/${id}`, (data) => {
+      setBundle(data.bundle);
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`
+    });
+    setIsLoading(false);
   }
 
   useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setBundle({
-        id: "1",
-        title: 'Bundle 1',
-        items: [
-          {_id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"},
-          {_id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"}
-        ]
-      });
-      setIsLoading(false);
-    }, 1000);
+    getBundle();
   }, []);
 
   if (isLoading) {

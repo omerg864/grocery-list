@@ -3,40 +3,23 @@ import Header from '../components/Header/Header';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../components/SearchBar/SearchBar';
 import Bundle from '../interface/BundleInterface';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BundleList from '../components/BundleList/BundleList';
 import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog';
 import Loading from '../components/Loading/Loading';
+import { del, get } from '../utils/apiRequest';
+import Cookies from 'universal-cookie';
 
 
 function Bundles() {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Bundles' });
-  const [bundles, setBundles] = useState<Bundle[]>([
-    {
-      id: "1",
-      title: 'Bundle 1',
-      items: [
-        {_id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"},
-        {_id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"}
-      ]
-    },
-    {
-      id: "2",
-      title: 'Bundle 2',
-      items: [
-        {_id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"},
-        {_id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"},
-        {_id: "3", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"},
-        {_id: "4", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"},
-        {_id: "5", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"}
-      ]
-    }
-  ]);
+  const [bundles, setBundles] = useState<Bundle[]>([]);
   const [displayedBundles, setDisplayedBundles] = useState<Bundle[]>(bundles);
   const [open, setOpen] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const cookies = new Cookies();
 
   const filterBundles = (search: string) => {
     const filteredBundles = bundles.filter(bundle => bundle.title.toLowerCase().includes(search.toLowerCase()));
@@ -52,14 +35,16 @@ function Bundles() {
     setOpen(id);
   }
 
-  const deleteBundle = (id: string) => {
+  const deleteBundle = async (id: string) => {
     setIsLoading(true);
-    setTimeout(() => {
+    await del(`/api/bundle/${id}`, (_) => {
       handleClose();
-      setBundles(bundles.filter(bundle => bundle.id !== id));
-      setDisplayedBundles(displayedBundles.filter(bundle => bundle.id !== id));
-      setIsLoading(false);
-    }, 1000);
+      setBundles(bundles.filter(bundle => bundle._id !== id));
+      setDisplayedBundles(displayedBundles.filter(bundle => bundle._id !== id));
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    });
+    setIsLoading(false);
   }
 
   const onItemClicked = (id: string) => {
@@ -69,6 +54,21 @@ function Bundles() {
   const handleClose = () => {
     setOpen('');
   }
+
+  const getBundles = async () => {
+    setIsLoading(true);
+    await get('/api/bundle', (data) => {
+      setBundles(data.bundles);
+      setDisplayedBundles(data.bundles);
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    })
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    getBundles();
+  }, []);
 
   if (isLoading) {
     return <Loading />;

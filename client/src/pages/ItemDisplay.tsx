@@ -39,6 +39,7 @@ function ItemDisplay() {
   let side;
 
   let path = window.location.pathname.split('/')[1];
+  let url = `/api/item/${id}`;
 
   switch (path) {
     case 'lists':
@@ -61,6 +62,7 @@ function ItemDisplay() {
       break;
     case 'bundles':
       let editPath = window.location.pathname.split('/')[3];
+      url = `/api/item/${item}`;
       if (editPath === 'edit') {
         back = {
           onBack: () => navigate(`/bundles/${id}/edit`)
@@ -100,7 +102,7 @@ function ItemDisplay() {
   
   const getItem = async () => {
     setIsLoading(true);
-    await get(`/api/item/${id}`, (data) => {
+    await get(url, (data) => {
       setItemState(data.item);
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,

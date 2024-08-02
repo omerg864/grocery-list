@@ -1,7 +1,7 @@
 import Item from "./ItemInterface";
 
 interface Bundle {
-    id: string;
+    _id: string;
     title: string;
     description?: string;
     items: Item[];

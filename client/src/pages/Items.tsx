@@ -8,7 +8,7 @@ import CategoryList from '../components/CategoryList/CategoryList';
 import ItemsList from '../components/ItemsList/ItemsList';
 import Loading from '../components/Loading/Loading';
 import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDialog';
-import { get } from '../utils/apiRequest';
+import { del, get } from '../utils/apiRequest';
 import Cookies from 'universal-cookie';
 import MemoizedImage from "../components/MemoizedImage/MemoizedImage";
 
@@ -55,12 +55,14 @@ function Items() {
 
   const deleteItem = async (id: string) => {
     setIsLoading(true);
-    setTimeout(() => {
+    await del(`/api/item/${id}`, (_) => {
       handleClose();
       setItems(items.filter(item => item._id !== id));
       setDisplayedItems(displayedItems.filter(item => item._id !== id));
-      setIsLoading(false);
-    }, 1000);
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    });
+    setIsLoading(false);
   }
 
   const onItemClicked = (id: string) => {

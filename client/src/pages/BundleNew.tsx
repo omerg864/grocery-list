@@ -11,6 +11,9 @@ import { bundleAtom } from '../recoil/atoms';
 import Bundle from '../interface/BundleInterface';
 import { useState } from 'react';
 import Loading from '../components/Loading/Loading';
+import Cookies from 'universal-cookie';
+import { post } from '../utils/apiRequest';
+import { toast } from 'react-toastify';
 
 function BundleNew() {
 
@@ -18,11 +21,12 @@ function BundleNew() {
   const navigate = useNavigate();
   const [bundle, setBundle] = useRecoilState<Bundle>(bundleAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const cookies = new Cookies();
 
   const outerTheme = useTheme();
 
   const goToBundles = () => {
-    setBundle({id: "", title: '', items: []});
+    setBundle({_id: "", title: '', items: []});
     navigate('/bundles');
   }
 
@@ -45,14 +49,28 @@ function BundleNew() {
     navigate(`/bundles/new/items`);
   }
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!bundle.title) {
+      toast.error(t('titleRequired'));
+      return;
+    }
+    if (bundle.items.length === 0) {
+      toast.error(t('itemsRequired'));
+      return;
+    }
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setBundle({id: "", title: '', items: []});
+    let formData = {
+      title: bundle.title,
+      items: bundle.items.map(item => item._id)
+    }
+    await post('/api/bundle', formData, (_) => {
+      setBundle({_id: "", title: '', items: []});
       navigate('/bundles');
-    }, 1000);
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    });
+    setIsLoading(false);
   }
 
   if (isLoading) {
