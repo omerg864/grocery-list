@@ -32,14 +32,21 @@ function SwipeItem(props: SwipeItemProps) {
     const fullSwipe = props.fullSwipe === undefined ? true : props.fullSwipe;
 
     const [swipeState, setSwipeState] = useState<number>(0);
+    const [canceled, setCanceled] = useState<boolean>(false);
 
     const [{ x }, api] = useSpring(() => ({ x: 0 }));
     const [{ w }, set] = useSpring(() => ({ w: 0 }));
     const [{ w2 }, set2] = useSpring(() => ({ w2: 0 }));
     // Set the drag hook and define component movement based on gesture data
     const bind = useGesture({
-        onDrag: ({ down, movement: [mx, _my], axis}) => {
-            if (axis !== 'x') return;
+        onDrag: ({ down, movement: [mx, _my], axis, event}) => {
+            // stop the swipe if the user is scrolling vertically
+            if (axis === 'y') {
+                setCanceled(true);
+                // scroll the page
+                return;
+            }
+            event.preventDefault();
             if(down && x.get() != 0) {
                 x.set(0);
             }
@@ -62,7 +69,11 @@ function SwipeItem(props: SwipeItemProps) {
             }
           }
         },
-        onDragEnd: ({ movement: [mx, _my] }) => {
+        onDragEnd: ({ movement: [mx, my] }) => {
+            if(canceled) {
+                setCanceled(false);
+                return;
+            }
             if( mx > 0.8 * document.documentElement.clientWidth && props.onSwipedRight && fullSwipe) {
                 props.onSwipedRight!(props.id);
                 api.start({x: 0 });
@@ -92,7 +103,7 @@ function SwipeItem(props: SwipeItemProps) {
                 setSwipeState(0);
             } else {
                 if(props.mainItemClick) {
-                    if (swipeState === 0 && props.open === null) {
+                    if (swipeState === 0 && props.open === null && my < 10 && my > -10) {
                         props.mainItemClick();
                     }
                 }
@@ -103,7 +114,7 @@ function SwipeItem(props: SwipeItemProps) {
                 props.setOpen!(null);
             }
         },
-    }, { drag: { axis: 'lock' } });
+    });
 
     useEffect(() => {
         if (props.open !== props.id) {
@@ -116,13 +127,13 @@ function SwipeItem(props: SwipeItemProps) {
 
   return (
     <div style={{display: 'flex', position: 'relative', width: '100%', overflow: 'hidden', touchAction: 'pan-y'}}>
-        {props.onSwipedRight && <animated.div style={{ width: w2, touchAction: 'none'}} ref={leftBtn} className={`swipe-right ${props.leftBtnClass}`} onClick={() => props.onSwipedRight!(props.id)}>
+        {props.onSwipedRight && <animated.div style={{ width: w2, touchAction: 'pan-y'}} ref={leftBtn} className={`swipe-right ${props.leftBtnClass}`} onClick={() => props.onSwipedRight!(props.id)}>
         {props.leftBtnChildren}
             </animated.div>}
-        <animated.div className={props.animateDivClass} {...bind()} style={{ x, touchAction: 'none' }} >
+        <animated.div className={props.animateDivClass} {...bind()} style={{ x, touchAction: 'pan-y' }} >
             {props.children}
         </animated.div>
-        {props.onSwipedLeft && <animated.div style={{ width: w, touchAction: 'none'}} ref={rightBtn} className={`swipe-left ${props.rightBtnClass}`} onClick={() => props.onSwipedLeft!(props.id)}>
+        {props.onSwipedLeft && <animated.div style={{ width: w, touchAction: 'pan-y'}} ref={rightBtn} className={`swipe-left ${props.rightBtnClass}`} onClick={() => props.onSwipedLeft!(props.id)}>
             {props.rightBtnChildren}
             </animated.div>}
     </div>

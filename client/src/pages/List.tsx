@@ -237,7 +237,7 @@ function List() {
 
 
   return (
-    <main onScroll={(e) => e.stopPropagation()}>
+    <main>
         <Header buttonTitle={t("addItem")} title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<Tooltip title={t('receipts')}><IconButton onClick={goToReceipt}>
             <RiFileList3Line color='white'/>
         </IconButton></Tooltip>} />
