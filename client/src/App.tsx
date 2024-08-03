@@ -74,15 +74,15 @@ function App() {
     <Router>
       <Routes>
         {/* lists routes */}
-        <Route path="/" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Lists /></ProtectedRoute>} />
+        <Route path="/" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Lists /></ProtectedRoute>} /> {/* TODO: delete */}
         <Route path="/lists/new" element={<ProtectedRoute isAuthenticated={isAuthenticated}><NewList /></ProtectedRoute>} />
-        <Route path="/lists/deleted" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListsDeleted /></ProtectedRoute>} />
+        <Route path="/lists/deleted" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListsDeleted /></ProtectedRoute>} /> {/* TODO: deleted */}
         <Route path="/lists/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><List /></ProtectedRoute>} />
-        <Route path="/lists/:id/receipts" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListReceipts /></ProtectedRoute>} />
+        <Route path="/lists/:id/receipts" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListReceipts /></ProtectedRoute>} /> {/* TODO: rec */}
         <Route path="/lists/:id/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         <Route path="/lists/:id/item/:item/edit" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemEdit /></ProtectedRoute>} />
         <Route path="/lists/:id/select" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Selection /></ProtectedRoute>} />
-        <Route path="/lists/:id/select/bundle" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleSelect /></ProtectedRoute>} />
+        <Route path="/lists/:id/select/bundle" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleSelect /></ProtectedRoute>} /> {/* TODO: bundle Select */}
         <Route path="/lists/:id/select/item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemSelect /></ProtectedRoute>} />
         <Route path="/lists/:id/add/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemAdd /></ProtectedRoute>} />
         <Route path="/lists/:id/new/item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemNew /></ProtectedRoute>} />

@@ -13,6 +13,7 @@ import { itemAtom } from "../recoil/atoms";
 import { getMinutesBetweenDates } from "../utils/functions";
 import { get, post } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
+import { SelectChangeEvent } from "@mui/material";
 
 
 
@@ -58,6 +59,23 @@ function ItemAdd() {
     setItemState({...itemState, amount: amountTemp});
   }
 
+  const onSelectionChange = (e: SelectChangeEvent) => {
+    const value = e.target.value as string;
+    if (item) {
+      let amount = (itemState as ListItem).amount;
+      if (value !== "") {
+        if (typeof amount !== 'number' || amount as number <= 0) {
+          amount = 1;
+        }
+      } else {
+        amount = 0;
+      }
+      setItemState(prev => ({...prev, unit: value, amount}));
+    } else {
+      setItemState(prev => ({...prev, unit: value}));
+    }
+  }
+
   const addCounter = () => {
     let amount = itemState.amount;
     if (typeof amount === 'number') {
@@ -81,6 +99,7 @@ function ItemAdd() {
   const addItem = async () => {
     setIsLoading(true);
     let formData = new FormData();
+    formData.append('unit', itemState.unit!);
     if (!itemState.unit) {
       formData.append('amount', '0');
     } else {
@@ -133,7 +152,7 @@ function ItemAdd() {
     <main>
         <Header title={itemState.name} onBack={back}/>
         <form className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}} onSubmit={addItem}>
-          <ItemDetails amountEdit={true} enableAmount={true} onImgIconClick={onImgIconClick} addCounter={addCounter} removeCounter={removeCounter} onChange={onChangeAmount}  disabled={true} item={itemState} />
+          <ItemDetails onSelectionChange={onSelectionChange} amountEdit={true} enableAmount={true} onImgIconClick={onImgIconClick} addCounter={addCounter} removeCounter={removeCounter} onChange={onChangeAmount}  disabled={true} item={itemState} />
           <GlassButton endIcon={<MdAdd size={"1.5rem"} color='white'/>} text={t('add')} style={{width: "100%", color: "white"}} type="submit"/>
         </form>
     </main>

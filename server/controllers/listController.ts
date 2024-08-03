@@ -260,7 +260,7 @@ const addNewItem = asyncHandler(
 const addExistingItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
-		const { amount } = req.body;
+		const { amount, unit } = req.body;
 		const { id, item } = req.params;
 		const list = await List.findById(id);
 		if (!list) {
@@ -288,7 +288,7 @@ const addExistingItem = asyncHandler(
 		const listItem = await ListItem.create({
 			name: ItemContext.name,
 			description: ItemContext.description,
-			unit: ItemContext.unit,
+			unit,
 			amount,
 			category: ItemContext.category,
 			list: list._id,
@@ -303,7 +303,12 @@ const addExistingItem = asyncHandler(
 	}
 );
 
-const checkListAndItem = async (listId: string, itemId: string, res: Response, userId: unknown) => {
+const checkListAndItem = async (
+	listId: string,
+	itemId: string,
+	res: Response,
+	userId: unknown
+) => {
 	const list = await List.findById(listId);
 	if (!list) {
 		res.status(404);
@@ -328,13 +333,18 @@ const checkListAndItem = async (listId: string, itemId: string, res: Response, u
 		throw new Error('Item Not Found');
 	}
 	return { list, listItem };
-}
+};
 
 const sendToDeleted = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id, item } = req.params;
-		const { list, listItem } = await checkListAndItem(id, item, res, user._id);
+		const { list, listItem } = await checkListAndItem(
+			id,
+			item,
+			res,
+			user._id
+		);
 		(list.items as ObjectId[]) = (list.items as ObjectId[]).filter(
 			(listItem) => (listItem as ObjectId).toString() !== item.toString()
 		);
@@ -354,7 +364,12 @@ const sendToBought = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id, item } = req.params;
-		const { list, listItem } = await checkListAndItem(id, item, res, user._id);
+		const { list, listItem } = await checkListAndItem(
+			id,
+			item,
+			res,
+			user._id
+		);
 		(list.items as ObjectId[]) = (list.items as ObjectId[]).filter(
 			(listItem) => (listItem as ObjectId).toString() !== item.toString()
 		);
@@ -374,8 +389,15 @@ const restoreFromDeleted = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id, item } = req.params;
-		const { list, listItem } = await checkListAndItem(id, item, res, user._id);
-		(list.deletedItems as ObjectId[]) = (list.deletedItems as ObjectId[]).filter(
+		const { list, listItem } = await checkListAndItem(
+			id,
+			item,
+			res,
+			user._id
+		);
+		(list.deletedItems as ObjectId[]) = (
+			list.deletedItems as ObjectId[]
+		).filter(
 			(listItem) => (listItem as ObjectId).toString() !== item.toString()
 		);
 		(list.items as ObjectId[]) = [
@@ -394,8 +416,15 @@ const restoreFromBought = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id, item } = req.params;
-		const { list, listItem } = await checkListAndItem(id, item, res, user._id);
-		(list.boughtItems as ObjectId[]) = (list.boughtItems as ObjectId[]).filter(
+		const { list, listItem } = await checkListAndItem(
+			id,
+			item,
+			res,
+			user._id
+		);
+		(list.boughtItems as ObjectId[]) = (
+			list.boughtItems as ObjectId[]
+		).filter(
 			(listItem) => (listItem as ObjectId).toString() !== item.toString()
 		);
 		(list.items as ObjectId[]) = [
@@ -409,7 +438,6 @@ const restoreFromBought = asyncHandler(
 		});
 	}
 );
-
 
 const addBundleItems = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -442,23 +470,99 @@ const addBundleItems = asyncHandler(
 		for (let i = 0; i < bundleContext.items.length; i++) {
 			const item = bundleContext.items[i] as ItemDocument;
 			console.log(item._id);
-			const amount = amounts.find((a: {id: string , amount: number | undefined}) => a.id === (item._id as ObjectId).toString())!.amount;
+			const info = amounts.find(
+				(a: { id: string; amount: number | undefined; unit: string }) =>
+					a.id === (item._id as ObjectId).toString()
+			)!;
 			const listItem = await ListItem.create({
 				name: item.name,
 				description: item.description,
-				unit: item.unit,
-				amount: amount,
+				unit: info.unit,
+				amount: info.amount,
 				category: item.category,
 				list: list._id,
 				img: item.img,
 			});
-			list.items = [...(list.items as ObjectId[]), listItem._id as ObjectId];
+			list.items = [
+				...(list.items as ObjectId[]),
+				listItem._id as ObjectId,
+			];
 		}
 		await list.save();
 		res.status(200).json({
-			success: true
+			success: true,
 		});
 	}
-)
+);
 
-export { getLists, getList, addList, addNewItem, addExistingItem, sendToDeleted, sendToBought, restoreFromDeleted, restoreFromBought, addBundleItems };
+const deleteForAll = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id } = req.params;
+		const list = await List.findById(id).populate('users');
+		if (!list) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
+		if (list.owner.toString() !== (user._id as ObjectId).toString()) {
+			res.status(403);
+			throw new Error('Not Authorized');
+		}
+		list.users = [user._id as ObjectId];
+		list.deleted = true;
+		await list.save();
+		res.status(200).json({
+			success: true,
+		});
+	}
+);
+
+const deleteForMe = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		// TODO: implement deleteForMe
+		const user = (req as RequestWithUser).user;
+		const { id } = req.params;
+		const list = await List.findById(id);
+		if (!list) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
+		let found = false;
+		list.users.forEach((listUser) => {
+			if (
+				(listUser as ObjectId).toString() ===
+				(user._id as ObjectId).toString()
+			) {
+				found = true;
+			}
+		});
+		if (!found) {
+			res.status(403);
+			throw new Error('Not Authorized');
+		}
+		list.users = (list.users as ObjectId[]).filter(
+			(listUser) =>
+				(listUser as ObjectId).toString() !==
+				(user._id as ObjectId).toString()
+		);
+		await list.save();
+		res.status(200).json({
+			success: true,
+		});
+	}
+);
+
+export {
+	getLists,
+	getList,
+	addList,
+	addNewItem,
+	addExistingItem,
+	sendToDeleted,
+	sendToBought,
+	restoreFromDeleted,
+	restoreFromBought,
+	addBundleItems,
+	deleteForAll,
+	deleteForMe,
+};

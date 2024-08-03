@@ -86,11 +86,11 @@ function ItemDetails(props: ItemDetailsProps) {
                 {props.item.unit !== '' && (props.item.unit === 'pc' ? <Counter handleChange={props.onChange} addCounter={props.addCounter} removeCounter={props.removeCounter} count={(props.item as ListItem).amount!} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false} />: 
                         <TextField required name="amount" onChange={props.onChange} color='success' type="number" className='white-color-input' fullWidth value={(props.item as ListItem).amount} label={t('amount')} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false}  variant="outlined" />)}
                         <FormControl fullWidth>
-                            <InputLabel disabled={props.disabled} color="success" id="unit-label">{t('unit')}</InputLabel>
+                            <InputLabel disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled) : false} color="success" id="unit-label">{t('unit')}</InputLabel>
                             <Select
                                 labelId="unit-label"
                                 id="unit"
-                                disabled={props.disabled}
+                                disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled) : false}
                                 color="success"
                                 value={props.item.unit}
                                 label={t('unit')}

@@ -52,6 +52,7 @@ function ItemDisplay() {
           onBack: () => navigate(`/lists/${id}/add/bundle/${bundle}`)
         }
         url = `/api/item/${item}`;
+        list = false;
       } else {
         back = {
           onBack: () => navigate(`/lists/${id}`)
@@ -108,7 +109,7 @@ function ItemDisplay() {
   const getItem = async () => {
     setIsLoading(true);
     await get(url, (data) => {
-      setItemState(data.item);
+      setItemState({...data.item, stateUpdated: new Date()});
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,
     })

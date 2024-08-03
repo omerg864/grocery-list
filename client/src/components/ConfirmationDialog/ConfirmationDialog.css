@@ -3,3 +3,19 @@
     justify-content: space-between;
     padding: 10px;
 }
+
+.two-buttons-dialog {
+    display: flex;
+    gap: 0.5rem;
+}
+
+
+@media screen and (max-width: 600px) {
+    .dialog-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .two-buttons-dialog {
+        flex-direction: column;
+    }
+}

@@ -21,6 +21,7 @@ import Cookies from "universal-cookie";
 import { useRecoilState } from "recoil";
 import { listAtom } from "../recoil/atoms.ts";
 import ListItem from "../interface/ListItemInterface.ts";
+import { LuRefreshCw } from "react-icons/lu";
 
 function List() {
     const [list, setList] = useRecoilState<ListInterface>(listAtom);
@@ -243,7 +244,12 @@ function List() {
         <ConfirmationDialog title={t('deleteUserTitle')} content={t('deleteUserContent')} open={dialog} handleClose={closeDialog} handleConfirm={deleteUser}  />
         <UsersList onAdd={addUser} {...deleteAction} users={users} />
         <SearchBar onSearch={filterItems} placeholder={t("search")} />
-        <ListFilters categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>
+        <div style={{display: 'flex', width: '100%'}}>
+            <IconButton onClick={getList}>
+                <LuRefreshCw size={"1.5rem"} color='white'/>
+            </IconButton>
+            <ListFilters categories={list.categories} selectedCategory={selectedCategory} onSelect={onSelect} filterList={filterList} onFilter={clickFilter}/>
+        </div>
         <ItemsList onItemClicked={onItemClicked} items={displayList} {...swipeLeft} {...swipeRight}/>
     </main>
   )

@@ -10,10 +10,11 @@ import { MdOutlineAutoDelete } from "react-icons/md";
 import { Button, IconButton, Tooltip } from "@mui/material";
 import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDialog.tsx";
 import Loading from "../components/Loading/Loading.tsx";
-import { get } from "../utils/apiRequest.ts";
+import { del, get } from "../utils/apiRequest.ts";
 import Cookies from "universal-cookie";
 import ListsInterface from "../interface/ListsInterface.ts";
 import { getMinutesBetweenDates } from "../utils/functions.ts";
+import { LuRefreshCw } from "react-icons/lu";
 
 function Lists() {
 
@@ -23,6 +24,17 @@ function Lists() {
     const [updated, setUpdated] = useState<Date>(new Date());
     const [listsDisplayed, setListsDisplayed] = useState<ListsInterface[]>(lists);
     const [dialog, setDialog] = useState<{open: boolean, id: string | null}>({open: false, id: null});
+    const [list, setList] = useState<ListsInterface>({
+      _id: '',
+      title: '',
+      categories: [],
+      items: 0,
+      deletedItems: 0,
+      boughtItems: 0,
+      updatedAt: '',
+      createdAt: '',
+      owner: false,
+    });
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const cookies = new Cookies();
 
@@ -36,10 +48,23 @@ function Lists() {
     }
 
     const handleClose = () => {
+      setList({
+        _id: '',
+        title: '',
+        categories: [],
+        items: 0,
+        deletedItems: 0,
+        boughtItems: 0,
+        updatedAt: '',
+        createdAt: '',
+        owner: false,
+      })
       setDialog({open: false, id: null});
     }
 
     const openDialog = (id: string) => {
+      const listFound = lists.find((list) => list._id === id)!;
+      setList(listFound);
       setDialog({open: true, id: id});
     }
 
@@ -49,16 +74,28 @@ function Lists() {
       setListsDisplayed(filteredLists);
     }
 
-    const deleteListForAll = (id: string) => {
-      setLists((prev) => prev.filter((list) => list._id !== id));
-      setListsDisplayed((prev) => prev.filter((list) => list._id !== id));
-      handleClose();
+    const deleteListForAll = async (id: string) => {
+      setIsLoading(true);
+      await del(`/api/list/${id}/all`, (_) => {
+        setIsLoading(false);
+        setLists((prev) => prev.filter((list) => list._id !== id));
+        setListsDisplayed((prev) => prev.filter((list) => list._id !== id));
+        handleClose();
+      }, {
+        'Authorization': `Bearer ${cookies.get('userToken')}`,
+      });
     }
 
     const deleteListForMe = (id: string) => {
-      setLists((prev) => prev.filter((list) => list._id !== id));
-      setListsDisplayed((prev) => prev.filter((list) => list._id !== id));
-      handleClose();
+      setIsLoading(true);
+      del(`/api/list/${id}/me`, (_) => {
+        setIsLoading(false);
+        setLists((prev) => prev.filter((list) => list._id !== id));
+        setListsDisplayed((prev) => prev.filter((list) => list._id !== id));
+        handleClose();
+      }, {
+        'Authorization': `Bearer ${cookies.get('userToken')}`,
+      });
     }
 
     const onClick = (id: string) => {
@@ -97,12 +134,17 @@ function Lists() {
         <ConfirmationDialog  handleClose={handleClose} open={dialog.open} title={t('deleteList')} content={t('deleteListContent')} 
           buttons={<div className='dialog-buttons'>
             <Button onClick={handleClose} variant='outlined' color="primary">{t('cancel')}</Button>
-            <div style={{display: 'flex', gap: '10px'}}>
-              <Button onClick={() => deleteListForAll(dialog.id as string)} variant='outlined' color="error" autoFocus>{t('deleteForAll')}</Button>
+            <div className="two-buttons-dialog" style={{display: 'flex', gap: '10px'}}>
+              {list.owner && <Button onClick={() => deleteListForAll(dialog.id as string)} variant='outlined' color="error" autoFocus>{t('deleteForAll')}</Button>}
               <Button onClick={() => deleteListForMe(dialog.id as string)} variant='outlined' color="warning" autoFocus>{t('deleteForMe')}</Button>
             </div>
           </div>}/>
-        <SearchBar placeholder={t("search")} onSearch={onSearch}/>
+        <div style={{display: 'flex', width: '100%'}}>
+          <IconButton onClick={getLists}>
+            <LuRefreshCw color="white"/>
+          </IconButton>
+          <SearchBar placeholder={t("search")} onSearch={onSearch}/>
+        </div>
         <ListsList onClick={onClick} deleteList={openDialog} lists={listsDisplayed} />
     </main>
   )

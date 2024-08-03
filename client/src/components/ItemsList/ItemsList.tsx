@@ -2,7 +2,7 @@ import { Fragment, useState } from "react";
 import Item from "../../interface/ItemInterface.ts";
 import ItemView from "../ItemView/ItemView.tsx";
 import './ItemsList.css';
-import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
 import Counter from "../Counter/Counter.tsx";
 import { useTranslation } from "react-i18next";
 
@@ -13,6 +13,7 @@ interface ItemsListProps {
     onSwipeLeft?: (id: string) => void;
     onItemClicked?: (id: string) => void;
     onAmountChanged?: (id: string, amount: string) => void;
+    onSelectionChange?: (e: SelectChangeEvent, id: string) => void;
     amounts?: {id: string, amount: number | ""}[];
     addCounter?: (id: string) => void;
     removeCounter?: (id: string) => void;
@@ -26,7 +27,7 @@ function ItemsList(props: ItemsListProps) {
 
     const { t } = useTranslation('translation', { keyPrefix: 'ItemsList' });
 
-    const units = ['pc', 'kg', 'g', 'l', 'ml'];
+    const units = ['pc', 'kg', 'g', 'l', 'ml', ''];
 
 
   return (
@@ -35,15 +36,15 @@ function ItemsList(props: ItemsListProps) {
           <Fragment key={item._id} >
           <ItemView rightIcon={props.rightIcon} leftIcon={props.leftIcon} onItemClicked={props.onItemClicked} open={open} setOpen={setOpen} item={item} onSwipeRight={props.onSwipeRight} onSwipeLeft={props.onSwipeLeft}/>
           {props.amounts && <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
-            {item.unit === 'pc' ? <Counter handleChange={(e) => props.onAmountChanged!(item._id, e.target.value)} addCounter={() => props.addCounter!(item._id)} removeCounter={() => props.removeCounter!(item._id)} count={props.amounts?.find(obj => obj.id === item._id)!.amount!} />: 
-                        <TextField required name="amount" onChange={(e) => props.onAmountChanged!(item._id, e.target.value)} color='success' type="number" className='white-color-input' fullWidth value={props.amounts?.find(obj => obj.id === item._id)!.amount!} label={t('amount')} variant="outlined" />}
+            {item.unit && (item.unit === 'pc' ? <Counter handleChange={(e) => props.onAmountChanged!(item._id, e.target.value)} addCounter={() => props.addCounter!(item._id)} removeCounter={() => props.removeCounter!(item._id)} count={props.amounts?.find(obj => obj.id === item._id)!.amount!} />: 
+                        <TextField required name="amount" onChange={(e) => props.onAmountChanged!(item._id, e.target.value)} color='success' type="number" className='white-color-input' fullWidth value={props.amounts?.find(obj => obj.id === item._id)!.amount!} label={t('amount')} variant="outlined" />)}
             <FormControl fullWidth>
-                <InputLabel disabled={true} color="success" id="unit-label">{t('unit')}</InputLabel>
+                <InputLabel color="success" id="unit-label">{t('unit')}</InputLabel>
                 <Select
                     labelId="unit-label"
                     id="unit"
-                    disabled={true}
                     color="success"
+                    onChange={(e) => props.onSelectionChange!(e, item._id)}
                     value={item.unit}
                     label={t('unit')}
                 >
