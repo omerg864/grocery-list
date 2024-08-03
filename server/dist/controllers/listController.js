@@ -20,6 +20,7 @@ const itemModel_1 = __importDefault(require("../models/itemModel"));
 const listItemModel_1 = __importDefault(require("../models/listItemModel"));
 const cloudinary_1 = require("cloudinary");
 const bundleModel_1 = __importDefault(require("../models/bundleModel"));
+const streamifier_1 = __importDefault(require("streamifier"));
 const getLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const lists = yield listModel_1.default.find({ users: user._id });
@@ -143,12 +144,22 @@ const createItem = (name, description, unit, category, user, img) => __awaiter(v
             api_key: process.env.CLOUDINARY_API_KEY,
             api_secret: process.env.CLOUDINARY_API_SECRET,
         });
-        console.log(img.path);
-        const result = yield cloudinary_1.v2.uploader.upload(img.path, {
+        console.log(img);
+        const stream = yield cloudinary_1.v2.uploader.upload_stream({
             folder: 'SuperCart/items',
             public_id: `${user}/${item._id}`,
+        }, (error, result) => {
+            if (error) {
+                throw new Error(error.message);
+            }
+            if (!result) {
+                item.img = '';
+            }
+            else {
+                item.img = result.secure_url;
+            }
         });
-        item.img = result.secure_url;
+        streamifier_1.default.createReadStream(img.buffer).pipe(stream);
         yield item.save();
     }
     return item;
@@ -178,7 +189,6 @@ const addNewItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('Not Authorized');
     }
     let listItem, item;
-    console.log(req.file);
     if (saveItem) {
         item = yield createItem(name, description, unit, category, user._id, req.file);
         listItem = yield createListItem(name, description, unit, amount, category, list._id, item.img);

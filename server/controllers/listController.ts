@@ -12,6 +12,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import Bundle from '../models/bundleModel';
 import { ItemDocument } from '../interface/itemInterface';
 import { ListItemDocument } from '../interface/listItemInterface';
+import streamifier from "streamifier";
 
 const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -178,12 +179,24 @@ const createItem = async (
 			api_key: process.env.CLOUDINARY_API_KEY,
 			api_secret: process.env.CLOUDINARY_API_SECRET,
 		});
-		console.log(img.path);
-		const result = await cloudinary.uploader.upload(img.path, {
-			folder: 'SuperCart/items',
-			public_id: `${user}/${item._id}`,
-		});
-		item.img = result.secure_url;
+		console.log(img);
+		const stream = await cloudinary.uploader.upload_stream(
+			{
+				folder: 'SuperCart/items',
+				public_id: `${user}/${item._id}`,
+			},
+			(error, result) => {
+			  if (error) {
+				throw new Error(error.message);
+			  }
+			  if (!result) {
+			  	item.img = '';
+			  } else {
+				item.img = result.secure_url;
+			  }
+			}
+		  );
+		streamifier.createReadStream(img.buffer).pipe(stream);
 		await item.save();
 	}
 	return item;
@@ -218,7 +231,6 @@ const addNewItem = asyncHandler(
 			throw new Error('Not Authorized');
 		}
 		let listItem, item;
-		console.log(req.file);
 		if (saveItem) {
 			item = await createItem(
 				name,
