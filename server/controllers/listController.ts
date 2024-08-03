@@ -158,6 +158,27 @@ const createListItem = async (
 	return newItem;
 };
 
+const uploadToCloudinary = (imgBuffer: Buffer, folder: string, publicId: string): Promise<string> => {
+	return new Promise((resolve, reject) => {
+	  const stream = cloudinary.uploader.upload_stream(
+		{
+		  folder: folder,
+		  public_id: publicId,
+		},
+		(error, result) => {
+		  if (error) {
+			return reject(error);
+		  }
+		  if (!result) {
+			return reject(new Error('No result from Cloudinary'));
+		  }
+		  resolve(result.secure_url);
+		}
+	  );
+	  streamifier.createReadStream(imgBuffer).pipe(stream);
+	});
+  }
+
 const createItem = async (
 	name: string,
 	description: string,
@@ -180,23 +201,7 @@ const createItem = async (
 			api_secret: process.env.CLOUDINARY_API_SECRET,
 		});
 		console.log(img);
-		const stream = await cloudinary.uploader.upload_stream(
-			{
-				folder: 'SuperCart/items',
-				public_id: `${user}/${item._id}`,
-			},
-			(error, result) => {
-			  if (error) {
-				throw new Error(error.message);
-			  }
-			  if (!result) {
-			  	item.img = '';
-			  } else {
-				item.img = result.secure_url;
-			  }
-			}
-		  );
-		streamifier.createReadStream(img.buffer).pipe(stream);
+		item.img = await uploadToCloudinary(img.buffer, 'SuperCart/items', `${user}/${item._id}`);
 		await item.save();
 	}
 	return item;

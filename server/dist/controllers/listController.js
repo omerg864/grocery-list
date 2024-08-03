@@ -130,6 +130,23 @@ const createListItem = (name, description, unit, amount, category, list, img) =>
     }
     return newItem;
 });
+const uploadToCloudinary = (imgBuffer, folder, publicId) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary_1.v2.uploader.upload_stream({
+            folder: folder,
+            public_id: publicId,
+        }, (error, result) => {
+            if (error) {
+                return reject(error);
+            }
+            if (!result) {
+                return reject(new Error('No result from Cloudinary'));
+            }
+            resolve(result.secure_url);
+        });
+        streamifier_1.default.createReadStream(imgBuffer).pipe(stream);
+    });
+};
 const createItem = (name, description, unit, category, user, img) => __awaiter(void 0, void 0, void 0, function* () {
     const item = yield itemModel_1.default.create({
         name,
@@ -145,21 +162,7 @@ const createItem = (name, description, unit, category, user, img) => __awaiter(v
             api_secret: process.env.CLOUDINARY_API_SECRET,
         });
         console.log(img);
-        const stream = yield cloudinary_1.v2.uploader.upload_stream({
-            folder: 'SuperCart/items',
-            public_id: `${user}/${item._id}`,
-        }, (error, result) => {
-            if (error) {
-                throw new Error(error.message);
-            }
-            if (!result) {
-                item.img = '';
-            }
-            else {
-                item.img = result.secure_url;
-            }
-        });
-        streamifier_1.default.createReadStream(img.buffer).pipe(stream);
+        item.img = yield uploadToCloudinary(img.buffer, 'SuperCart/items', `${user}/${item._id}`);
         yield item.save();
     }
     return item;
