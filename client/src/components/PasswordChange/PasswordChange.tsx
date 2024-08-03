@@ -5,6 +5,9 @@ import PasswordRules from '../PasswordRules/PasswordRules';
 import GlassButton from '../GlassButton/GlassButton';
 import { MdLockReset } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
+import Cookies from 'universal-cookie';
+import { put } from '../../utils/apiRequest';
+import { toast } from 'react-toastify';
 
 
 interface PasswordChangeProps {
@@ -16,13 +19,17 @@ function PasswordChange(props: PasswordChangeProps) {
   const outerTheme = useTheme();
   const [form, setForm] = useState<{password: string, password2: string}>({password: '', password2: ''});
   const { t } = useTranslation('translation', { keyPrefix: 'ResetPassword' });
+  const cookies = new Cookies();
 
-  const resetPassword = () => {
+  const resetPassword = async() => {
     props.setIsLoading(true);
-    setTimeout(() => {
-      props.setIsLoading(false);
+    await put('/api/user/update-password', form, (_) => {
+      toast.success(t('passwordChanged'));
       props.setTab(0);
-    }, 1000);
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`
+    });
+    props.setIsLoading(false);
   }
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {

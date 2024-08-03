@@ -10,8 +10,7 @@ const ListItemScheme = new mongoose.Schema<ListItemDocument>({
         type: String
     },
     unit: {
-        type: String,
-        required: true
+        type: String
     },
     img: {
         type: String

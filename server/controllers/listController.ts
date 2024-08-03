@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import { Request, Response, NextFunction } from 'express';
-import { ObjectId } from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 import { RequestWithUser } from '../interface/requestInterface';
 import List from '../models/listModel';
 import { UserDocument } from '../interface/userInterface';
@@ -10,6 +10,8 @@ import Item from '../models/itemModel';
 import ListItem from '../models/listItemModel';
 import { unlinkAsync } from '../config/upload';
 import { v2 as cloudinary } from 'cloudinary';
+import Bundle from '../models/bundleModel';
+import { ItemDocument } from '../interface/itemInterface';
 
 const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -131,7 +133,7 @@ const createListItem = async (
 			unit,
 			amount,
 			category,
-            list,
+			list,
 			img: img as string,
 		});
 	}
@@ -170,7 +172,7 @@ const createItem = async (
 	return item;
 };
 
-const addItem = asyncHandler(
+const addNewItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { name, description, unit, amount, category, saveItem } =
@@ -237,4 +239,208 @@ const addItem = asyncHandler(
 	}
 );
 
-export { getLists, getList, addList, addItem };
+const addExistingItem = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { amount } = req.body;
+		const { id, item } = req.params;
+		const list = await List.findById(id);
+		if (!list) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
+		let found = false;
+		list.users.forEach((listUser) => {
+			if (
+				(listUser as ObjectId).toString() ===
+				(user._id as ObjectId).toString()
+			) {
+				found = true;
+			}
+		});
+		if (!found) {
+			res.status(403);
+			throw new Error('Not Authorized');
+		}
+		const ItemContext = await Item.findById(item);
+		if (!ItemContext) {
+			res.status(404);
+			throw new Error('Item Not Found');
+		}
+		const listItem = await ListItem.create({
+			name: ItemContext.name,
+			description: ItemContext.description,
+			unit: ItemContext.unit,
+			amount,
+			category: ItemContext.category,
+			list: list._id,
+			img: ItemContext.img,
+		});
+		(list.items as ObjectId[]).push(listItem._id as ObjectId);
+		await list.save();
+		res.status(200).json({
+			success: true,
+			item: listItem,
+		});
+	}
+);
+
+const checkListAndItem = async (listId: string, itemId: string, res: Response, userId: unknown) => {
+	const list = await List.findById(listId);
+	if (!list) {
+		res.status(404);
+		throw new Error('List Not Found');
+	}
+	let found = false;
+	list.users.forEach((listUser) => {
+		if (
+			(listUser as ObjectId).toString() ===
+			(userId as ObjectId).toString()
+		) {
+			found = true;
+		}
+	});
+	if (!found) {
+		res.status(403);
+		throw new Error('Not Authorized');
+	}
+	const listItem = await ListItem.findById(itemId);
+	if (!listItem) {
+		res.status(404);
+		throw new Error('Item Not Found');
+	}
+	return { list, listItem };
+}
+
+const sendToDeleted = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id, item } = req.params;
+		const { list, listItem } = await checkListAndItem(id, item, res, user._id);
+		(list.items as ObjectId[]) = (list.items as ObjectId[]).filter(
+			(listItem) => (listItem as ObjectId).toString() !== item.toString()
+		);
+		(list.deletedItems as ObjectId[]) = [
+			...(list.deletedItems as ObjectId[]),
+			item as unknown as ObjectId,
+		];
+		await list.save();
+		res.status(200).json({
+			success: true,
+			item: listItem,
+		});
+	}
+);
+
+const sendToBought = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id, item } = req.params;
+		const { list, listItem } = await checkListAndItem(id, item, res, user._id);
+		(list.items as ObjectId[]) = (list.items as ObjectId[]).filter(
+			(listItem) => (listItem as ObjectId).toString() !== item.toString()
+		);
+		(list.boughtItems as ObjectId[]) = [
+			...(list.boughtItems as ObjectId[]),
+			item as unknown as ObjectId,
+		];
+		await list.save();
+		res.status(200).json({
+			success: true,
+			item: listItem,
+		});
+	}
+);
+
+const restoreFromDeleted = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id, item } = req.params;
+		const { list, listItem } = await checkListAndItem(id, item, res, user._id);
+		(list.deletedItems as ObjectId[]) = (list.deletedItems as ObjectId[]).filter(
+			(listItem) => (listItem as ObjectId).toString() !== item.toString()
+		);
+		(list.items as ObjectId[]) = [
+			...(list.items as ObjectId[]),
+			item as unknown as ObjectId,
+		];
+		await list.save();
+		res.status(200).json({
+			success: true,
+			item: listItem,
+		});
+	}
+);
+
+const restoreFromBought = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id, item } = req.params;
+		const { list, listItem } = await checkListAndItem(id, item, res, user._id);
+		(list.boughtItems as ObjectId[]) = (list.boughtItems as ObjectId[]).filter(
+			(listItem) => (listItem as ObjectId).toString() !== item.toString()
+		);
+		(list.items as ObjectId[]) = [
+			...(list.items as ObjectId[]),
+			item as unknown as ObjectId,
+		];
+		await list.save();
+		res.status(200).json({
+			success: true,
+			item: listItem,
+		});
+	}
+);
+
+
+const addBundleItems = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id, bundle } = req.params;
+		const { amounts } = req.body;
+		const list = await List.findById(id);
+		if (!list) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
+		let found = false;
+		list.users.forEach((listUser) => {
+			if (
+				(listUser as ObjectId).toString() ===
+				(user._id as ObjectId).toString()
+			) {
+				found = true;
+			}
+		});
+		if (!found) {
+			res.status(403);
+			throw new Error('Not Authorized');
+		}
+		const bundleContext = await Bundle.findById(bundle).populate('items');
+		if (!bundleContext) {
+			res.status(404);
+			throw new Error('Bundle Not Found');
+		}
+		for (let i = 0; i < bundleContext.items.length; i++) {
+			const item = bundleContext.items[i] as ItemDocument;
+			console.log(item._id);
+			const amount = amounts.find((a: {id: string , amount: number | undefined}) => a.id === (item._id as ObjectId).toString())!.amount;
+			const listItem = await ListItem.create({
+				name: item.name,
+				description: item.description,
+				unit: item.unit,
+				amount: amount,
+				category: item.category,
+				list: list._id,
+				img: item.img,
+			});
+			list.items = [...(list.items as ObjectId[]), listItem._id as ObjectId];
+		}
+		await list.save();
+		res.status(200).json({
+			success: true
+		});
+	}
+)
+
+export { getLists, getList, addList, addNewItem, addExistingItem, sendToDeleted, sendToBought, restoreFromDeleted, restoreFromBought, addBundleItems };

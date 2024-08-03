@@ -58,15 +58,33 @@ function ItemEdit() {
 
   const onSelectionChange = (e: SelectChangeEvent) => {
     const value = e.target.value as string;
-    setItemState(prev => ({...prev, unit: value}));
+    if (item) {
+      let amount = (itemState as ListItem).amount;
+      if (value !== "") {
+        amount = 1;
+      } else {
+        amount = 0;
+      }
+      setItemState(prev => ({...prev, unit: value, amount}));
+    } else {
+      setItemState(prev => ({...prev, unit: value}));
+    }
   }
 
   const addCounter = () => {
-    setItemState(prev => ({...prev, amount: (prev as ListItem).amount! + 1}));
+    if (typeof (itemState as ListItem).amount === 'number') {
+      setItemState(prev => ({...prev, amount: ((prev as ListItem).amount! as number) + 1}));
+    } else {
+      setItemState(prev => ({...prev, amount: 1}));
+    }
   }
 
   const removeCounter = () => {
-    setItemState(prev => ({...prev, amount: (prev as ListItem).amount! - 1}));
+    if (typeof (itemState as ListItem).amount === 'number' && ((itemState as ListItem).amount! as number) > 1) {
+      setItemState(prev => ({...prev, amount: ((prev as ListItem).amount! as number) - 1}));
+    } else {
+      setItemState(prev => ({...prev, amount: 1}));
+    }
   }
 
   const updateItem = async () => {
@@ -112,7 +130,7 @@ function ItemEdit() {
 
   const getItem = async () => {
     setIsLoading(true);
-    await get(`/api/item/${id}`, (data) => {
+    await get(api_url, (data) => {
       setItemState(data.item);
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,

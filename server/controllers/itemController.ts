@@ -5,9 +5,9 @@ import { ItemDocument } from '../interface/itemInterface';
 import Item from '../models/itemModel';
 import { RequestWithUser } from '../interface/requestInterface';
 import { itemExclude } from '../utils/modelsConst';
-import List from '../models/listModel';
 import { v2 as cloudinary } from 'cloudinary';
 import { unlinkAsync } from '../config/upload';
+import { deleteImage } from '../utils/functions';
 
 const getItems = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -118,16 +118,8 @@ const updateItem = asyncHandler(
 				api_key: process.env.CLOUDINARY_API_KEY,
 				api_secret: process.env.CLOUDINARY_API_SECRET,
 			});
-			const public_id = `SuperCart/items/${user._id}/${id}`;
 			if (item.img) {
-				await cloudinary.uploader.destroy(
-					public_id,
-					(error, result) => {
-						if (error) {
-							console.log(error);
-						}
-					}
-				);
+				deleteImage(item.img, true);
 			}
 			const result = await cloudinary.uploader.upload(req.file.path, {
 				folder: 'SuperCart/items',
@@ -161,31 +153,15 @@ const deleteItem = asyncHandler(
 			res.status(401);
 			throw new Error('Not authorized');
 		}
-		const foundLists = await List.find({
-			$or: [
-				{ items: item._id },
-				{ boughtItems: item._id },
-				{ deletedItems: item._id },
-			],
+		cloudinary.config({
+			cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+			api_key: process.env.CLOUDINARY_API_KEY,
+			api_secret: process.env.CLOUDINARY_API_SECRET,
 		});
-		if (foundLists.length) {
-			item.deleted = true;
-			await item.save();
+		if (item.img) {
+			await Promise.all([deleteImage(item.img, true), item.deleteOne()]);
 		} else {
-			cloudinary.config({
-				cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-				api_key: process.env.CLOUDINARY_API_KEY,
-				api_secret: process.env.CLOUDINARY_API_SECRET,
-			});
-			const public_id = `SuperCart/items/${user._id}/${id}`;
-			await Promise.all([
-				cloudinary.uploader.destroy(public_id, (error, result) => {
-					if (error) {
-						console.log(error);
-					}
-				}),
-				item.deleteOne(),
-			]);
+			await item.deleteOne();
 		}
 		res.status(200).json({
 			success: true,

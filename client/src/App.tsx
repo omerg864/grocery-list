@@ -86,7 +86,7 @@ function App() {
         <Route path="/lists/:id/select/item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemSelect /></ProtectedRoute>} />
         <Route path="/lists/:id/add/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemAdd /></ProtectedRoute>} />
         <Route path="/lists/:id/new/item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemNew /></ProtectedRoute>} />
-        <Route path="/lists/:id/add/bundle/:bundle" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleAdd /></ProtectedRoute>} />
+        <Route path="/lists/:id/add/bundle/:bundleId" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleAdd /></ProtectedRoute>} />
         <Route path="/lists/:id/add/bundle/:bundle/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         {/* items routes */}
         <Route path="/items" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Items /></ProtectedRoute>} />

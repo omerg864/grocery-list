@@ -8,6 +8,7 @@ interface Item {
 	img?: string;
 	category?: string;
 	imageMemo?: ReactNode;
+	stateUpdated?: Date;
 }
 
 

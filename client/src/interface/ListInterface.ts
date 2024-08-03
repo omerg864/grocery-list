@@ -11,6 +11,7 @@ interface List {
     updatedAt: string;
     createdAt: string;
 	owner: boolean;
+	stateUpdated?: Date;
 }
 
 export default List;

@@ -1,4 +1,4 @@
-import Item from "../../interface/ItemInterface";
+import Item, { ItemNew } from "../../interface/ItemInterface";
 import { Fragment } from "react";
 import './ItemDetails.css';
 import { FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, ThemeProvider, useTheme } from "@mui/material";
@@ -8,12 +8,13 @@ import Counter from '../Counter/Counter';
 import formTheme from "../../themes/formTheme";
 import { MdEdit } from "react-icons/md";
 import { IoIosShare } from "react-icons/io";
+import ListItem, { ListItemNew} from "../../interface/ListItemInterface";
 
 
 
 
 interface ItemDetailsProps {
-    item: Item | Omit<Item, '_id'> | Omit<Item, 'amount'> & {amount: number | string};
+    item: Item | ListItem | ListItemNew | ItemNew;
     disabled?: boolean;
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     addCounter?: () => void;
@@ -30,7 +31,7 @@ function ItemDetails(props: ItemDetailsProps) {
 
     const outerTheme = useTheme();
 
-    const units = ['pc', 'kg', 'g', 'l', 'ml'];
+    const units = ['pc', 'kg', 'g', 'l', 'ml', ''];
 
     const onImgClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
         e.preventDefault();
@@ -80,9 +81,9 @@ function ItemDetails(props: ItemDetailsProps) {
                 <TextareaAutosize placeholder={t('description')} name="description" value={props.item.description} onChange={props.onChange} disabled={props.disabled} />
                 <ThemeProvider theme={formTheme(outerTheme)}>
                 <TextField name="category" color='success' className='white-color-input' fullWidth value={props.item.category} InputLabelProps={{ disabled: props.disabled}} label={t('category')} onChange={props.onChange} disabled={props.disabled} variant="outlined" />
-                {props.item.amount ? <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
-                {props.item.unit === 'pc' ? <Counter handleChange={props.onChange} addCounter={props.addCounter} removeCounter={props.removeCounter} count={props.item.amount} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false} />: 
-                        <TextField required name="amount" onChange={props.onChange} color='success' type="number" className='white-color-input' fullWidth value={props.item.amount} label={t('amount')} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false}  variant="outlined" />}
+                {(props.item as ListItem).amount ? <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
+                {props.item.unit !== '' && (props.item.unit === 'pc' ? <Counter handleChange={props.onChange} addCounter={props.addCounter} removeCounter={props.removeCounter} count={(props.item as ListItem).amount!} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false} />: 
+                        <TextField required name="amount" onChange={props.onChange} color='success' type="number" className='white-color-input' fullWidth value={(props.item as ListItem).amount} label={t('amount')} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false}  variant="outlined" />)}
                         <FormControl fullWidth>
                             <InputLabel disabled={props.disabled} color="success" id="unit-label">{t('unit')}</InputLabel>
                             <Select

@@ -1,9 +1,10 @@
 import { CardActionArea, Typography } from "@mui/material"
 import Item from "../../interface/ItemInterface"
+import ListItem from "../../interface/ListItemInterface";
 
 
 interface ItemListDisplayProps {
-    item: Item;
+    item: Item | ListItem;
 }
 
 
@@ -15,7 +16,7 @@ function ItemListDisplay(props: ItemListDisplayProps) {
             <div className="item-details">
                 <Typography sx={{margin: 0, fontWeight: 700}} variant='h6'>{props.item.name}</Typography>
                 <Typography sx={{minHeight: '1.245rem'}} variant='caption'>{props.item.description}</Typography>
-                {props.item.amount && <Typography sx={{margin: 0, fontWeight: 700}} variant='h6'>{props.item.amount} {props.item.unit}</Typography>}
+                {props.item.unit && ((props.item as ListItem).amount && <Typography sx={{margin: 0, fontWeight: 700}} variant='h6'>{(props.item as ListItem).amount} {props.item.unit}</Typography>)}
             </div>
         </div>
     </CardActionArea>

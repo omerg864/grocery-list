@@ -8,12 +8,13 @@ import BundleList from '../components/BundleList/BundleList';
 import ItemsList from '../components/ItemsList/ItemsList';
 import Cookies from 'universal-cookie';
 import { useRecoilState } from 'recoil';
-import { listAtom } from '../recoil/atoms';
+import { bundleAtom, itemAtom } from '../recoil/atoms';
 import { get } from '../utils/apiRequest';
 import Item from '../interface/ItemInterface';
 import MemoizedImage from '../components/MemoizedImage/MemoizedImage';
 import Bundle from '../interface/BundleInterface';
 import { BUNDLE_SELECTION_LIMIT, ITEM_SELECTION_LIMIT } from '../utils/requestsConst';
+import ListItem from '../interface/ListItemInterface';
 
 function Selection() {
 
@@ -22,7 +23,8 @@ function Selection() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [bundles, setBundles] = useState<Bundle[]>([]);
     const [items, setItems] = useState<Item[]>([]);
-    const [list, _] = useRecoilState(listAtom);
+    const [_, setItem] = useRecoilState<ListItem>(itemAtom);
+    const [__, setBundle] = useRecoilState<Bundle>(bundleAtom);
     const { id } = useParams();
     const cookies = new Cookies();
 
@@ -35,10 +37,14 @@ function Selection() {
     }
 
     const onItemClicked = (itemId: string) => {
+        const item = items.find((item) => item._id === itemId)!;
+        setItem({...item, amount: 1, stateUpdated: new Date()});
         navigate(`/lists/${id}/add/item/${itemId}`);
     }
 
     const onBundleClicked = (bundleId: string) => {
+        const bundle = bundles.find((bundle) => bundle._id === bundleId)!;
+        setBundle({...bundle, stateUpdated: new Date()});
         navigate(`/lists/${id}/add/bundle/${bundleId}`);
     }
 
@@ -64,7 +70,7 @@ function Selection() {
 
     const getAll = async () => {
         setIsLoading(true);
-        Promise.all([getItems(), getBundles()])
+        await Promise.all([getItems(), getBundles()])
         setIsLoading(false);
     }
 

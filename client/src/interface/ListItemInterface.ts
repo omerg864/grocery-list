@@ -4,11 +4,12 @@ interface ListItem {
 	_id: string;
 	name: string;
 	description?: string;
-	amount?: number;
+	amount?: number | string;
 	unit: string;
 	img?: string;
 	category?: string;
 	imageMemo?: ReactNode;
+	stateUpdated?: Date;
 }
 
 export interface ListItemNew {

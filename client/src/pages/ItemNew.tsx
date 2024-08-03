@@ -85,7 +85,11 @@ function ItemNew() {
     formData.append('description', itemState.description ? itemState.description : "");
     formData.append('unit', itemState.unit ? itemState.unit : "");
     if (id) {
-      formData.append('amount', (itemState as ListItemNew).amount ? (itemState as ListItemNew).amount!.toString() : "1");
+      if (!itemState.unit) {
+        formData.append('amount', '0');
+      } else {
+        formData.append('amount', (itemState as ListItemNew).amount ? (itemState as ListItemNew).amount!.toString() : "1");
+      }
       formData.append('saveItem', (itemState as ListItemNew).saveItem ? (itemState as ListItemNew).saveItem.toString() : "true");
     }
     await post(api_url, formData, (_) => {

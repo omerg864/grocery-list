@@ -40,7 +40,6 @@ const login = asyncHandler(
 			res.status(400);
 			throw new Error('Please verify your email');
 		}
-		console.log(email, password);
 		const isMatch = await bcrypt.compare(password, user.password!);
 		if (!isMatch) {
 			res.status(400);

@@ -1,4 +1,3 @@
-import Item from "../interface/ItemInterface";
 import Header from "../components/Header/Header";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -8,6 +7,12 @@ import { toast } from "react-toastify";
 import Loading from "../components/Loading/Loading";
 import GlassButton from "../components/GlassButton/GlassButton";
 import { MdAdd } from "react-icons/md";
+import ListItem from "../interface/ListItemInterface";
+import { useRecoilState } from "recoil";
+import { itemAtom } from "../recoil/atoms";
+import { getMinutesBetweenDates } from "../utils/functions";
+import { post } from "../utils/apiRequest";
+import Cookies from "universal-cookie";
 
 
 
@@ -16,18 +21,19 @@ function ItemAdd() {
   const { id } = useParams<{ id: string, item: string, bundle: string }>();
   const { t } = useTranslation('translation', { keyPrefix: 'ItemAdd' });
   const navigate = useNavigate();
-  const [itemState, setItemState] = useState< Omit<Item, 'amount'> & {amount: number | string}>({
-    _id: "",
-    name: '',
-    category: "",
-    img: "",
-    description: "",
-    unit: "",
-    amount: 0
-  });
+  const [itemState, setItemState] = useRecoilState<ListItem>(itemAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const cookies = new Cookies();
 
   const back = () => {
+    setItemState({
+      _id: '',
+      name: '',
+      category: '',
+      amount: 0,
+      unit: 'pc',
+      description: '',
+    });
     navigate(`/lists/${id}/select`);
   }
 
@@ -54,18 +60,17 @@ function ItemAdd() {
 
   const addCounter = () => {
     let amount = itemState.amount;
-    console.log(typeof amount);
-    if (typeof amount === 'string') {
-      amount = 1;
-    } else {
+    if (typeof amount === 'number') {
       amount = amount + 1;
+    } else {
+      amount = 1;
     }
     setItemState({...itemState, amount});
   }
 
   const removeCounter = () => {
     let amount = itemState.amount;
-    if (amount === "" || amount as number <= 1) {
+    if (typeof amount !== 'number' || amount as number <= 1) {
       amount = 1;
     } else {
       amount = amount as number - 1;
@@ -75,29 +80,39 @@ function ItemAdd() {
 
   const addItem = async () => {
     setIsLoading(true);
-    try {
-        // await addItem(itemState);
-        setIsLoading(false);
-        navigate(`/lists/${id}/select`);
-    } catch (error) {
-      setIsLoading(false);
+    let formData = new FormData();
+    if (!itemState.unit) {
+      formData.append('amount', '0');
+    } else {
+      formData.append('amount', itemState.amount!.toString());
     }
+    await post(`/api/list/${id}/item/${itemState._id}`, formData, (_) => {
+      setItemState({
+        _id: '',
+        name: '',
+        category: '',
+        amount: 0,
+        unit: 'pc',
+        description: '',
+      });
+      toast.success(t('ItemAdded'));
+      navigate(`/lists/${id}/select`);
+    }, {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    });
+    setIsLoading(false);
+  }
+
+  const getItem = async () => {
+    setIsLoading(true);
+    setIsLoading(false);
   }
 
   useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setItemState({
-        _id: "1",
-        name: 'Banana',
-        category: "Fruits",
-        img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF",
-        description: "only yellow ones",
-        unit: "pc",
-        amount: 1
-      });
-      setIsLoading(false);
-    }, 1000);
+    if (!itemState._id || itemState._id !== id || getMinutesBetweenDates(itemState.stateUpdated as Date, new Date()) > 10) {
+      getItem();
+    }
   }, []);
 
   if (isLoading) {

@@ -150,6 +150,13 @@
         "saveItem": "Save Item",
         "itemAdded": "Item added to the list"
     },
+    "ItemAdd": {
+        "add": "Add Item",
+        "shareTitle": "Item Sharing",
+        "shareText": "Share this link with other users for them to get this item.",
+        "linkCopied": "Link copied to clipboard. Share it with other users for them to get this item.",
+        "ItemAdded": "Item added to the list"
+    },
     "Bundles": {
         "bundles": "Bundles",
         "newBundle": "New Bundle",

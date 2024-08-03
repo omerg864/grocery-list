@@ -71,15 +71,37 @@ function List() {
     }
 
     const boughtItem = (id: string) => {
+        const item = items.find((item) => item._id === id)!;
         setDisplayList((prev) => prev.filter((item) => item._id !== id));
         setItems((prev) => prev.filter((item) => item._id !== id));
         setBoughtItems((prev) => [...prev, items.find((item) => item._id === id)!]);
+        get(`/api/list/${list._id}/item/${id}/bought`, (_) => {}, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        }, (message) => {
+            toast.error(message);
+            if (filterList === 0) {
+                setDisplayList((prev) => [...prev, item]);
+            }
+            setItems((prev) => [...prev, item]);
+            setBoughtItems((prev) => prev.filter((item) => item._id !== id));
+        });
     }
 
     const deleteItem = (id: string) => {
+        const item = items.find((item) => item._id === id)!;
         setDisplayList((prev) => prev.filter((item) => item._id !== id));
         setItems((prev) => prev.filter((item) => item._id !== id));
         setDeletedItems((prev) => [...prev, items.find((item) => item._id === id)!]);
+        get(`/api/list/${list._id}/item/${id}/delete`, (_) => {}, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        }, (message) => {
+            toast.error(message);
+            if (filterList === 0) {
+                setDisplayList((prev) => [...prev, item]);
+            }
+            setItems((prev) => [...prev, item]);
+            setDeletedItems((prev) => prev.filter((item) => item._id !== id));
+        });
     }
 
     const restoreItemDeleted = (id: string) => {
@@ -87,6 +109,16 @@ function List() {
         setDisplayList((prev) => prev.filter((item) => item._id !== id));
         setDeletedItems((prev) => prev.filter((item) => item._id !== id));
         setItems((prev) => [...prev, item!]);
+        get(`/api/list/${list._id}/item/${id}/restore`, (_) => {}, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        }, (message) => {
+            toast.error(message);
+            if (filterList === 2) {
+                setDisplayList((prev) => [...prev, item!]);
+            }
+            setItems((prev) => [...prev, item!]);
+            setDeletedItems((prev) => prev.filter((item) => item._id !== id));
+        });
     }
 
     const restoreItemBought = (id: string) => {
@@ -94,6 +126,16 @@ function List() {
         setDisplayList((prev) => prev.filter((item) => item._id !== id));
         setBoughtItems((prev) => prev.filter((item) => item._id !== id));
         setItems((prev) => [...prev, item!]);
+        get(`/api/list/${list._id}/item/${id}/shop`, (_) => {}, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        }, (message) => {
+            toast.error(message);
+            if (filterList === 1) {
+                setDisplayList((prev) => [...prev, item!]);
+            }
+            setItems((prev) => [...prev, item!]);
+            setBoughtItems((prev) => prev.filter((item) => item._id !== id));
+        });
     }
 
     const deleteUser = () => {

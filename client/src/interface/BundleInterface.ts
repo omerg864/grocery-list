@@ -5,6 +5,7 @@ interface Bundle {
     title: string;
     description?: string;
     items: Item[];
+    stateUpdated?: Date;
 }
 
 export default Bundle;
