@@ -64,7 +64,8 @@
         "email": "Email",
         "password": "Password",
         "forgotPassword": "Forgot password?",
-        "noAccount": "Don't have an account?"
+        "noAccount": "Don't have an account?",
+        "verifyEmailResend": "please verify your email address to login. you can resend the verification email here."
     },
     "Register": {
         "register": "Register",
@@ -112,7 +113,10 @@
         "resetPasswordRequest": "Reset Password Request",
         "email": "Email",
         "sendEmail": "Send Email",
-        "rememberPassword": "I remembered my password"
+        "rememberPassword": "I remembered my password",
+        "emailSent": "An email has been sent to you with instructions on how to reset your password.",
+        "emailRequired": "Email is required",
+        "invalidEmail": "Invalid email"
     },
     "PasswordRules" : {
         "start": "Password must be:",

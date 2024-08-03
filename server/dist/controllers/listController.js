@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteForMe = exports.deleteForAll = exports.addBundleItems = exports.restoreFromBought = exports.restoreFromDeleted = exports.sendToBought = exports.sendToDeleted = exports.addExistingItem = exports.addNewItem = exports.addList = exports.getList = exports.getLists = void 0;
+exports.deleteAllListsUserDeleted = exports.deletePermanently = exports.restoreList = exports.getDeletedLists = exports.deleteForMe = exports.deleteForAll = exports.addBundleItems = exports.restoreFromBought = exports.restoreFromDeleted = exports.sendToBought = exports.sendToDeleted = exports.addExistingItem = exports.addNewItem = exports.addList = exports.getList = exports.getLists = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const listModel_1 = __importDefault(require("../models/listModel"));
 const modelsConst_1 = require("../utils/modelsConst");
@@ -20,6 +20,7 @@ const itemModel_1 = __importDefault(require("../models/itemModel"));
 const listItemModel_1 = __importDefault(require("../models/listItemModel"));
 const bundleModel_1 = __importDefault(require("../models/bundleModel"));
 const upload_1 = require("../config/upload");
+const functions_1 = require("../utils/functions");
 const getLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const lists = yield listModel_1.default.find({ users: user._id });
@@ -365,8 +366,8 @@ const deleteForAll = (0, express_async_handler_1.default)((req, res, next) => __
         res.status(403);
         throw new Error('Not Authorized');
     }
-    list.users = [user._id];
-    list.deleted = true;
+    list.users = [];
+    list.deletedUsers = [user._id];
     yield list.save();
     res.status(200).json({
         success: true,
@@ -374,7 +375,6 @@ const deleteForAll = (0, express_async_handler_1.default)((req, res, next) => __
 }));
 exports.deleteForAll = deleteForAll;
 const deleteForMe = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    // TODO: implement deleteForMe
     const user = req.user;
     const { id } = req.params;
     const list = yield listModel_1.default.findById(id);
@@ -393,11 +393,166 @@ const deleteForMe = (0, express_async_handler_1.default)((req, res, next) => __a
         res.status(403);
         throw new Error('Not Authorized');
     }
+    let owner = false;
+    if (list.owner.toString() === user._id.toString()) {
+        owner = true;
+    }
+    if (owner) {
+        if (list.users.length > 1) {
+            list.owner = list.users.find((userId) => userId.toString() !== user._id.toString());
+        }
+    }
     list.users = list.users.filter((listUser) => listUser.toString() !==
         user._id.toString());
+    list.deletedUsers = [
+        ...list.deletedUsers,
+        user._id,
+    ];
     yield list.save();
     res.status(200).json({
         success: true,
     });
 }));
 exports.deleteForMe = deleteForMe;
+const getDeletedLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const lists = yield listModel_1.default.find({ deletedUsers: user._id });
+    const listsDisplay = lists.map((list) => (Object.assign(Object.assign({}, list.toObject()), { users: list.users.length, items: list.items.length, deletedItems: list.deletedItems.length, boughtItems: list.boughtItems.length, owner: list.owner.toString() ===
+            user._id.toString() })));
+    res.status(200).json({
+        success: true,
+        lists: listsDisplay,
+    });
+}));
+exports.getDeletedLists = getDeletedLists;
+const restoreList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const { id } = req.params;
+    const list = yield listModel_1.default.findById(id);
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+    if (list.deletedUsers.find((userId) => userId.toString() ===
+        user._id.toString())) {
+        list.deletedUsers = list.deletedUsers.filter((userId) => userId.toString() !==
+            user._id.toString());
+        list.users = [...list.users, user._id];
+        yield list.save();
+        res.status(200).json({
+            success: true,
+        });
+    }
+    else {
+        res.status(403);
+        throw new Error('Not Authorized');
+    }
+}));
+exports.restoreList = restoreList;
+const deletePermanently = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const { id } = req.params;
+    const list = yield listModel_1.default.findById(id).populate('items deletedItems boughtItems');
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+    if (!list.deletedUsers.find((userId) => userId.toString() ===
+        user._id.toString())) {
+        res.status(403);
+        throw new Error('Not Authorized');
+    }
+    let owner = false;
+    if (list.owner.toString() === user._id.toString()) {
+        owner = true;
+    }
+    if (owner) {
+        // full delete
+        for (let i = 0; i < list.items.length; i++) {
+            const item = list.items[i];
+            if (item.img) {
+                (0, functions_1.deleteImage)(item.img);
+            }
+            listItemModel_1.default.deleteOne({ _id: item._id });
+        }
+        for (let i = 0; i < list.deletedItems.length; i++) {
+            const item = list.deletedItems[i];
+            if (item.img) {
+                (0, functions_1.deleteImage)(item.img);
+            }
+            listItemModel_1.default.deleteOne({ _id: item._id });
+        }
+        for (let i = 0; i < list.boughtItems.length; i++) {
+            const item = list.boughtItems[i];
+            if (item.img) {
+                (0, functions_1.deleteImage)(item.img);
+            }
+            listItemModel_1.default.deleteOne({ _id: item._id });
+        }
+        yield listModel_1.default.deleteOne({ _id: list._id });
+    }
+    else {
+        // remove user
+        list.users = list.users.filter((listUser) => listUser.toString() !==
+            user._id.toString());
+        list.deletedUsers = [
+            ...list.deletedUsers,
+            user._id,
+        ];
+        yield list.save();
+    }
+    res.status(200).json({
+        success: true,
+    });
+}));
+exports.deletePermanently = deletePermanently;
+const deleteAllListsUserDeleted = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const lists = yield listModel_1.default.find({ deletedUsers: user._id });
+    for (let i = 0; i < lists.length; i++) {
+        const list = lists[i];
+        let owner = false;
+        if (list.owner.toString() === user._id.toString()) {
+            owner = true;
+        }
+        if (owner) {
+            // full delete
+            for (let i = 0; i < list.items.length; i++) {
+                const item = list.items[i];
+                if (item.img) {
+                    (0, functions_1.deleteImage)(item.img);
+                }
+                listItemModel_1.default.deleteOne({ _id: item._id });
+            }
+            for (let i = 0; i < list.deletedItems.length; i++) {
+                const item = list.deletedItems[i];
+                if (item.img) {
+                    (0, functions_1.deleteImage)(item.img);
+                }
+                listItemModel_1.default.deleteOne({ _id: item._id });
+            }
+            for (let i = 0; i < list.boughtItems.length; i++) {
+                const item = list.boughtItems[i];
+                if (item.img) {
+                    (0, functions_1.deleteImage)(item.img);
+                }
+                listItemModel_1.default.deleteOne({ _id: item._id });
+            }
+            yield listModel_1.default.deleteOne({ _id: list._id });
+        }
+        else {
+            // remove user
+            list.users = list.users.filter((listUser) => listUser.toString() !==
+                user._id.toString());
+            list.deletedUsers = [
+                ...list.deletedUsers,
+                user._id,
+            ];
+            yield list.save();
+        }
+    }
+    res.status(200).json({
+        success: true,
+    });
+}));
+exports.deleteAllListsUserDeleted = deleteAllListsUserDeleted;

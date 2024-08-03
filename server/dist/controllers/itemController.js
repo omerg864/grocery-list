@@ -134,10 +134,10 @@ const deleteItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('Not authorized');
     }
     if (item.img) {
-        yield Promise.all([(0, functions_1.deleteImage)(item.img, true), item.deleteOne()]);
+        yield Promise.all([(0, functions_1.deleteImage)(item.img, true), itemModel_1.default.deleteOne({ _id: id })]);
     }
     else {
-        yield item.deleteOne();
+        yield itemModel_1.default.deleteOne({ _id: id });
     }
     res.status(200).json({
         success: true,

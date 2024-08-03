@@ -12,6 +12,7 @@ import Bundle from '../models/bundleModel';
 import { ItemDocument } from '../interface/itemInterface';
 import { ListItemDocument } from '../interface/listItemInterface';
 import { uploadToCloudinary } from '../config/upload';
+import { deleteImage } from '../utils/functions';
 
 const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -132,7 +133,11 @@ const createListItem = async (
 			category,
 			list,
 		});
-		newItem.img = await uploadToCloudinary(img.buffer, 'SuperCart/listItems', `${newItem._id}`);
+		newItem.img = await uploadToCloudinary(
+			img.buffer,
+			'SuperCart/listItems',
+			`${newItem._id}`
+		);
 		await newItem.save();
 	} else {
 		newItem = await ListItem.create({
@@ -164,7 +169,11 @@ const createItem = async (
 		user: user,
 	});
 	if (img) {
-		item.img = await uploadToCloudinary(img.buffer, 'SuperCart/items', `${user}/${item._id}`);
+		item.img = await uploadToCloudinary(
+			img.buffer,
+			'SuperCart/items',
+			`${user}/${item._id}`
+		);
 		await item.save();
 	}
 	return item;
@@ -488,8 +497,8 @@ const deleteForAll = asyncHandler(
 			res.status(403);
 			throw new Error('Not Authorized');
 		}
-		list.users = [user._id as ObjectId];
-		list.deleted = true;
+		list.users = [];
+		list.deletedUsers = [user._id as ObjectId];
 		await list.save();
 		res.status(200).json({
 			success: true,
@@ -499,7 +508,6 @@ const deleteForAll = asyncHandler(
 
 const deleteForMe = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
-		// TODO: implement deleteForMe
 		const user = (req as RequestWithUser).user;
 		const { id } = req.params;
 		const list = await List.findById(id);
@@ -520,12 +528,205 @@ const deleteForMe = asyncHandler(
 			res.status(403);
 			throw new Error('Not Authorized');
 		}
+		let owner = false;
+		if (list.owner.toString() === (user._id as ObjectId).toString()) {
+			owner = true;
+		}
+		if (owner) {
+			if (list.users.length > 1) {
+				list.owner = list.users.find(
+					(userId) =>
+						userId.toString() !== (user._id as ObjectId).toString()
+				) as ObjectId;
+			}
+		}
 		list.users = (list.users as ObjectId[]).filter(
 			(listUser) =>
 				(listUser as ObjectId).toString() !==
 				(user._id as ObjectId).toString()
 		);
+		list.deletedUsers = [
+			...(list.deletedUsers as ObjectId[]),
+			user._id as ObjectId,
+		];
 		await list.save();
+		res.status(200).json({
+			success: true,
+		});
+	}
+);
+
+const getDeletedLists = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const lists = await List.find({ deletedUsers: user._id });
+		const listsDisplay = lists.map((list) => ({
+			...list.toObject(),
+			users: list.users.length,
+			items: list.items.length,
+			deletedItems: list.deletedItems.length,
+			boughtItems: list.boughtItems.length,
+			owner:
+				(list.owner as ObjectId).toString() ===
+				(user._id as ObjectId).toString(),
+		}));
+		res.status(200).json({
+			success: true,
+			lists: listsDisplay,
+		});
+	}
+);
+
+const restoreList = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id } = req.params;
+		const list: ListDocument | null = await List.findById(id);
+		if (!list) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
+		if (
+			(list.deletedUsers as ObjectId[]).find(
+				(userId) =>
+					(userId as ObjectId).toString() ===
+					(user._id as ObjectId).toString()
+			)
+		) {
+			list.deletedUsers = (list.deletedUsers as ObjectId[]).filter(
+				(userId) =>
+					(userId as ObjectId).toString() !==
+					(user._id as ObjectId).toString()
+			);
+			list.users = [...(list.users as ObjectId[]), user._id as ObjectId];
+			await list.save();
+			res.status(200).json({
+				success: true,
+			});
+		} else {
+			res.status(403);
+			throw new Error('Not Authorized');
+		}
+	}
+);
+
+const deletePermanently = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id } = req.params;
+		const list: ListDocument | null = await List.findById(id).populate(
+			'items deletedItems boughtItems'
+		);
+		if (!list) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
+		if (
+			!(list.deletedUsers as ObjectId[]).find(
+				(userId) =>
+					(userId as ObjectId).toString() ===
+					(user._id as ObjectId).toString()
+			)
+		) {
+			res.status(403);
+			throw new Error('Not Authorized');
+		}
+		let owner = false;
+		if (list.owner.toString() === (user._id as ObjectId).toString()) {
+			owner = true;
+		}
+		if (owner) {
+			// full delete
+			for (let i = 0; i < list.items.length; i++) {
+				const item = list.items[i] as ListItemDocument;
+				if (item.img) {
+					deleteImage(item.img);
+				}
+				ListItem.deleteOne({ _id: item._id });
+			}
+			for (let i = 0; i < list.deletedItems.length; i++) {
+				const item = list.deletedItems[i] as ListItemDocument;
+				if (item.img) {
+					deleteImage(item.img);
+				}
+				ListItem.deleteOne({ _id: item._id });
+			}
+			for (let i = 0; i < list.boughtItems.length; i++) {
+				const item = list.boughtItems[i] as ListItemDocument;
+				if (item.img) {
+					deleteImage(item.img);
+				}
+				ListItem.deleteOne({ _id: item._id });
+			}
+			await List.deleteOne({ _id: list._id });
+		} else {
+			// remove user
+			list.users = (list.users as ObjectId[]).filter(
+				(listUser) =>
+					(listUser as ObjectId).toString() !==
+					(user._id as ObjectId).toString()
+			);
+			list.deletedUsers = [
+				...(list.deletedUsers as ObjectId[]),
+				user._id as ObjectId,
+			];
+			await list.save();
+		}
+		res.status(200).json({
+			success: true,
+		});
+	}
+);
+
+
+const deleteAllListsUserDeleted = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const lists = await List.find({ deletedUsers: user._id });
+		for (let i = 0; i < lists.length; i++) {
+			const list = lists[i];
+			let owner = false;
+			if (list.owner.toString() === (user._id as ObjectId).toString()) {
+				owner = true;
+			}
+			if (owner) {
+				// full delete
+				for (let i = 0; i < list.items.length; i++) {
+					const item = list.items[i] as ListItemDocument;
+					if (item.img) {
+						deleteImage(item.img);
+					}
+					ListItem.deleteOne({ _id: item._id });
+				}
+				for (let i = 0; i < list.deletedItems.length; i++) {
+					const item = list.deletedItems[i] as ListItemDocument;
+					if (item.img) {
+						deleteImage(item.img);
+					}
+					ListItem.deleteOne({ _id: item._id });
+				}
+				for (let i = 0; i < list.boughtItems.length; i++) {
+					const item = list.boughtItems[i] as ListItemDocument;
+					if (item.img) {
+						deleteImage(item.img);
+					}
+					ListItem.deleteOne({ _id: item._id });
+				}
+				await List.deleteOne({ _id: list._id });
+			} else {
+				// remove user
+				list.users = (list.users as ObjectId[]).filter(
+					(listUser) =>
+						(listUser as ObjectId).toString() !==
+						(user._id as ObjectId).toString()
+				);
+				list.deletedUsers = [
+					...(list.deletedUsers as ObjectId[]),
+					user._id as ObjectId,
+				];
+				await list.save();
+			}
+		}
 		res.status(200).json({
 			success: true,
 		});
@@ -545,4 +746,8 @@ export {
 	addBundleItems,
 	deleteForAll,
 	deleteForMe,
+	getDeletedLists,
+	restoreList,
+	deletePermanently,
+	deleteAllListsUserDeleted
 };

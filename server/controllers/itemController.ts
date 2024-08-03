@@ -67,7 +67,7 @@ const getItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id } = req.params;
-		const item = await Item.findById(id).select(itemExclude);
+		const item: ItemDocument | null = await Item.findById(id).select(itemExclude);
 		if (!item) {
 			res.status(404);
 			throw new Error('Item Not Found');
@@ -133,9 +133,9 @@ const deleteItem = asyncHandler(
 			throw new Error('Not authorized');
 		}
 		if (item.img) {
-			await Promise.all([deleteImage(item.img, true), item.deleteOne()]);
+			await Promise.all([deleteImage(item.img, true), Item.deleteOne({ _id: id })]);
 		} else {
-			await item.deleteOne();
+			await Item.deleteOne({ _id: id });
 		}
 		res.status(200).json({
 			success: true,

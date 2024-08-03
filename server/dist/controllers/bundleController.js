@@ -99,7 +99,7 @@ const deleteBundle = (0, express_async_handler_1.default)((req, res, next) => __
         res.status(403);
         throw new Error('Not Authorized');
     }
-    yield bundle.deleteOne();
+    yield bundleModel_1.default.deleteOne({ _id: req.params.id });
     res.status(200).json({
         success: true
     });

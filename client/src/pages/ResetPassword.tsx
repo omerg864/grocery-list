@@ -8,24 +8,23 @@ import formTheme from '../themes/formTheme';
 import GlassButton from '../components/GlassButton/GlassButton';
 import PasswordRules from '../components/PasswordRules/PasswordRules';
 import { MdLockReset } from "react-icons/md";
+import { post } from '../utils/apiRequest';
 
 function ResetPassword() {
   const { t } = useTranslation('translation', { keyPrefix: 'ResetPassword' });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [form, setForm] = useState<{password: string, password2: string}>({password: '', password2: ''});
-
-  let { token } = useParams();
+  const { token } = useParams();
 
   const outerTheme = useTheme();
 
-  const resetPassword = () => {
-    console.log(token);
+  const resetPassword = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate('/login');
-    }, 1000);
+    await post(`/api/user/reset-password/${token}`, { password: form.password}, (_) => {
+       navigate('/login');
+    });
+    setIsLoading(false);
   }
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {

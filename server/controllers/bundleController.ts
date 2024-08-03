@@ -92,7 +92,7 @@ const deleteBundle = asyncHandler(async (req: Request, res: Response, next: Next
         res.status(403);
         throw new Error('Not Authorized');
     }
-    await bundle.deleteOne();
+    await Bundle.deleteOne({ _id: req.params.id });
     res.status(200).json({
         success: true
     });

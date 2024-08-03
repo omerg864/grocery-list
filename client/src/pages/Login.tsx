@@ -12,6 +12,7 @@ import Cookies from "universal-cookie";
 import { addDays } from "../utils/functions";
 import Loading from "../components/Loading/Loading";
 import { post } from "../utils/apiRequest";
+import { toast } from "react-toastify";
 
 
 interface LoginProps {
@@ -36,6 +37,13 @@ function Login(props: LoginProps) {
       cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: date30 });
       props.setIsAuthenticated(true);
       navigate('/');
+    }, {}, (message) => {
+      if (message === 'Please verify your email') {
+        toast.error(t('verifyEmailResend'));
+        navigate('/verify-email');
+      } else {
+        toast.error(message);
+      }
     });
     setIsLoading(false);
   }

@@ -52,6 +52,7 @@ function ItemDetails(props: ItemDetailsProps) {
         newDiv.style.display = 'flex';
         newDiv.style.alignItems = 'center';
         newDiv.style.justifyContent = 'center';
+        newDiv.style.zIndex = '9000';
         newDiv.appendChild(imageCopy);
         document.body.appendChild(newDiv);
         newDiv.addEventListener('click', () => {

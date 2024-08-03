@@ -42,10 +42,12 @@ const ListScheme = new mongoose.Schema<ListDocument>(
 			ref: 'User',
 			required: true,
 		},
-		deleted: {
-			type: Boolean,
-			default: false,
-		}
+		deletedUsers: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'User',
+			},
+		],
 	},
 	{ timestamps: true }
 );

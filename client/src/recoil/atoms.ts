@@ -42,9 +42,41 @@ const bundleAtom = atom<Bundle>({
 	},
 });
 
+
+const bundlesAtom = atom<Bundle[]>({
+	key: 'bundlesState',
+	default: [],
+});
+
+const updatedBundlesAtom = atom<Date>(
+	{
+		key: 'updatedBundles',
+		default: new Date(),
+	}
+)
+
+const itemsAtom = atom<Item[]>({
+	key: 'itemsState',
+	default: [],
+});
+
+const updatedItemsAtom = atom<Date>(
+	{
+		key: 'updatedItems',
+		default: new Date(),
+	}
+)
+
 const listsState = atom<Lists[]>({
 	key: 'listsState',
 	default: []
 });
 
-export { listAtom, listsState, bundleAtom, itemAtom };
+const updatedListsAtom = atom<Date>(
+	{
+		key: 'updatedLists',
+		default: new Date(),
+	}
+)
+
+export { listAtom, listsState, bundleAtom, itemAtom, bundlesAtom, itemsAtom, updatedBundlesAtom, updatedItemsAtom, updatedListsAtom };

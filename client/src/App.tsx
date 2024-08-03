@@ -74,15 +74,15 @@ function App() {
     <Router>
       <Routes>
         {/* lists routes */}
-        <Route path="/" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Lists /></ProtectedRoute>} /> {/* TODO: delete */}
+        <Route path="/" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Lists /></ProtectedRoute>} /> {/* TODO: test delete for me and all */}
         <Route path="/lists/new" element={<ProtectedRoute isAuthenticated={isAuthenticated}><NewList /></ProtectedRoute>} />
-        <Route path="/lists/deleted" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListsDeleted /></ProtectedRoute>} /> {/* TODO: deleted */}
+        <Route path="/lists/deleted" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListsDeleted /></ProtectedRoute>} />
         <Route path="/lists/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><List /></ProtectedRoute>} />
-        <Route path="/lists/:id/receipts" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListReceipts /></ProtectedRoute>} /> {/* TODO: rec */}
+        <Route path="/lists/:id/receipts" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListReceipts /></ProtectedRoute>} /> 
         <Route path="/lists/:id/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         <Route path="/lists/:id/item/:item/edit" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemEdit /></ProtectedRoute>} />
         <Route path="/lists/:id/select" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Selection /></ProtectedRoute>} />
-        <Route path="/lists/:id/select/bundle" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleSelect /></ProtectedRoute>} /> {/* TODO: bundle Select */}
+        <Route path="/lists/:id/select/bundle" element={<ProtectedRoute isAuthenticated={isAuthenticated}><BundleSelect /></ProtectedRoute>} /> 
         <Route path="/lists/:id/select/item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemSelect /></ProtectedRoute>} />
         <Route path="/lists/:id/add/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemAdd /></ProtectedRoute>} />
         <Route path="/lists/:id/new/item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemNew /></ProtectedRoute>} />
@@ -103,17 +103,17 @@ function App() {
         <Route path="/bundles/:id/edit/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         <Route path="/bundles/:id/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         {/* share routes */}
-        <Route path="/join/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><JoinList /></ProtectedRoute>} />
-        <Route path="/share/bundle/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareBundle /></ProtectedRoute>} />
-        <Route path="/share/item/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} />
+        <Route path="/join/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><JoinList /></ProtectedRoute>} /> {/* TODO: join list */}
+        <Route path="/share/bundle/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareBundle /></ProtectedRoute>} /> {/* TODO: share Bundle */}
+        <Route path="/share/item/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} /> {/* TODO: share Item */}
         {/* profile routes */}
-        <Route path="/profile" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Profile setIsAuthenticated={setIsAuthenticated}  /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Profile setIsAuthenticated={setIsAuthenticated}  /></ProtectedRoute>} /> {/* TODO: preferences */}
         {/* authentication routes */}
         <Route path="/login" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><Login setIsAuthenticated={setIsAuthenticated}/> </UserRestrictedRoute> } />
         <Route path="/register" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><Register /> </UserRestrictedRoute>} />
         <Route path="/forgot-password" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><ForgotPassword /> </UserRestrictedRoute>} />
-        <Route path="/reset-password/:token" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><ResetPassword /> </UserRestrictedRoute>} />
-        <Route path="/verify/send" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><VerifyEmailResend /> </UserRestrictedRoute>} />
+        <Route path="/reset-password/:token" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><ResetPassword /> </UserRestrictedRoute>} /> 
+        <Route path="/verify/send" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><VerifyEmailResend /> </UserRestrictedRoute>} />  
         <Route path="/verify/:token" element={<VerifyEmail />} />
       </Routes>
       <NavBar setSelectedTab={setSelectedTab} selectedTab={selectedTab} />

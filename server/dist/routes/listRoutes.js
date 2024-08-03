@@ -10,6 +10,7 @@ const upload_1 = require("../config/upload");
 const router = express_1.default.Router();
 router.get('/', authMiddleware_1.protectUser, listController_1.getLists);
 router.post('/', authMiddleware_1.protectUser, listController_1.addList);
+router.get('/deleted', authMiddleware_1.protectUser, listController_1.getDeletedLists);
 router.get('/:id', authMiddleware_1.protectUser, listController_1.getList);
 router.post('/:id/item', authMiddleware_1.protectUser, upload_1.upload.single('file'), listController_1.addNewItem);
 router.post('/:id/item/:item', authMiddleware_1.protectUser, listController_1.addExistingItem);
@@ -18,4 +19,9 @@ router.get('/:id/item/:item/restore', authMiddleware_1.protectUser, listControll
 router.get('/:id/item/:item/shop', authMiddleware_1.protectUser, listController_1.restoreFromBought);
 router.get('/:id/item/:item/bought', authMiddleware_1.protectUser, listController_1.sendToBought);
 router.post('/:id/bundle/:bundle', authMiddleware_1.protectUser, listController_1.addBundleItems);
+router.delete('/deleteAll', authMiddleware_1.protectUser, listController_1.deleteAllListsUserDeleted);
+router.delete('/:id/me', authMiddleware_1.protectUser, listController_1.deleteForMe);
+router.delete('/:id/all', authMiddleware_1.protectUser, listController_1.deleteForAll);
+router.get('/:id/restore', authMiddleware_1.protectUser, listController_1.restoreList);
+router.delete('/:id/permanently', authMiddleware_1.protectUser, listController_1.deletePermanently);
 exports.default = router;

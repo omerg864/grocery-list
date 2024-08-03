@@ -7,38 +7,33 @@ import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDia
 import { FaTrash } from "react-icons/fa";
 import Loading from "../components/Loading/Loading.tsx";
 import Lists from "../interface/ListsInterface.ts";
+import { del, get } from "../utils/apiRequest.ts";
+import Cookies from "universal-cookie";
 
 function ListsDeleted() {
 
     const navigate = useNavigate();
     const { t } = useTranslation('translation', { keyPrefix: 'ListsDeleted' });
-    const [lists, setLists] = useState<Lists[]>([{
-        _id: '1',
-        title: 'List 1',
-        items: 0,
-        boughtItems: 0,
-        createdAt: '2021-10-10',
-        updatedAt: '2021-10-10',
-        owner: true,
-        users: 0,
-        categories: [],
-        deletedItems: 0
-    }]);
+    const [lists, setLists] = useState<Lists[]>([]);
     const [dialogContent, setDialogContent] = useState<{open: boolean, title: string, content: string, action: () => void}>({open: false, title: '', content: '', action: () => {}});
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const cookies = new Cookies();
 
 
     const handleClose = () => {
         setDialogContent({open: false, title: '', content: '', action: () => {}});
     }
 
-    const deleteAll = () => {
+    const deleteAll = async () => {
         setIsLoading(true);
-        setTimeout(() => {
-            handleClose();
-            setLists([]);
-            setIsLoading(false);
-        }, 1000);
+        del('/api/list/deleteAll', () => {
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        });
+        getLists();
+        handleClose();
+        navigate('/');
+        setIsLoading(false);
     }
 
     const deleteAllDialog = () => {
@@ -49,13 +44,15 @@ function ListsDeleted() {
         setDialogContent({open: true, title: t('restoreList'), content: t('restoreListContent'), action: () => restoreList(id)});
     }
 
-    const restoreList = (id: string) => {
+    const restoreList = async (id: string) => {
         setIsLoading(true);
-        setTimeout(() => {
+        await get(`/api/list/${id}/restore`, () => {
             handleClose();
             navigate(`/lists/${id}`);
-            setIsLoading(false);
-        }, 1000);
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        });
+        setIsLoading(false);
     }
 
 
@@ -63,21 +60,33 @@ function ListsDeleted() {
         setDialogContent({open: true, title: t('deleteList'), content: t('deleteListContent'), action: () => deleteList(id)});
     }
 
-    const deleteList = (id: string) => {
+    const deleteList = async (id: string) => {
         setIsLoading(true);
-        setTimeout(() => {
-            setLists((prev) => prev.filter((list) => list._id !== id));
+        await del(`/api/list/${id}/permanently`, () => {
+            getLists();
             handleClose();
-            setIsLoading(false);
-        }, 1000);
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        });
+        setIsLoading(false);
     }
 
     const back = () => {
         navigate('/');
     }
 
+    const getLists = async () => {
+        setIsLoading(true);
+        await get('/api/list/deleted', (data) => {
+            setLists(data.lists);
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        });
+        setIsLoading(false);
+    }
+
     useEffect(() => {
-        
+        getLists()
     }, []);
 
     if (isLoading) {

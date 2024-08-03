@@ -9,12 +9,16 @@ import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDia
 import Loading from '../components/Loading/Loading';
 import { del, get } from '../utils/apiRequest';
 import Cookies from 'universal-cookie';
+import { useRecoilState } from 'recoil';
+import { bundlesAtom, updatedBundlesAtom } from '../recoil/atoms';
+import { getMinutesBetweenDates } from '../utils/functions';
 
 
 function Bundles() {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Bundles' });
-  const [bundles, setBundles] = useState<Bundle[]>([]);
+  const [bundles, setBundles] = useRecoilState<Bundle[]>(bundlesAtom);
+  const [updatedBundles, setUpdatedBundles] = useRecoilState<Date>(updatedBundlesAtom);
   const [displayedBundles, setDisplayedBundles] = useState<Bundle[]>(bundles);
   const [open, setOpen] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -59,6 +63,7 @@ function Bundles() {
     setIsLoading(true);
     await get('/api/bundle', (data) => {
       setBundles(data.bundles);
+      setUpdatedBundles(new Date());
       setDisplayedBundles(data.bundles);
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,
@@ -67,7 +72,9 @@ function Bundles() {
   }
 
   useEffect(() => {
-    getBundles();
+    if (bundles.length === 0 || getMinutesBetweenDates(updatedBundles, new Date()) > 10) {
+      getBundles();
+    }
   }, []);
 
   if (isLoading) {

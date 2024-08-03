@@ -1,8 +1,8 @@
 
 interface Receipt {
-    id: string;
+    _id: string;
     img: string;
-    createdAt: Date;
+    createdAt: string;
 }
 
 export default Receipt;

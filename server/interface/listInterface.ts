@@ -11,7 +11,7 @@ export interface List {
 	boughtItems: ListItemDocument[] | ObjectId[];
 	users: ObjectId[] | UserDocument[];
     owner: ObjectId | UserDocument;
-	deleted: boolean;
+	deletedUsers: ObjectId[] | UserDocument[];
 }
 
 export interface ListDocument extends List, Document {}

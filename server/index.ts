@@ -11,6 +11,7 @@ import itemRouter from './routes/itemRoutes';
 import bundleRouter from './routes/bundleRoutes';
 import listRouter from './routes/listRoutes';
 import listItemRouter from './routes/listItemRoutes';
+import receiptRouter from './routes/receiptRoutes';
 import cors from 'cors';
 
 dotenv.config();
@@ -47,5 +48,6 @@ app.use('/api/item', itemRouter);
 app.use('/api/bundle', bundleRouter);
 app.use('/api/list', listRouter);
 app.use('/api/listItem', listItemRouter);
+app.use('/api/receipt', receiptRouter);
 
 app.use(errorHandler);

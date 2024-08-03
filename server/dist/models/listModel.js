@@ -64,9 +64,11 @@ const ListScheme = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    deleted: {
-        type: Boolean,
-        default: false,
-    }
+    deletedUsers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+    ],
 }, { timestamps: true });
 exports.default = mongoose.model('List', ListScheme);

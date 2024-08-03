@@ -4,7 +4,6 @@ import { List } from './listInterface';
 
 export interface ListItem {
 	name: string;
-	deleted: boolean;
 	description?: string;
 	amount: number;
 	unit: string;

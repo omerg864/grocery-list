@@ -10,6 +10,7 @@ const upload_1 = require("../config/upload");
 const router = express_1.default.Router();
 router.post('/login', userController_1.login);
 router.post('/register', userController_1.register);
+router.post('/verify/send', userController_1.resendVerificationEmail);
 router.get('/verify/:id', userController_1.verify);
 router.get('/', authMiddleware_1.protectUser, userController_1.getUser);
 router.post('/reset-password/email', userController_1.resetPasswordEmail);

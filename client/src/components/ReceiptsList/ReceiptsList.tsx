@@ -2,6 +2,7 @@ import { IconButton, Typography } from "@mui/material";
 import Receipt from "../../interface/ReceiptInterface";
 import './ReceiptsList.css';
 import { FaTrash } from "react-icons/fa";
+import { formatDate } from "../../utils/functions";
 
 interface ReceiptsListProps {
     receipts: Receipt[];
@@ -27,6 +28,7 @@ function ReceiptsList(props: ReceiptsListProps) {
         newDiv.style.display = 'flex';
         newDiv.style.alignItems = 'center';
         newDiv.style.justifyContent = 'center';
+        newDiv.style.zIndex = '9000';
         newDiv.appendChild(imageCopy);
         document.body.appendChild(newDiv);
         newDiv.addEventListener('click', () => {
@@ -37,13 +39,13 @@ function ReceiptsList(props: ReceiptsListProps) {
   return (
     <div className="receipts-list">
         {props.receipts.map((receipt) => (
-            <div key={receipt.id} className="receipt">
+            <div key={receipt._id} className="receipt">
                 <img className="receipt-img" onClick={onImgClick} src={receipt.img} alt="receipt" />
                 <div className="receipt-details">
                     <Typography variant="h6">
-                        {receipt.createdAt.toLocaleDateString()}
+                        {formatDate(receipt.createdAt)}
                     </Typography>
-                    <IconButton onClick={() => props.onDelete(receipt.id)}>
+                    <IconButton onClick={() => props.onDelete(receipt._id)}>
                         <FaTrash size={"1.5rem"} color='red' />
                     </IconButton>
                 </div>

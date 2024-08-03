@@ -8,11 +8,12 @@ import { useEffect, useState } from 'react';
 import Item from '../interface/ItemInterface';
 import { useRecoilState } from "recoil";
 import Bundle from '../interface/BundleInterface';
-import { bundleAtom, itemAtom } from '../recoil/atoms';
+import { bundleAtom, itemAtom, itemsAtom, updatedItemsAtom } from '../recoil/atoms';
 import Loading from '../components/Loading/Loading';
 import Cookies from 'universal-cookie';
 import { get } from '../utils/apiRequest';
 import ListItem from '../interface/ListItemInterface';
+import { getMinutesBetweenDates } from '../utils/functions';
 
 function ItemSelect() {
     const { t } = useTranslation('translation', { keyPrefix: 'ItemSelect' });
@@ -22,7 +23,8 @@ function ItemSelect() {
     const [categories, setCategories] = useState<string[]>(["Fruits", "Home Essentials"]);
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [bundle, setBundle] = useRecoilState<Bundle>(bundleAtom);
-    const [items, setItems] = useState<Item[]>([]);
+    const [items, setItems] = useRecoilState<Item[]>(itemsAtom);
+    const [updatedItems, setUpdatedItems] = useRecoilState<Date>(updatedItemsAtom);
     const [_, setItem] = useRecoilState<Item | ListItem>(itemAtom);
     const [displayedItems, setDisplayedItems] = useState<Item[]>([]);
     const cookies = new Cookies();
@@ -68,6 +70,7 @@ function ItemSelect() {
         await get('/api/item', (data) => {
             let itemsTemp = data.items.filter((item: Item) => !bundle.items.find(bundleItem => bundleItem._id === item._id));
             setItems(itemsTemp);
+            setUpdatedItems(new Date());
             setDisplayedItems(itemsTemp);
             setCategories(data.categories);
         }, {
@@ -77,7 +80,9 @@ function ItemSelect() {
     }
 
     useEffect(() => {
-        getItems();
+        if (!items.length || getMinutesBetweenDates(updatedItems, new Date()) > 10) {
+            getItems();
+        }
     }, []);
 
 

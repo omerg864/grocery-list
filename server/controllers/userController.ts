@@ -194,8 +194,12 @@ const updateUserPassword = asyncHandler(async (req, res, next) => {
 const resetPasswordToken = asyncHandler(async (req, res, next) => {
 	const { token } = req.params;
 	const { password } = req.body;
+	if (!token) {
+		res.status(400);
+		throw new Error('Invalid token');
+	}
 	const user = await User.findOne({
-		resetPasswordToken: { $regex: new RegExp(`^${token}$`, 'i') },
+		resetPasswordToken: token,
 	});
 	if (!user) {
 		res.status(400);
@@ -250,6 +254,10 @@ const resetPasswordEmail = asyncHandler(async (req, res, next) => {
 		await user.save();
 		success = false;
 	}
+	if (!success) {
+		user.resetPasswordToken = undefined;
+		await user.save();
+	}
 	res.status(200).json({
 		success,
 	});
@@ -271,6 +279,46 @@ const verify = asyncHandler(
 	}
 );
 
+const resendVerificationEmail = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { email } = req.body;
+		if (!email_regex.test(email)) {
+			res.status(400);
+			throw new Error('Invalid email');
+		}
+		const user = await User.findOne({
+			email: { $regex: new RegExp(`^${email}$`, 'i') },
+		});
+		if (!user) {
+			res.status(400);
+			throw new Error('User not found');
+		}
+		if (user.isVerified) {
+			res.status(400);
+			throw new Error('User is already verified');
+		}
+		let success;
+		try {
+			success = await sendEmail(
+				user.email,
+				'Verify your email',
+				`Please verify your email by clicking on the link: ${process.env.HOST_ADDRESS}/verify/${user._id}`
+			);
+		} catch (err) {
+			console.log(err);
+			user.isVerified = true;
+			await user.save();
+		}
+		if (!success) {
+			user.isVerified = true;
+			await user.save();
+		}
+		res.status(200).json({
+			success: true,
+		});
+	}
+);
+
 export {
 	login,
 	verify,
@@ -280,4 +328,5 @@ export {
 	resetPasswordToken,
 	resetPasswordEmail,
 	updateUser,
+	resendVerificationEmail
 };

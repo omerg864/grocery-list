@@ -7,21 +7,21 @@ import { Button, TextField } from "@mui/material";
 import Loading from "../components/Loading/Loading.tsx";
 import ReceiptsList from "../components/ReceiptsList/ReceiptsList.tsx";
 import Receipt from "../interface/ReceiptInterface.ts";
+import { del, get, post } from "../utils/apiRequest.ts";
+import Cookies from "universal-cookie";
 
 function ListReceipts() {
 
     const { t } = useTranslation('translation', { keyPrefix: 'ListReceipts' });
-    const [receipts, setReceipts] = useState<Receipt[]>([{
-        id: "1",
-        createdAt: new Date(),
-        img: "https://mui.com/static/images/avatar/1.jpg",
-    }]);
+    const [receipts, setReceipts] = useState<Receipt[]>([]);
     const navigate = useNavigate();
     const { id } = useParams();
     const [open, setOpen] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [deleteDialog, setDeleteDialog] = useState<string>('');
+    const cookies = new Cookies();
+
 
     const back = () => {
         navigate(`/lists/${id}`);
@@ -35,14 +35,21 @@ function ListReceipts() {
         setOpen(true);
     }
 
-    const addReceipt = () => {
+    const addReceipt = async () => {
+        if (!file) {
+            return;
+        }
         setIsLoading(true);
-        const data = new FormData();
-        data.append('receipt', file!);
-        setTimeout(() => {
-            setIsLoading(false);
+        const formData = new FormData();
+        formData.append('file', file!);
+        await post(`/api/receipt/${id}`, formData, (data) => {
             closeDialog();
-        }, 1000);
+            setReceipts((prev) => [...prev, data.receipt]);
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+            'Content-Type': 'multipart/form-data',
+        });
+        setIsLoading(false);
     }
 
     const openDeleteDialog = (id: string) => {
@@ -53,17 +60,29 @@ function ListReceipts() {
         setDeleteDialog('');
     }
 
-    const deleteReceipt = () => {
+    const deleteReceipt = async () => {
         setIsLoading(true);
-        closeDeleteDialog();
-        setTimeout(() => {
-            setIsLoading(false);
-            setReceipts((prev) => prev.filter((receipt) => receipt.id !== deleteDialog));
-        }, 1000);
+        await del(`/api/receipt/${id}/${deleteDialog}`, (_) => {
+            setReceipts((prev) => prev.filter((receipt) => receipt._id !== deleteDialog));
+            closeDeleteDialog();
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        });
+        setIsLoading(false);
+    }
+
+    const getReceipts = async () => {
+        setIsLoading(true);
+        await get(`/api/receipt/${id}`, (data) => {
+            setReceipts(data.receipts);
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        })
+        setIsLoading(false);
     }
 
     useEffect(() => {
-        // TODO: fetch receipts
+        getReceipts();
     }, []);
 
     if (isLoading) {

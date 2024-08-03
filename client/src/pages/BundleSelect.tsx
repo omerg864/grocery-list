@@ -6,38 +6,23 @@ import Bundle from '../interface/BundleInterface';
 import { useEffect, useState } from 'react';
 import BundleList from '../components/BundleList/BundleList';
 import { useRecoilState } from 'recoil';
-import { bundleAtom } from '../recoil/atoms';
+import { bundleAtom, bundlesAtom, updatedBundlesAtom } from '../recoil/atoms';
 import Loading from '../components/Loading/Loading';
+import Cookies from 'universal-cookie';
+import { get } from '../utils/apiRequest';
+import { getMinutesBetweenDates } from '../utils/functions';
 
 
 function BundleSelect() {
 
   const { t } = useTranslation('translation', { keyPrefix: 'BundleSelect' });
-  const [bundles, ] = useState<Bundle[]>([
-    {
-      _id: "1",
-      title: 'Bundle 1',
-      items: [
-        {_id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"},
-        {_id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"}
-      ]
-    },
-    {
-      _id: "2",
-      title: 'Bundle 2',
-      items: [
-        {_id: "1", name: 'Item 1', category: "Fruits", img: "https://i5.walmartimages.com/seo/Fresh-Banana-Fruit-Each_5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF", description: "", unit: "pc"},
-        {_id: "2", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"},
-        {_id: "3", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"},
-        {_id: "4", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"},
-        {_id: "5", name: 'Item 2', img: "", description: "only shtraus", unit: "kg"}
-      ]
-    }
-  ]);
+  const [bundles, setBundles] = useRecoilState<Bundle[]>(bundlesAtom);
+  const [ updatedBundles, setUpdatedBundles] = useRecoilState<Date>(updatedBundlesAtom);
   const { id } = useParams();
   const [_, setBundle] = useRecoilState<Bundle>(bundleAtom);
   const [displayedBundles, setDisplayedBundles] = useState<Bundle[]>(bundles);
   const navigate = useNavigate();
+  const cookies = new Cookies();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const filterBundles = (search: string) => {
@@ -55,11 +40,22 @@ function BundleSelect() {
     navigate(`/lists/${id}/select`);
   }
 
-  useEffect(() => {
+  const getBundles = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    await get('/api/bundle', (data) => {
+      setBundles(data.bundles);
+      setUpdatedBundles(new Date());
+      setDisplayedBundles(data.bundles);
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    })
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    if (bundles.length === 0 || getMinutesBetweenDates(updatedBundles, new Date()) > 10) {
+      getBundles();
+    }
   }, []);
 
   if (isLoading) {

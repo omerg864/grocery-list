@@ -8,6 +8,9 @@ import GlassButton from '../components/GlassButton/GlassButton';
 import { MdLockReset } from "react-icons/md";
 import { CiLogin } from "react-icons/ci";
 import Loading from '../components/Loading/Loading';
+import { post } from '../utils/apiRequest';
+import { toast } from 'react-toastify';
+import { email_regex } from '../utils/regex';
 
 function ForgotPassword() {
     const { t } = useTranslation('translation', { keyPrefix: 'ForgotPassword' });
@@ -27,10 +30,20 @@ function ForgotPassword() {
     }
 
     const resetRequest = async () => {
+        if (!email) {
+            toast.error(t('emailRequired'));
+            return;
+        }
+        if (!email_regex.test(email)) {
+            toast.error(t('emailInvalid'));
+            return;
+        }
         setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 2000);
+        await post(`/api/user/reset-password/email`, { email }, (_) => {
+            toast.success(t('emailSent'));
+            navigate('/login');
+        });
+        setIsLoading(false);
     }
 
     if (isLoading) {

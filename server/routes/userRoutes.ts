@@ -9,6 +9,7 @@ import {
 	resetPasswordToken,
 	updateUserPassword,
 	updateUser,
+	resendVerificationEmail
 } from '../controllers/userController';
 import { upload } from '../config/upload';
 
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.post('/login', login);
 router.post('/register', register);
+router.post('/verify/send', resendVerificationEmail);
 router.get('/verify/:id', verify);
 router.get('/', protectUser, getUser);
 router.post('/reset-password/email', resetPasswordEmail);

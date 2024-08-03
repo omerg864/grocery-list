@@ -11,12 +11,16 @@ import ConfirmationDialog from '../components/ConfirmationDialog/ConfirmationDia
 import { del, get } from '../utils/apiRequest';
 import Cookies from 'universal-cookie';
 import MemoizedImage from "../components/MemoizedImage/MemoizedImage";
+import { useRecoilState } from 'recoil';
+import { itemsAtom, updatedItemsAtom } from '../recoil/atoms';
+import { getMinutesBetweenDates } from '../utils/functions';
 
 function Items() {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Items' });
   const navigate = useNavigate();
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useRecoilState<Item[]>(itemsAtom);
+  const [updatedItems, setUpdatedItems] = useRecoilState<Date>(updatedItemsAtom);
   const [displayedItems, setDisplayedItems] = useState<Item[]>(items);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [categories, setCategories] = useState<string[]>([]);
@@ -81,6 +85,7 @@ function Items() {
         imageMemo: <MemoizedImage className='item-img' src={item.img ? item.img : '/item.png'} alt={item.name} />
       }))
       setItems(itemsTemp);
+      setUpdatedItems(new Date());
       setDisplayedItems(itemsTemp);
       setCategories(data.categories);
     }, {
@@ -90,7 +95,9 @@ function Items() {
   }
 
   useEffect(() => {
-    getItems();
+    if (!items.length || getMinutesBetweenDates(updatedItems, new Date()) > 10) {
+      getItems();
+    }
   }, [])
 
   if (isLoading) {

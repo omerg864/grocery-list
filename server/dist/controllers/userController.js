@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUser = exports.resetPasswordEmail = exports.resetPasswordToken = exports.updateUserPassword = exports.getUser = exports.register = exports.verify = exports.login = void 0;
+exports.resendVerificationEmail = exports.updateUser = exports.resetPasswordEmail = exports.resetPasswordToken = exports.updateUserPassword = exports.getUser = exports.register = exports.verify = exports.login = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -192,8 +192,12 @@ exports.updateUserPassword = updateUserPassword;
 const resetPasswordToken = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = req.params;
     const { password } = req.body;
+    if (!token) {
+        res.status(400);
+        throw new Error('Invalid token');
+    }
     const user = yield userModel_1.default.findOne({
-        resetPasswordToken: { $regex: new RegExp(`^${token}$`, 'i') },
+        resetPasswordToken: token,
     });
     if (!user) {
         res.status(400);
@@ -245,6 +249,10 @@ const resetPasswordEmail = (0, express_async_handler_1.default)((req, res, next)
         yield user.save();
         success = false;
     }
+    if (!success) {
+        user.resetPasswordToken = undefined;
+        yield user.save();
+    }
     res.status(200).json({
         success,
     });
@@ -264,3 +272,38 @@ const verify = (0, express_async_handler_1.default)((req, res, next) => __awaite
     });
 }));
 exports.verify = verify;
+const resendVerificationEmail = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    if (!regex_1.email_regex.test(email)) {
+        res.status(400);
+        throw new Error('Invalid email');
+    }
+    const user = yield userModel_1.default.findOne({
+        email: { $regex: new RegExp(`^${email}$`, 'i') },
+    });
+    if (!user) {
+        res.status(400);
+        throw new Error('User not found');
+    }
+    if (user.isVerified) {
+        res.status(400);
+        throw new Error('User is already verified');
+    }
+    let success;
+    try {
+        success = yield (0, functions_1.sendEmail)(user.email, 'Verify your email', `Please verify your email by clicking on the link: ${process.env.HOST_ADDRESS}/verify/${user._id}`);
+    }
+    catch (err) {
+        console.log(err);
+        user.isVerified = true;
+        yield user.save();
+    }
+    if (!success) {
+        user.isVerified = true;
+        yield user.save();
+    }
+    res.status(200).json({
+        success: true,
+    });
+}));
+exports.resendVerificationEmail = resendVerificationEmail;

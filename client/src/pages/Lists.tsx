@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import ListsList from "../components/ListLists/ListsList.tsx";
 import SearchBar from "../components/SearchBar/SearchBar.tsx";
 import { useRecoilState } from "recoil";
-import { listsState } from "../recoil/atoms.ts";
+import { listsState, updatedListsAtom } from "../recoil/atoms.ts";
 import { MdOutlineAutoDelete } from "react-icons/md";
 import { Button, IconButton, Tooltip } from "@mui/material";
 import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDialog.tsx";
@@ -21,7 +21,7 @@ function Lists() {
     const navigate = useNavigate();
     const { t } = useTranslation('translation', { keyPrefix: 'Lists' });
     const [lists, setLists] = useRecoilState<ListsInterface[]>(listsState);
-    const [updated, setUpdated] = useState<Date>(new Date());
+    const [updatedLists, setUpdatedLists] = useRecoilState<Date>(updatedListsAtom);
     const [listsDisplayed, setListsDisplayed] = useState<ListsInterface[]>(lists);
     const [dialog, setDialog] = useState<{open: boolean, id: string | null}>({open: false, id: null});
     const [list, setList] = useState<ListsInterface>({
@@ -109,7 +109,7 @@ function Lists() {
       await get('/api/list', (data) => {
         setLists(data.lists);
         setListsDisplayed(data.lists);
-        setUpdated(new Date());
+        setUpdatedLists(new Date());
       }, {
         'Authorization': `Bearer ${cookies.get('userToken')}`,
       });
@@ -119,7 +119,7 @@ function Lists() {
 
 
     useEffect(() => {
-      if (getMinutesBetweenDates(updated, new Date()) > 10 || lists.length === 0) {
+      if (getMinutesBetweenDates(updatedLists, new Date()) > 10 || lists.length === 0) {
         getLists();
       }
     }, [])
