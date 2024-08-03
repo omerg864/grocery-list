@@ -1,4 +1,4 @@
-import { Avatar, Button, Icon, IconButton, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import './UserDisplay.css';
 import User from '../../interface/UserInterface';
 import UserAvatar from '../UserAvatar/UserAvatar';

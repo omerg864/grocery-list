@@ -20,6 +20,7 @@ function ResetPassword() {
   const outerTheme = useTheme();
 
   const resetPassword = () => {
+    console.log(token);
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);

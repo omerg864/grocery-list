@@ -33,6 +33,7 @@ function Lists() {
       boughtItems: 0,
       updatedAt: '',
       createdAt: '',
+      users: 1,
       owner: false,
     });
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -57,6 +58,7 @@ function Lists() {
         boughtItems: 0,
         updatedAt: '',
         createdAt: '',
+        users: 1,
         owner: false,
       })
       setDialog({open: false, id: null});
@@ -135,7 +137,7 @@ function Lists() {
           buttons={<div className='dialog-buttons'>
             <Button onClick={handleClose} variant='outlined' color="primary">{t('cancel')}</Button>
             <div className="two-buttons-dialog" style={{display: 'flex', gap: '10px'}}>
-              {list.owner && <Button onClick={() => deleteListForAll(dialog.id as string)} variant='outlined' color="error" autoFocus>{t('deleteForAll')}</Button>}
+              {list.owner && list.users > 1 && <Button onClick={() => deleteListForAll(dialog.id as string)} variant='outlined' color="error" autoFocus>{t('deleteForAll')}</Button>}
               <Button onClick={() => deleteListForMe(dialog.id as string)} variant='outlined' color="warning" autoFocus>{t('deleteForMe')}</Button>
             </div>
           </div>}/>

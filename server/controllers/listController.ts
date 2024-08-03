@@ -17,9 +17,10 @@ import { ListItemDocument } from '../interface/listItemInterface';
 const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
-		const lists = await List.find({ users: user._id }).populate('users');
+		const lists = await List.find({ users: user._id });
 		const listsDisplay = lists.map((list) => ({
 			...list.toObject(),
+			users: list.users.length,
 			items: list.items.length,
 			deletedItems: list.deletedItems.length,
 			boughtItems: list.boughtItems.length,

@@ -13,7 +13,7 @@ import Loading from '../components/Loading/Loading';
 function BundleSelect() {
 
   const { t } = useTranslation('translation', { keyPrefix: 'BundleSelect' });
-  const [bundles, setBundles] = useState<Bundle[]>([
+  const [bundles, ] = useState<Bundle[]>([
     {
       _id: "1",
       title: 'Bundle 1',

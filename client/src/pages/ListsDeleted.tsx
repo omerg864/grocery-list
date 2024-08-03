@@ -2,38 +2,27 @@ import Header from "../components/Header/Header.tsx";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import List from "../interface/ListInterface.ts";
 import ListsList from "../components/ListLists/ListsList.tsx";
 import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDialog.tsx";
 import { FaTrash } from "react-icons/fa";
 import Loading from "../components/Loading/Loading.tsx";
+import Lists from "../interface/ListsInterface.ts";
 
 function ListsDeleted() {
 
     const navigate = useNavigate();
     const { t } = useTranslation('translation', { keyPrefix: 'ListsDeleted' });
-    const [lists, setLists] = useState<List[]>([{
-        id: '1',
+    const [lists, setLists] = useState<Lists[]>([{
+        _id: '1',
         title: 'List 1',
-        items: [],
-        boughtItems: [],
+        items: 0,
+        boughtItems: 0,
         createdAt: '2021-10-10',
         updatedAt: '2021-10-10',
         owner: true,
-        users: [],
+        users: 0,
         categories: [],
-        deletedItems: []
-    }, {
-        id: '2',
-        title: 'List 2',
-        items: [],
-        boughtItems: [],
-        createdAt: '2021-10-10',
-        updatedAt: '2021-10-10',
-        owner: true,
-        users: [],
-        categories: [],
-        deletedItems: []
+        deletedItems: 0
     }]);
     const [dialogContent, setDialogContent] = useState<{open: boolean, title: string, content: string, action: () => void}>({open: false, title: '', content: '', action: () => {}});
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -77,7 +66,7 @@ function ListsDeleted() {
     const deleteList = (id: string) => {
         setIsLoading(true);
         setTimeout(() => {
-            setLists((prev) => prev.filter((list) => list.id !== id));
+            setLists((prev) => prev.filter((list) => list._id !== id));
             handleClose();
             setIsLoading(false);
         }, 1000);

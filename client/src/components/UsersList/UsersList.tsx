@@ -18,7 +18,7 @@ function UsersList(props: UsersListProps) {
     
     const { t } = useTranslation('translation', { keyPrefix: 'UsersList' });
 
-    const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+    const StyledBadge = styled(Badge)<BadgeProps>(({  }) => ({
         '& .MuiBadge-badge': {
           padding: 0
         },

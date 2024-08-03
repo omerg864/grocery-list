@@ -13,8 +13,17 @@ function VerifyEmail() {
     const { token } = useParams();
     const [message, setMessage] = useState<string>('verifying');
 
+
+    const verifyEmail = async () => {
+        setIsLoading(true);
+        setMessage('verified');
+        console.log(token);
+        setIsLoading(false);
+    }
+
     useEffect(() => {
         // Verify email
+        verifyEmail();
     }, []);
 
     const back = () => {

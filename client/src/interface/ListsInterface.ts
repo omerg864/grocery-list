@@ -5,6 +5,7 @@ interface Lists {
 	title: string;
 	categories: string[];
 	items: number;
+	users: number;
 	deletedItems: number;
 	boughtItems:number;
     updatedAt: string;

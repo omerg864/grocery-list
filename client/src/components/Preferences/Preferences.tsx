@@ -24,10 +24,6 @@ function Preferences(props: PreferencesProps) {
 
   const outerTheme = useTheme();
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [event.target.name]: event.target.value });
-  }
-
   const onChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [event.target.name]: event.target.checked });
   }
