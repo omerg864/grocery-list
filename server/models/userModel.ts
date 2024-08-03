@@ -28,6 +28,14 @@ const UserScheme = new mongoose.Schema<UserDocument>({
     },
     avatar: {
         type: String
+    },
+    fullSwipe: {
+        type: Boolean,
+        default: false
+    },
+    language: {
+        type: String,
+        default: 'en'
     }
 }, { timestamps: true });
 

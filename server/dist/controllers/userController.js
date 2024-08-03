@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resendVerificationEmail = exports.updateUser = exports.resetPasswordEmail = exports.resetPasswordToken = exports.updateUserPassword = exports.getUser = exports.register = exports.verify = exports.login = void 0;
+exports.updatePreferences = exports.resendVerificationEmail = exports.updateUser = exports.resetPasswordEmail = exports.resetPasswordToken = exports.updateUserPassword = exports.getUser = exports.register = exports.verify = exports.login = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -115,6 +115,10 @@ const getUser = (0, express_async_handler_1.default)((req, res, next) => __await
     res.status(200).json({
         success: true,
         user,
+        preferences: {
+            fullSwipe: user.fullSwipe,
+            language: user.language,
+        }
     });
 }));
 exports.getUser = getUser;
@@ -307,3 +311,20 @@ const resendVerificationEmail = (0, express_async_handler_1.default)((req, res, 
     });
 }));
 exports.resendVerificationEmail = resendVerificationEmail;
+const updatePreferences = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { fullSwipe, language } = req.body;
+    if (fullSwipe === undefined || language === undefined) {
+        res.status(400);
+        throw new Error('Please fill all the fields');
+    }
+    const userReq = req.user;
+    userReq.fullSwipe = fullSwipe;
+    userReq.language = language;
+    yield userReq.save();
+    const userEx = yield userModel_1.default.findById(userReq._id).select(modelsConst_1.userExclude);
+    res.status(200).json({
+        success: true,
+        user: userEx,
+    });
+}));
+exports.updatePreferences = updatePreferences;

@@ -8,6 +8,8 @@ export interface User {
     isVerified: boolean;
     resetPasswordToken?: string;
     avatar?: string;
+    fullSwipe: boolean;
+    language: string;
 }
 
 export interface UserDocument extends User, Document {}

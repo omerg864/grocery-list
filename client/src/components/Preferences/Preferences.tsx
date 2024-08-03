@@ -8,6 +8,10 @@ import GlassButton from '../GlassButton/GlassButton';
 import { GiSettingsKnobs } from "react-icons/gi";
 import formTheme from '../../themes/formTheme';
 import PreferencesInterface from '../../interface/PreferencesInterface';
+import { put } from '../../utils/apiRequest';
+import { toast } from 'react-toastify';
+import Cookies from 'universal-cookie';
+import { addDays } from '../../utils/functions';
 
 
 interface PreferencesProps {
@@ -20,7 +24,8 @@ function Preferences(props: PreferencesProps) {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Profile' });
 
-  const [form, setForm] = useState<PreferencesInterface>({fullSwipe: false, language: 'en'});
+  const [form, setForm] = useState<PreferencesInterface>(props.preferences);
+  const cookies = new Cookies();
 
   const outerTheme = useTheme();
 
@@ -34,9 +39,10 @@ function Preferences(props: PreferencesProps) {
 
   const changePreferences = async () => {
     props.setIsLoading(true);
-    setTimeout(() => {
-      props.setIsLoading(false);
-      // change language
+    await put('/api/user/preferences', form, (data) => {
+      toast.success(t('preferencesChanged'));
+      let date30 = addDays(new Date(), 30);
+      cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: date30 });
       if (form.language === 'he') {
         document.body.dir = 'rtl';
       } else {
@@ -44,7 +50,10 @@ function Preferences(props: PreferencesProps) {
       }
       i18next.changeLanguage(form.language);
       props.setTab(0);
-    }, 1000);
+    }, {
+      authorization: `Bearer ${cookies.get('userToken')}`
+    });
+    props.setIsLoading(false);
   }
 
   return (

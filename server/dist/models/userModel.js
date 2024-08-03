@@ -51,6 +51,14 @@ const UserScheme = new mongoose.Schema({
     },
     avatar: {
         type: String
+    },
+    fullSwipe: {
+        type: Boolean,
+        default: false
+    },
+    language: {
+        type: String,
+        default: 'en'
     }
 }, { timestamps: true });
 exports.default = mongoose.model('User', UserScheme);

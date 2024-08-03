@@ -9,7 +9,8 @@ import {
 	resetPasswordToken,
 	updateUserPassword,
 	updateUser,
-	resendVerificationEmail
+	resendVerificationEmail,
+	updatePreferences
 } from '../controllers/userController';
 import { upload } from '../config/upload';
 
@@ -24,5 +25,6 @@ router.post('/reset-password/email', resetPasswordEmail);
 router.post('/reset-password/:token', resetPasswordToken);
 router.put('/update-password', protectUser, updateUserPassword);
 router.put('/', protectUser, upload.single('file'), updateUser);
+router.put('/preferences', protectUser, updatePreferences);
 
 export default router;

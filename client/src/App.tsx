@@ -107,7 +107,7 @@ function App() {
         <Route path="/share/bundle/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareBundle /></ProtectedRoute>} /> {/* TODO: share Bundle */}
         <Route path="/share/item/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} /> {/* TODO: share Item */}
         {/* profile routes */}
-        <Route path="/profile" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Profile setIsAuthenticated={setIsAuthenticated}  /></ProtectedRoute>} /> {/* TODO: preferences */}
+        <Route path="/profile" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Profile setIsAuthenticated={setIsAuthenticated}  /></ProtectedRoute>} />
         {/* authentication routes */}
         <Route path="/login" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><Login setIsAuthenticated={setIsAuthenticated}/> </UserRestrictedRoute> } />
         <Route path="/register" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><Register /> </UserRestrictedRoute>} />

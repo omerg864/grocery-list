@@ -112,6 +112,10 @@ const getUser = asyncHandler(
 		res.status(200).json({
 			success: true,
 			user,
+			preferences: {
+				fullSwipe: user!.fullSwipe,
+				language: user!.language,
+			}
 		});
 	}
 );
@@ -319,6 +323,27 @@ const resendVerificationEmail = asyncHandler(
 	}
 );
 
+
+const updatePreferences = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { fullSwipe, language } = req.body;
+		if (fullSwipe === undefined || language === undefined) {
+			res.status(400);
+			throw new Error('Please fill all the fields');
+		}
+		const userReq = (req as RequestWithUser).user;
+		userReq.fullSwipe = fullSwipe;
+		userReq.language = language;
+		await userReq.save();
+		const userEx = await User.findById(userReq._id).select(userExclude);
+		res.status(200).json({
+			success: true,
+			user: userEx,
+		});
+	}
+);
+
+
 export {
 	login,
 	verify,
@@ -328,5 +353,6 @@ export {
 	resetPasswordToken,
 	resetPasswordEmail,
 	updateUser,
-	resendVerificationEmail
+	resendVerificationEmail,
+	updatePreferences
 };
