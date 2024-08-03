@@ -21,6 +21,7 @@ dotenv_1.default.config();
 const port = process.env.PORT || 5000;
 const app = (0, express_1.default)();
 (0, db_1.default)();
+console.log(process.env.HOST_ADDRESS);
 // Middleware
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
