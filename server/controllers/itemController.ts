@@ -5,8 +5,8 @@ import { ItemDocument } from '../interface/itemInterface';
 import Item from '../models/itemModel';
 import { RequestWithUser } from '../interface/requestInterface';
 import { itemExclude } from '../utils/modelsConst';
-import { v2 as cloudinary } from 'cloudinary';
 import { deleteImage } from '../utils/functions';
+import { uploadToCloudinary } from '../config/upload';
 
 const getItems = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -53,16 +53,7 @@ const addItem = asyncHandler(
 			user: user._id,
 		});
 		if (req.file) {
-			cloudinary.config({
-				cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-				api_key: process.env.CLOUDINARY_API_KEY,
-				api_secret: process.env.CLOUDINARY_API_SECRET,
-			});
-			const result = await cloudinary.uploader.upload(req.file.path, {
-				folder: 'SuperCart/items',
-				public_id: `${user._id}/${item._id}`,
-			});
-			item.img = result.secure_url;
+			item.img = await uploadToCloudinary(req.file.buffer, 'SuperCart/items', `${user._id}/${item._id}`);
 			await item.save();
 		}
 		res.status(200).json({
@@ -111,19 +102,10 @@ const updateItem = asyncHandler(
 			throw new Error('Name is Required');
 		}
 		if (req.file) {
-			cloudinary.config({
-				cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-				api_key: process.env.CLOUDINARY_API_KEY,
-				api_secret: process.env.CLOUDINARY_API_SECRET,
-			});
 			if (item.img) {
-				deleteImage(item.img, true);
+				await deleteImage(item.img, true);
 			}
-			const result = await cloudinary.uploader.upload(req.file.path, {
-				folder: 'SuperCart/items',
-				public_id: `${user._id}/${item._id}`,
-			});
-			item.img = result.secure_url;
+			item.img = await uploadToCloudinary(req.file.buffer, 'SuperCart/items', `${user._id}/${item._id}`);
 		}
 		item.name = name;
 		item.description = description;
@@ -150,11 +132,6 @@ const deleteItem = asyncHandler(
 			res.status(401);
 			throw new Error('Not authorized');
 		}
-		cloudinary.config({
-			cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-			api_key: process.env.CLOUDINARY_API_KEY,
-			api_secret: process.env.CLOUDINARY_API_SECRET,
-		});
 		if (item.img) {
 			await Promise.all([deleteImage(item.img, true), item.deleteOne()]);
 		} else {

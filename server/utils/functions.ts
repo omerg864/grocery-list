@@ -69,6 +69,11 @@ const checkItem = (listItemsWithSameImg: ListItemDocument[], ItemWithTheSameImg:
 }
 
 export const deleteImage = async (img: string, item?: boolean) => {
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
     const public_id = extractPublicId(img);
     const [listItemsWithSameImg, ItemWithTheSameImg] = await Promise.all([ListItem.find({ img: img }), Item.find({ img: img })]);
     let deleteImage = item ? checkItem(listItemsWithSameImg, ItemWithTheSameImg) : checkListItem(listItemsWithSameImg, ItemWithTheSameImg);

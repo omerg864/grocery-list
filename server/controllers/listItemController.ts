@@ -4,9 +4,9 @@ import { ObjectId } from 'mongoose';
 import { RequestWithUser } from '../interface/requestInterface';
 import ListItem from '../models/listItemModel';
 import { List } from '../interface/listInterface';
-import { v2 as cloudinary } from 'cloudinary';
-import { uploadImageListItem, deleteImage } from '../utils/functions';
+import { deleteImage } from '../utils/functions';
 import { ListItemDocument } from '../interface/listItemInterface';
+import { uploadToCloudinary } from '../config/upload';
 
 const getItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -67,19 +67,14 @@ const updateItem = asyncHandler(
 			throw new Error('Not Authorized');
 		}
 		if (req.file) {
-			cloudinary.config({
-				cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-				api_key: process.env.CLOUDINARY_API_KEY,
-				api_secret: process.env.CLOUDINARY_API_SECRET,
-			});
 			if (item.img) {
 				const [_, image_url] = await Promise.all([
 					deleteImage(item.img),
-					uploadImageListItem(req.file, id),
+					uploadToCloudinary(req.file.buffer, 'SuperCart/listItems', id),
 				]);
 				item.img = image_url;
 			} else {
-				item.img = await uploadImageListItem(req.file, id);
+				item.img = await uploadToCloudinary(req.file.buffer, 'SuperCart/listItems', id);
 			}
 		}
 		item.name = name;

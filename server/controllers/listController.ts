@@ -8,11 +8,10 @@ import { itemExclude, populateList } from '../utils/modelsConst';
 import { ListDocument } from '../interface/listInterface';
 import Item from '../models/itemModel';
 import ListItem from '../models/listItemModel';
-import { v2 as cloudinary } from 'cloudinary';
 import Bundle from '../models/bundleModel';
 import { ItemDocument } from '../interface/itemInterface';
 import { ListItemDocument } from '../interface/listItemInterface';
-import streamifier from "streamifier";
+import { uploadToCloudinary } from '../config/upload';
 
 const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -133,16 +132,7 @@ const createListItem = async (
 			category,
 			list,
 		});
-		cloudinary.config({
-			cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-			api_key: process.env.CLOUDINARY_API_KEY,
-			api_secret: process.env.CLOUDINARY_API_SECRET,
-		});
-		const result = await cloudinary.uploader.upload(img.path, {
-			folder: 'SuperCart/listItems',
-			public_id: `${newItem._id}`,
-		});
-		newItem.img = result.secure_url;
+		newItem.img = await uploadToCloudinary(img.buffer, 'SuperCart/listItems', `${newItem._id}`);
 		await newItem.save();
 	} else {
 		newItem = await ListItem.create({
@@ -157,27 +147,6 @@ const createListItem = async (
 	}
 	return newItem;
 };
-
-const uploadToCloudinary = (imgBuffer: Buffer, folder: string, publicId: string): Promise<string> => {
-	return new Promise((resolve, reject) => {
-	  const stream = cloudinary.uploader.upload_stream(
-		{
-		  folder: folder,
-		  public_id: publicId,
-		},
-		(error, result) => {
-		  if (error) {
-			return reject(error);
-		  }
-		  if (!result) {
-			return reject(new Error('No result from Cloudinary'));
-		  }
-		  resolve(result.secure_url);
-		}
-	  );
-	  streamifier.createReadStream(imgBuffer).pipe(stream);
-	});
-  }
 
 const createItem = async (
 	name: string,
@@ -195,12 +164,6 @@ const createItem = async (
 		user: user,
 	});
 	if (img) {
-		cloudinary.config({
-			cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-			api_key: process.env.CLOUDINARY_API_KEY,
-			api_secret: process.env.CLOUDINARY_API_SECRET,
-		});
-		console.log(img);
 		item.img = await uploadToCloudinary(img.buffer, 'SuperCart/items', `${user}/${item._id}`);
 		await item.save();
 	}

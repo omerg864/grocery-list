@@ -10,6 +10,7 @@ import { RequestWithUser } from '../interface/requestInterface';
 import { v2 as cloudinary } from 'cloudinary';
 import { ObjectId } from 'mongoose';
 import { UserDocument } from '../interface/userInterface';
+import { uploadToCloudinary } from '../config/upload';
 
 const generateToken = (id: string) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET!, {
@@ -156,11 +157,7 @@ const updateUser = asyncHandler(
 					}
 				});
 			}
-			const result = await cloudinary.uploader.upload(req.file.path, {
-				folder: 'SuperCart/users',
-				public_id: `${userReq._id}/avatar`,
-			});
-			userReq!.avatar = result.secure_url;
+			userReq!.avatar = await uploadToCloudinary(req.file.buffer, 'SuperCart/users', `${userReq._id}/avatar`);
 		}
 		userReq!.f_name = f_name;
 		userReq!.l_name = l_name;
