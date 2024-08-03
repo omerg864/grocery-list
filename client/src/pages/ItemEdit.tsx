@@ -161,7 +161,7 @@ function ItemEdit() {
           <ThemeProvider theme={formTheme(outerTheme)}>
           <TextField required name="name" color='success' className='white-color-input' fullWidth value={itemState.name} label={t('name')} onChange={onChange} variant="outlined" />
           </ThemeProvider>
-          <ItemDetails onImgIconClick={onImgIconClick} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
+          <ItemDetails amountEdit={item !== undefined} onImgIconClick={onImgIconClick} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
           <GlassButton endIcon={<HiOutlineSave size={"1.5rem"} color='white'/>} text={t('save')} style={{width: "100%", color: "white"}} type="submit"/>
         </form>
     </main>

@@ -11,14 +11,14 @@ import ListItem from "../interface/ListItemInterface";
 import { useRecoilState } from "recoil";
 import { itemAtom } from "../recoil/atoms";
 import { getMinutesBetweenDates } from "../utils/functions";
-import { post } from "../utils/apiRequest";
+import { get, post } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
 
 
 
 function ItemAdd() {
 
-  const { id } = useParams<{ id: string, item: string, bundle: string }>();
+  const { id, item } = useParams<{ id: string, item: string, bundle: string }>();
   const { t } = useTranslation('translation', { keyPrefix: 'ItemAdd' });
   const navigate = useNavigate();
   const [itemState, setItemState] = useRecoilState<ListItem>(itemAtom);
@@ -106,12 +106,22 @@ function ItemAdd() {
 
   const getItem = async () => {
     setIsLoading(true);
+    await get(`/api/item/${item}`, (data) => {
+      setItemState({
+        ...data.item,
+        amount: 1,
+      });
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    });
     setIsLoading(false);
   }
 
   useEffect(() => {
     if (!itemState._id || itemState._id !== id || getMinutesBetweenDates(itemState.stateUpdated as Date, new Date()) > 10) {
       getItem();
+    } else {
+      setItemState({...itemState, amount: 1});
     }
   }, []);
 
@@ -123,7 +133,7 @@ function ItemAdd() {
     <main>
         <Header title={itemState.name} onBack={back}/>
         <form className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}} onSubmit={addItem}>
-          <ItemDetails enableAmount={true} onImgIconClick={onImgIconClick} addCounter={addCounter} removeCounter={removeCounter} onChange={onChangeAmount}  disabled={true} item={itemState} />
+          <ItemDetails amountEdit={true} enableAmount={true} onImgIconClick={onImgIconClick} addCounter={addCounter} removeCounter={removeCounter} onChange={onChangeAmount}  disabled={true} item={itemState} />
           <GlassButton endIcon={<MdAdd size={"1.5rem"} color='white'/>} text={t('add')} style={{width: "100%", color: "white"}} type="submit"/>
         </form>
     </main>

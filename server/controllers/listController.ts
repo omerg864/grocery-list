@@ -12,6 +12,7 @@ import { unlinkAsync } from '../config/upload';
 import { v2 as cloudinary } from 'cloudinary';
 import Bundle from '../models/bundleModel';
 import { ItemDocument } from '../interface/itemInterface';
+import { ListItemDocument } from '../interface/listItemInterface';
 
 const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -57,6 +58,22 @@ const getList = asyncHandler(
 			res.status(403);
 			throw new Error('Not Authorized');
 		}
+		const categories = new Set<string>();
+		(list.items as ListItemDocument[]).forEach((item) => {
+			if (item.category) {
+				categories.add(item.category);
+			}
+		});
+		(list.deletedItems as ListItemDocument[]).forEach((item) => {
+			if (item.category) {
+				categories.add(item.category);
+			}
+		});
+		(list.boughtItems as ListItemDocument[]).forEach((item) => {
+			if (item.category) {
+				categories.add(item.category);
+			}
+		});
 		const listDisplay = {
 			...list.toObject(),
 			owner:
@@ -67,6 +84,7 @@ const getList = asyncHandler(
 					((listUser as UserDocument)._id as ObjectId).toString() !==
 					(user._id as ObjectId).toString()
 			),
+			categories: Array.from(categories),
 		};
 		res.status(200).json({
 			success: true,

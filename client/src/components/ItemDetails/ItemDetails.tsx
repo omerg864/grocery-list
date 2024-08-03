@@ -23,6 +23,7 @@ interface ItemDetailsProps {
     onImgIconClick: () => void;
     img?: string | null;
     enableAmount?: boolean;
+    amountEdit?: boolean;
 }
 
 function ItemDetails(props: ItemDetailsProps) {
@@ -81,7 +82,7 @@ function ItemDetails(props: ItemDetailsProps) {
                 <TextareaAutosize placeholder={t('description')} name="description" value={props.item.description} onChange={props.onChange} disabled={props.disabled} />
                 <ThemeProvider theme={formTheme(outerTheme)}>
                 <TextField name="category" color='success' className='white-color-input' fullWidth value={props.item.category} InputLabelProps={{ disabled: props.disabled}} label={t('category')} onChange={props.onChange} disabled={props.disabled} variant="outlined" />
-                {(props.item as ListItem).amount ? <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
+                {props.amountEdit ? <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
                 {props.item.unit !== '' && (props.item.unit === 'pc' ? <Counter handleChange={props.onChange} addCounter={props.addCounter} removeCounter={props.removeCounter} count={(props.item as ListItem).amount!} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false} />: 
                         <TextField required name="amount" onChange={props.onChange} color='success' type="number" className='white-color-input' fullWidth value={(props.item as ListItem).amount} label={t('amount')} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false}  variant="outlined" />)}
                         <FormControl fullWidth>

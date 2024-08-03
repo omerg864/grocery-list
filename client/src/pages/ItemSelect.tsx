@@ -8,10 +8,11 @@ import { useEffect, useState } from 'react';
 import Item from '../interface/ItemInterface';
 import { useRecoilState } from "recoil";
 import Bundle from '../interface/BundleInterface';
-import { bundleAtom } from '../recoil/atoms';
+import { bundleAtom, itemAtom } from '../recoil/atoms';
 import Loading from '../components/Loading/Loading';
 import Cookies from 'universal-cookie';
 import { get } from '../utils/apiRequest';
+import ListItem from '../interface/ListItemInterface';
 
 function ItemSelect() {
     const { t } = useTranslation('translation', { keyPrefix: 'ItemSelect' });
@@ -22,6 +23,7 @@ function ItemSelect() {
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [bundle, setBundle] = useRecoilState<Bundle>(bundleAtom);
     const [items, setItems] = useState<Item[]>([]);
+    const [_, setItem] = useRecoilState<Item | ListItem>(itemAtom);
     const [displayedItems, setDisplayedItems] = useState<Item[]>([]);
     const cookies = new Cookies();
 
@@ -54,8 +56,8 @@ function ItemSelect() {
                     navigate(`/bundles/new`);
                     return;
                 }
-                break;
             case 'lists':
+                setItem(items.find(item => item._id === itemId)!);
                 navigate(`/lists/${id}/add/item/${itemId}`);
                 break;
         }

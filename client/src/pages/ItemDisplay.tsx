@@ -41,14 +41,17 @@ function ItemDisplay() {
 
   let path = window.location.pathname.split('/')[1];
   let url = `/api/item/${id}`;
+  let list = false
 
   switch (path) {
     case 'lists':
       url = `/api/listitem/${item}`;
+      list = true;
       if (bundle) {
         back = {
           onBack: () => navigate(`/lists/${id}/add/bundle/${bundle}`)
         }
+        url = `/api/item/${item}`;
       } else {
         back = {
           onBack: () => navigate(`/lists/${id}`)
@@ -124,7 +127,7 @@ function ItemDisplay() {
     <main>
         <Header title={itemState.name} {...back} {...side}/>
         <div className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}}>
-          <ItemDetails onImgIconClick={onImgIconClick} disabled={true} item={itemState} />
+          <ItemDetails amountEdit={list} onImgIconClick={onImgIconClick} disabled={true} item={itemState} />
         </div>
     </main>
   )
