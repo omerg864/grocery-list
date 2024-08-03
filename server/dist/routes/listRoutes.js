@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const listController_1 = require("../controllers/listController");
+const upload_1 = require("../config/upload");
+const router = express_1.default.Router();
+router.get('/', authMiddleware_1.protectUser, listController_1.getLists);
+router.post('/', authMiddleware_1.protectUser, listController_1.addList);
+router.get('/:id', authMiddleware_1.protectUser, listController_1.getList);
+router.post('/:id/item', authMiddleware_1.protectUser, upload_1.upload.single('file'), listController_1.addNewItem);
+router.post('/:id/item/:item', authMiddleware_1.protectUser, listController_1.addExistingItem);
+router.get('/:id/item/:item/delete', authMiddleware_1.protectUser, listController_1.sendToDeleted);
+router.get('/:id/item/:item/restore', authMiddleware_1.protectUser, listController_1.restoreFromDeleted);
+router.get('/:id/item/:item/shop', authMiddleware_1.protectUser, listController_1.restoreFromBought);
+router.get('/:id/item/:item/bought', authMiddleware_1.protectUser, listController_1.sendToBought);
+router.post('/:id/bundle/:bundle', authMiddleware_1.protectUser, listController_1.addBundleItems);
+exports.default = router;
