@@ -1,10 +1,10 @@
-import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
-import connectDB from "./config/db";
+import express, { Express, Request, Response } from 'express';
+import dotenv from 'dotenv';
+import connectDB from './config/db';
 import mongoSanitize from 'express-mongo-sanitize';
-import errorHandler from "./middleware/errorMiddleware";
+import errorHandler from './middleware/errorMiddleware';
 import rateLimiterMiddleware from './middleware/rateLimiterMiddleware';
-import colors from "colors";
+import colors from 'colors';
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/userRoutes';
 import itemRouter from './routes/itemRoutes';
@@ -21,6 +21,7 @@ const app: Express = express();
 
 connectDB();
 
+console.log(process.env.HOST_ADDRESS);
 
 // Middleware
 app.use(express.json());
@@ -29,18 +30,15 @@ app.use(mongoSanitize());
 app.use(errorHandler);
 app.use(rateLimiterMiddleware);
 app.use(cookieParser());
-app.use(cors(
-  {
-    origin: process.env.HOST_ADDRESS,
-    credentials: true,
-  }
-));
-
-
-
+app.use(
+	cors({
+		origin: process.env.HOST_ADDRESS,
+		credentials: true,
+	})
+);
 
 app.listen(port, () => {
-  console.log(colors.green.underline(`Server running on port ${port}`));
+	console.log(colors.green.underline(`Server running on port ${port}`));
 });
 
 // Routes
