@@ -18,9 +18,8 @@ const listModel_1 = __importDefault(require("../models/listModel"));
 const modelsConst_1 = require("../utils/modelsConst");
 const itemModel_1 = __importDefault(require("../models/itemModel"));
 const listItemModel_1 = __importDefault(require("../models/listItemModel"));
-const cloudinary_1 = require("cloudinary");
 const bundleModel_1 = __importDefault(require("../models/bundleModel"));
-const streamifier_1 = __importDefault(require("streamifier"));
+const upload_1 = require("../config/upload");
 const getLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const lists = yield listModel_1.default.find({ users: user._id });
@@ -105,16 +104,7 @@ const createListItem = (name, description, unit, amount, category, list, img) =>
             category,
             list,
         });
-        cloudinary_1.v2.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET,
-        });
-        const result = yield cloudinary_1.v2.uploader.upload(img.path, {
-            folder: 'SuperCart/listItems',
-            public_id: `${newItem._id}`,
-        });
-        newItem.img = result.secure_url;
+        newItem.img = yield (0, upload_1.uploadToCloudinary)(img.buffer, 'SuperCart/listItems', `${newItem._id}`);
         yield newItem.save();
     }
     else {
@@ -130,23 +120,6 @@ const createListItem = (name, description, unit, amount, category, list, img) =>
     }
     return newItem;
 });
-const uploadToCloudinary = (imgBuffer, folder, publicId) => {
-    return new Promise((resolve, reject) => {
-        const stream = cloudinary_1.v2.uploader.upload_stream({
-            folder: folder,
-            public_id: publicId,
-        }, (error, result) => {
-            if (error) {
-                return reject(error);
-            }
-            if (!result) {
-                return reject(new Error('No result from Cloudinary'));
-            }
-            resolve(result.secure_url);
-        });
-        streamifier_1.default.createReadStream(imgBuffer).pipe(stream);
-    });
-};
 const createItem = (name, description, unit, category, user, img) => __awaiter(void 0, void 0, void 0, function* () {
     const item = yield itemModel_1.default.create({
         name,
@@ -156,13 +129,7 @@ const createItem = (name, description, unit, category, user, img) => __awaiter(v
         user: user,
     });
     if (img) {
-        cloudinary_1.v2.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET,
-        });
-        console.log(img);
-        item.img = yield uploadToCloudinary(img.buffer, 'SuperCart/items', `${user}/${item._id}`);
+        item.img = yield (0, upload_1.uploadToCloudinary)(img.buffer, 'SuperCart/items', `${user}/${item._id}`);
         yield item.save();
     }
     return item;

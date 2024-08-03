@@ -37,8 +37,9 @@ function SwipeItem(props: SwipeItemProps) {
     const [{ w }, set] = useSpring(() => ({ w: 0 }));
     const [{ w2 }, set2] = useSpring(() => ({ w2: 0 }));
     // Set the drag hook and define component movement based on gesture data
-    const bind = useGesture(({
-        onDrag: ({ down, movement: [mx, _my] }) => {
+    const bind = useGesture({
+        onDrag: ({ down, movement: [mx, _my], axis}) => {
+            if (axis !== 'x') return;
             if(down && x.get() != 0) {
                 x.set(0);
             }
@@ -102,7 +103,7 @@ function SwipeItem(props: SwipeItemProps) {
                 props.setOpen!(null);
             }
         },
-    }))
+    }, { drag: { axis: 'lock' } });
 
     useEffect(() => {
         if (props.open !== props.id) {
@@ -114,7 +115,7 @@ function SwipeItem(props: SwipeItemProps) {
     }, [props.open])
 
   return (
-    <div style={{display: 'flex', position: 'relative', width: '100%', overflow: 'hidden'}}>
+    <div style={{display: 'flex', position: 'relative', width: '100%', overflow: 'hidden', touchAction: 'pan-y'}}>
         {props.onSwipedRight && <animated.div style={{ width: w2, touchAction: 'none'}} ref={leftBtn} className={`swipe-right ${props.leftBtnClass}`} onClick={() => props.onSwipedRight!(props.id)}>
         {props.leftBtnChildren}
             </animated.div>}

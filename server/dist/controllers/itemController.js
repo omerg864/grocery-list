@@ -16,8 +16,8 @@ exports.getItem = exports.updateItem = exports.addItem = exports.deleteItem = ex
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const itemModel_1 = __importDefault(require("../models/itemModel"));
 const modelsConst_1 = require("../utils/modelsConst");
-const cloudinary_1 = require("cloudinary");
 const functions_1 = require("../utils/functions");
+const upload_1 = require("../config/upload");
 const getItems = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     let { category, limit } = req.query;
@@ -60,16 +60,7 @@ const addItem = (0, express_async_handler_1.default)((req, res, next) => __await
         user: user._id,
     });
     if (req.file) {
-        cloudinary_1.v2.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET,
-        });
-        const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
-            folder: 'SuperCart/items',
-            public_id: `${user._id}/${item._id}`,
-        });
-        item.img = result.secure_url;
+        item.img = yield (0, upload_1.uploadToCloudinary)(req.file.buffer, 'SuperCart/items', `${user._id}/${item._id}`);
         yield item.save();
     }
     res.status(200).json({
@@ -114,19 +105,10 @@ const updateItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('Name is Required');
     }
     if (req.file) {
-        cloudinary_1.v2.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET,
-        });
         if (item.img) {
-            (0, functions_1.deleteImage)(item.img, true);
+            yield (0, functions_1.deleteImage)(item.img, true);
         }
-        const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
-            folder: 'SuperCart/items',
-            public_id: `${user._id}/${item._id}`,
-        });
-        item.img = result.secure_url;
+        item.img = yield (0, upload_1.uploadToCloudinary)(req.file.buffer, 'SuperCart/items', `${user._id}/${item._id}`);
     }
     item.name = name;
     item.description = description;
@@ -151,11 +133,6 @@ const deleteItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         res.status(401);
         throw new Error('Not authorized');
     }
-    cloudinary_1.v2.config({
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-        api_key: process.env.CLOUDINARY_API_KEY,
-        api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
     if (item.img) {
         yield Promise.all([(0, functions_1.deleteImage)(item.img, true), item.deleteOne()]);
     }

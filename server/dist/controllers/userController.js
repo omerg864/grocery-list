@@ -21,6 +21,7 @@ const userModel_1 = __importDefault(require("../models/userModel"));
 const modelsConst_1 = require("../utils/modelsConst");
 const functions_1 = require("../utils/functions");
 const cloudinary_1 = require("cloudinary");
+const upload_1 = require("../config/upload");
 const generateToken = (id) => {
     return jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: '30d',
@@ -155,11 +156,7 @@ const updateUser = (0, express_async_handler_1.default)((req, res, next) => __aw
                 }
             });
         }
-        const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
-            folder: 'SuperCart/users',
-            public_id: `${userReq._id}/avatar`,
-        });
-        userReq.avatar = result.secure_url;
+        userReq.avatar = yield (0, upload_1.uploadToCloudinary)(req.file.buffer, 'SuperCart/users', `${userReq._id}/avatar`);
     }
     userReq.f_name = f_name;
     userReq.l_name = l_name;

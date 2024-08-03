@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateItem = exports.getItem = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const listItemModel_1 = __importDefault(require("../models/listItemModel"));
-const cloudinary_1 = require("cloudinary");
 const functions_1 = require("../utils/functions");
+const upload_1 = require("../config/upload");
 const getItem = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { id } = req.params;
@@ -69,20 +69,15 @@ const updateItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('Not Authorized');
     }
     if (req.file) {
-        cloudinary_1.v2.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET,
-        });
         if (item.img) {
             const [_, image_url] = yield Promise.all([
                 (0, functions_1.deleteImage)(item.img),
-                (0, functions_1.uploadImageListItem)(req.file, id),
+                (0, upload_1.uploadToCloudinary)(req.file.buffer, 'SuperCart/listItems', id),
             ]);
             item.img = image_url;
         }
         else {
-            item.img = yield (0, functions_1.uploadImageListItem)(req.file, id);
+            item.img = yield (0, upload_1.uploadToCloudinary)(req.file.buffer, 'SuperCart/listItems', id);
         }
     }
     item.name = name;
