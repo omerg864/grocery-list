@@ -26,7 +26,7 @@ function ItemSelect() {
     const [items, setItems] = useRecoilState<Item[]>(itemsAtom);
     const [updatedItems, setUpdatedItems] = useRecoilState<Date>(updatedItemsAtom);
     const [_, setItem] = useRecoilState<Item | ListItem>(itemAtom);
-    const [displayedItems, setDisplayedItems] = useState<Item[]>([]);
+    const [displayedItems, setDisplayedItems] = useState<Item[]>(items);
     const cookies = new Cookies();
 
     const filterItems = (search: string) => {
@@ -84,6 +84,14 @@ function ItemSelect() {
             getItems();
         }
     }, []);
+
+    useEffect(() => {
+        if (selectedCategory === "All") {
+            setDisplayedItems(items);
+        } else {
+            setDisplayedItems(items.filter(item => item.category === selectedCategory));
+        }
+    }, [selectedCategory, items]);
 
 
     let path = window.location.pathname.split('/')[1];

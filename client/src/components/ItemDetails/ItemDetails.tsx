@@ -9,6 +9,7 @@ import formTheme from "../../themes/formTheme";
 import { MdEdit } from "react-icons/md";
 import { IoIosShare } from "react-icons/io";
 import ListItem, { ListItemNew} from "../../interface/ListItemInterface";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 
 
@@ -31,6 +32,7 @@ function ItemDetails(props: ItemDetailsProps) {
     const { t } = useTranslation('translation', { keyPrefix: 'ItemDetails' });
 
     const outerTheme = useTheme();
+    const dimensions = useWindowDimensions();
 
     const units = ['pc', 'kg', 'g', 'l', 'ml', ''];
 
@@ -39,8 +41,13 @@ function ItemDetails(props: ItemDetailsProps) {
         e.stopPropagation();
         let image = e.target as HTMLImageElement;
         let imageCopy = image.cloneNode() as HTMLImageElement;
-        imageCopy.style.width = '100%';
-        imageCopy.style.height = 'auto';
+        if (dimensions.height > dimensions.width) {
+            imageCopy.style.width = '100%';
+            imageCopy.style.height = 'auto';
+        } else {
+            imageCopy.style.width = 'auto';
+            imageCopy.style.height = '100%';
+        }
         imageCopy.style.borderRadius = '0';
         let newDiv = document.createElement('div');
         newDiv.style.position = 'fixed';

@@ -4,6 +4,7 @@ import SwipeItem from "../SwipeItem/SwipeItem";
 import { FaTrash } from "react-icons/fa";
 import ImagesList from "../ImagesList/ImagesList";
 import './BundleViewList.css';
+import Cookies from "universal-cookie";
 
 
 interface BundleViewListProps {
@@ -24,6 +25,10 @@ function BundleViewList(props: BundleViewListProps) {
             </div>
         )
     }
+    const cookies = new Cookies();
+
+    const user = cookies.get('user');
+    const fullSwipe = user && user.fullSwipe ? true : false;
 
     let leftButtonChild;
 
@@ -32,7 +37,7 @@ function BundleViewList(props: BundleViewListProps) {
     }
 
   return (
-    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedRight={props.onSwipeRight ? () => props.onSwipeRight!(props.bundle._id) : undefined} id={props.bundle._id} leftBtnOpenWidth={80}
+    <SwipeItem fullSwipe={fullSwipe} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedRight={props.onSwipeRight ? () => props.onSwipeRight!(props.bundle._id) : undefined} id={props.bundle._id} leftBtnOpenWidth={80}
     animateDivClass={"item-div"} leftBtnClass='swipe-left-btn' leftBtnChildren={leftButtonChild} 
     mainItemClick={() => props.onItemClick!(props.bundle._id)}>
       <CardActionArea className='item-container'>

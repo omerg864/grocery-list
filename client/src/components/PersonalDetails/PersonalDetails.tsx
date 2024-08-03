@@ -80,7 +80,7 @@ function PersonalDetails(props: PersonalDetailsProps) {
     newDiv.style.display = 'flex';
     newDiv.style.alignItems = 'center';
     newDiv.style.justifyContent = 'center';
-    newDiv.style.zIndex = '900';
+    newDiv.style.zIndex = '9000';
     newDiv.appendChild(image);
     document.body.appendChild(newDiv);
     newDiv.addEventListener('click', () => {

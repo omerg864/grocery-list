@@ -18,6 +18,7 @@ interface PreferencesProps {
     setTab: (tab: number) => void;
     setIsLoading: (loading: boolean) => void;
     preferences: PreferencesInterface;
+    setPreferences: (preferences: PreferencesInterface) => void;
 }
 
 function Preferences(props: PreferencesProps) {
@@ -41,13 +42,9 @@ function Preferences(props: PreferencesProps) {
     props.setIsLoading(true);
     await put('/api/user/preferences', form, (data) => {
       toast.success(t('preferencesChanged'));
+      props.setPreferences(form);
       let date30 = addDays(new Date(), 30);
       cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: date30 });
-      if (form.language === 'he') {
-        document.body.dir = 'rtl';
-      } else {
-        document.body.dir = 'ltr';
-      }
       i18next.changeLanguage(form.language);
       props.setTab(0);
     }, {

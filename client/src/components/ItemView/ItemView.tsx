@@ -5,6 +5,7 @@ import SwipeItem from '../SwipeItem/SwipeItem';
 import { FaTrash } from "react-icons/fa";
 import { MdAddShoppingCart } from "react-icons/md";
 import ItemListDisplay from '../ItemListDisplay/ItemListDisplay';
+import Cookies from 'universal-cookie';
 
 interface ItemViewProps {
     item: Item;
@@ -17,6 +18,8 @@ interface ItemViewProps {
     rightIcon?: React.ReactNode;
 }
 function ItemView(props: ItemViewProps) {
+
+    const cookies = new Cookies();
 
     const leftButton = (): React.ReactNode => {
         return (
@@ -33,6 +36,7 @@ function ItemView(props: ItemViewProps) {
             </div>
         )
     }
+    
 
     let rightButtonChild, leftButtonChild;
 
@@ -44,8 +48,11 @@ function ItemView(props: ItemViewProps) {
         leftButtonChild = leftButton();
     }
 
+    const user = cookies.get('user');
+    const fullSwipe = user && user.fullSwipe ? true : false;
+
   return (
-    <SwipeItem fullSwipe={false} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedLeft={props.onSwipeLeft ? () => props.onSwipeLeft!(props.item._id) : undefined} onSwipedRight={props.onSwipeRight ? () => props.onSwipeRight!(props.item._id) : undefined} id={props.item._id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
+    <SwipeItem fullSwipe={fullSwipe} open={props.open} setOpen={props.setOpen} threshold={0.1} onSwipedLeft={props.onSwipeLeft ? () => props.onSwipeLeft!(props.item._id) : undefined} onSwipedRight={props.onSwipeRight ? () => props.onSwipeRight!(props.item._id) : undefined} id={props.item._id} rightBtnOpenWidth={80} leftBtnOpenWidth={80}
     animateDivClass={"item-div"} rightBtnClass='swipe-right-btn' leftBtnClass='swipe-left-btn' rightBtnChildren={rightButtonChild} leftBtnChildren={leftButtonChild} 
     mainItemClick={() => props.onItemClicked!(props.item._id)}>
         <ItemListDisplay item={props.item} />

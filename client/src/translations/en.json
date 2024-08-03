@@ -95,7 +95,12 @@
         "language": "Language",
         "english": "English",
         "hebrew": "Hebrew",
-        "detailsUpdated": "Details updated"
+        "detailsUpdated": "Details updated",
+        "passwordUpdated": "Password updated",
+        "passwordsDontMatch": "Passwords don't match",
+        "invalidEmail": "Invalid email",
+        "invalidPassword": "Invalid password",
+        "preferencesChanged": "Preferences changed"
     },
     "Notifications": {
         "notifications": "Notifications",

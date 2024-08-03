@@ -3,6 +3,7 @@ import Receipt from "../../interface/ReceiptInterface";
 import './ReceiptsList.css';
 import { FaTrash } from "react-icons/fa";
 import { formatDate } from "../../utils/functions";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 interface ReceiptsListProps {
     receipts: Receipt[];
@@ -10,13 +11,20 @@ interface ReceiptsListProps {
 }   
 function ReceiptsList(props: ReceiptsListProps) {
 
+    const dimensions = useWindowDimensions();
+
     const onImgClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
         e.preventDefault();
         e.stopPropagation();
         let image = e.target as HTMLImageElement;
         let imageCopy = image.cloneNode() as HTMLImageElement;
-        imageCopy.style.width = '100%';
-        imageCopy.style.height = 'auto';
+        if (dimensions.height > dimensions.width) {
+            imageCopy.style.width = '100%';
+            imageCopy.style.height = 'auto';
+        } else {
+            imageCopy.style.width = 'auto';
+            imageCopy.style.height = '100%';
+        }
         imageCopy.style.borderRadius = '0';
         let newDiv = document.createElement('div');
         newDiv.style.position = 'fixed';

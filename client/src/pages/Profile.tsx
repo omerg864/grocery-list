@@ -102,7 +102,7 @@ function Profile(props: ProfileProps) {
           </List>}
         {tab === 1 && <PersonalDetails setUser={setUser} user={user} setTab={setTab} setIsLoading={setIsLoading} />}
         {tab === 2 && <PasswordChange setTab={setTab} setIsLoading={setIsLoading} />}
-        {tab === 3 && <Preferences preferences={preferences} setTab={setTab} setIsLoading={setIsLoading} />}
+        {tab === 3 && <Preferences preferences={preferences} setPreferences={setPreferences} setTab={setTab} setIsLoading={setIsLoading} />}
       </ThemeProvider>
   </div>
   </main>

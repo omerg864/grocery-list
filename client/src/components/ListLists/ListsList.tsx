@@ -6,6 +6,7 @@ import { useState } from 'react';
 import ArrowForward from '../ArrowForward/ArrowForward';
 import Lists from '../../interface/ListsInterface';
 import { formatDate } from '../../utils/functions';
+import Cookies from 'universal-cookie';
 
 
 interface ListsListProps {
@@ -16,6 +17,7 @@ interface ListsListProps {
 function ListsList(props: ListsListProps) {
 
     const [open, setOpen] = useState<string | null>(null);
+    const cookies = new Cookies();
 
     const leftButton = (): React.ReactNode => {
         return (
@@ -25,12 +27,15 @@ function ListsList(props: ListsListProps) {
         )
     }
 
+    const user = cookies.get('user');
+    const fullSwipe = user && user.fullSwipe ? true : false;
+
   return (
     <div className='list-lists'>
         {props.lists.map((list: Lists) => (
-            <SwipeItem open={open} setOpen={setOpen} fullSwipe={false} leftBtnClass='swipe-left-btn' animateDivClass='list-view' threshold={0.06} onSwipedRight={() => props.deleteList(list._id)} leftBtnChildren={leftButton()} leftBtnOpenWidth={80} mainItemClick={() => props.onClick(list._id)} key={list._id} id={list._id} >
+            <SwipeItem open={open} setOpen={setOpen} fullSwipe={fullSwipe} leftBtnClass='swipe-left-btn' animateDivClass='list-view' threshold={0.06} onSwipedRight={() => props.deleteList(list._id)} leftBtnChildren={leftButton()} leftBtnOpenWidth={80} mainItemClick={() => props.onClick(list._id)} key={list._id} id={list._id} >
                 <CardActionArea className='list-container'>
-                    <div className='list-view'>
+                    <div className='list-view' style={{ padding: '0 0.5rem' }}>
                         <div className='list-details'>
                             <div className='list-title'>
                                 <Typography sx={{margin: 0, fontWeight: 700}} variant='h6'>{list.title}</Typography>
