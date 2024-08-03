@@ -178,6 +178,7 @@ const createItem = async (
 			api_key: process.env.CLOUDINARY_API_KEY,
 			api_secret: process.env.CLOUDINARY_API_SECRET,
 		});
+		console.log(img.path);
 		const result = await cloudinary.uploader.upload(img.path, {
 			folder: 'SuperCart/items',
 			public_id: `${user}/${item._id}`,
@@ -217,6 +218,7 @@ const addNewItem = asyncHandler(
 			throw new Error('Not Authorized');
 		}
 		let listItem, item;
+		console.log(req.file);
 		if (saveItem) {
 			item = await createItem(
 				name,

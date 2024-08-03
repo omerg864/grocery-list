@@ -143,6 +143,7 @@ const createItem = (name, description, unit, category, user, img) => __awaiter(v
             api_key: process.env.CLOUDINARY_API_KEY,
             api_secret: process.env.CLOUDINARY_API_SECRET,
         });
+        console.log(img.path);
         const result = yield cloudinary_1.v2.uploader.upload(img.path, {
             folder: 'SuperCart/items',
             public_id: `${user}/${item._id}`,
@@ -177,6 +178,7 @@ const addNewItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('Not Authorized');
     }
     let listItem, item;
+    console.log(req.file);
     if (saveItem) {
         item = yield createItem(name, description, unit, category, user._id, req.file);
         listItem = yield createListItem(name, description, unit, amount, category, list._id, item.img);
