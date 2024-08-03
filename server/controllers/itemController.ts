@@ -6,7 +6,6 @@ import Item from '../models/itemModel';
 import { RequestWithUser } from '../interface/requestInterface';
 import { itemExclude } from '../utils/modelsConst';
 import { v2 as cloudinary } from 'cloudinary';
-import { unlinkAsync } from '../config/upload';
 import { deleteImage } from '../utils/functions';
 
 const getItems = asyncHandler(
@@ -63,7 +62,6 @@ const addItem = asyncHandler(
 				folder: 'SuperCart/items',
 				public_id: `${user._id}/${item._id}`,
 			});
-			await unlinkAsync(req.file.path);
 			item.img = result.secure_url;
 			await item.save();
 		}
@@ -125,7 +123,6 @@ const updateItem = asyncHandler(
 				folder: 'SuperCart/items',
 				public_id: `${user._id}/${item._id}`,
 			});
-			await unlinkAsync(req.file.path);
 			item.img = result.secure_url;
 		}
 		item.name = name;

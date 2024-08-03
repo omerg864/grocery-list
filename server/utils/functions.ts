@@ -2,7 +2,6 @@ import { createTransport } from 'nodemailer';
 import Item from '../models/itemModel';
 import ListItem from '../models/listItemModel';
 import { v2 as cloudinary } from 'cloudinary';
-import { unlinkAsync } from '../config/upload';
 import { ListItemDocument } from '../interface/listItemInterface';
 import { ItemDocument } from '../interface/itemInterface';
 
@@ -88,6 +87,5 @@ export const uploadImageListItem = async (file: Express.Multer.File, id: string)
         folder: 'SuperCart/listItems',
         public_id: `${id}`,
     });
-    await unlinkAsync(file.path);
     return result.secure_url;
 }

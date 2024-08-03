@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { unlinkAsync } from '../config/upload';
 
 const errorHandler = async (
 	err: Error,
@@ -8,9 +7,8 @@ const errorHandler = async (
 	next: NextFunction
 ) => {
 	const statusCode = res.statusCode ? res.statusCode : 500;
-	console.log(err.stack);
-	if (req.file) {
-		await unlinkAsync(req.file.path);
+	if (process.env.NODE_ENV === 'development') {
+		console.log(err.stack);
 	}
 	res.status(statusCode).json({
 		message: err.message,

@@ -9,12 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const upload_1 = require("../config/upload");
 const errorHandler = (err, req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const statusCode = res.statusCode ? res.statusCode : 500;
-    console.log(err.stack);
-    if (req.file) {
-        yield (0, upload_1.unlinkAsync)(req.file.path);
+    if (process.env.NODE_ENV === 'development') {
+        console.log(err.stack);
     }
     res.status(statusCode).json({
         message: err.message,

@@ -8,7 +8,6 @@ import { itemExclude, populateList } from '../utils/modelsConst';
 import { ListDocument } from '../interface/listInterface';
 import Item from '../models/itemModel';
 import ListItem from '../models/listItemModel';
-import { unlinkAsync } from '../config/upload';
 import { v2 as cloudinary } from 'cloudinary';
 import Bundle from '../models/bundleModel';
 import { ItemDocument } from '../interface/itemInterface';
@@ -142,7 +141,6 @@ const createListItem = async (
 			folder: 'SuperCart/listItems',
 			public_id: `${newItem._id}`,
 		});
-		await unlinkAsync(img.path);
 		newItem.img = result.secure_url;
 		await newItem.save();
 	} else {
@@ -184,7 +182,6 @@ const createItem = async (
 			folder: 'SuperCart/items',
 			public_id: `${user}/${item._id}`,
 		});
-		await unlinkAsync(img.path);
 		item.img = result.secure_url;
 		await item.save();
 	}

@@ -17,7 +17,6 @@ const nodemailer_1 = require("nodemailer");
 const itemModel_1 = __importDefault(require("../models/itemModel"));
 const listItemModel_1 = __importDefault(require("../models/listItemModel"));
 const cloudinary_1 = require("cloudinary");
-const upload_1 = require("../config/upload");
 const sendEmail = (receiver, subject, text) => __awaiter(void 0, void 0, void 0, function* () {
     var transporter = (0, nodemailer_1.createTransport)({
         service: process.env.EMAIL_SERVICE,
@@ -95,7 +94,6 @@ const uploadImageListItem = (file, id) => __awaiter(void 0, void 0, void 0, func
         folder: 'SuperCart/listItems',
         public_id: `${id}`,
     });
-    yield (0, upload_1.unlinkAsync)(file.path);
     return result.secure_url;
 });
 exports.uploadImageListItem = uploadImageListItem;

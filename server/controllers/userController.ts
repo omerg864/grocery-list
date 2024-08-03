@@ -7,7 +7,6 @@ import { Request, Response, NextFunction } from 'express';
 import { userExclude } from '../utils/modelsConst';
 import { sendEmail } from '../utils/functions';
 import { RequestWithUser } from '../interface/requestInterface';
-import { unlinkAsync } from '../config/upload';
 import { v2 as cloudinary } from 'cloudinary';
 import { ObjectId } from 'mongoose';
 import { UserDocument } from '../interface/userInterface';
@@ -161,8 +160,6 @@ const updateUser = asyncHandler(
 				folder: 'SuperCart/users',
 				public_id: `${userReq._id}/avatar`,
 			});
-			// Delete the file from the server after uploading to Cloudinary
-			await unlinkAsync(req.file.path);
 			userReq!.avatar = result.secure_url;
 		}
 		userReq!.f_name = f_name;

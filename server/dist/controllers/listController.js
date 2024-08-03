@@ -18,7 +18,6 @@ const listModel_1 = __importDefault(require("../models/listModel"));
 const modelsConst_1 = require("../utils/modelsConst");
 const itemModel_1 = __importDefault(require("../models/itemModel"));
 const listItemModel_1 = __importDefault(require("../models/listItemModel"));
-const upload_1 = require("../config/upload");
 const cloudinary_1 = require("cloudinary");
 const bundleModel_1 = __importDefault(require("../models/bundleModel"));
 const getLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -114,7 +113,6 @@ const createListItem = (name, description, unit, amount, category, list, img) =>
             folder: 'SuperCart/listItems',
             public_id: `${newItem._id}`,
         });
-        yield (0, upload_1.unlinkAsync)(img.path);
         newItem.img = result.secure_url;
         yield newItem.save();
     }
@@ -149,7 +147,6 @@ const createItem = (name, description, unit, category, user, img) => __awaiter(v
             folder: 'SuperCart/items',
             public_id: `${user}/${item._id}`,
         });
-        yield (0, upload_1.unlinkAsync)(img.path);
         item.img = result.secure_url;
         yield item.save();
     }

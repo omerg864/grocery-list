@@ -17,7 +17,6 @@ const express_async_handler_1 = __importDefault(require("express-async-handler")
 const itemModel_1 = __importDefault(require("../models/itemModel"));
 const modelsConst_1 = require("../utils/modelsConst");
 const cloudinary_1 = require("cloudinary");
-const upload_1 = require("../config/upload");
 const functions_1 = require("../utils/functions");
 const getItems = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
@@ -70,7 +69,6 @@ const addItem = (0, express_async_handler_1.default)((req, res, next) => __await
             folder: 'SuperCart/items',
             public_id: `${user._id}/${item._id}`,
         });
-        yield (0, upload_1.unlinkAsync)(req.file.path);
         item.img = result.secure_url;
         yield item.save();
     }
@@ -128,7 +126,6 @@ const updateItem = (0, express_async_handler_1.default)((req, res, next) => __aw
             folder: 'SuperCart/items',
             public_id: `${user._id}/${item._id}`,
         });
-        yield (0, upload_1.unlinkAsync)(req.file.path);
         item.img = result.secure_url;
     }
     item.name = name;

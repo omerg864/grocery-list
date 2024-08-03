@@ -20,7 +20,6 @@ const regex_1 = require("../utils/regex");
 const userModel_1 = __importDefault(require("../models/userModel"));
 const modelsConst_1 = require("../utils/modelsConst");
 const functions_1 = require("../utils/functions");
-const upload_1 = require("../config/upload");
 const cloudinary_1 = require("cloudinary");
 const generateToken = (id) => {
     return jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, {
@@ -160,8 +159,6 @@ const updateUser = (0, express_async_handler_1.default)((req, res, next) => __aw
             folder: 'SuperCart/users',
             public_id: `${userReq._id}/avatar`,
         });
-        // Delete the file from the server after uploading to Cloudinary
-        yield (0, upload_1.unlinkAsync)(req.file.path);
         userReq.avatar = result.secure_url;
     }
     userReq.f_name = f_name;
