@@ -7,6 +7,7 @@ import {
 	updateItem,
 	deleteItem,
 	getItem,
+	changeDefault
 } from '../controllers/itemController';
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.get('/:id', protectUser, getItem);
 router.post('/', protectUser, upload.single('file'), addItem);
 router.put('/:id', protectUser, upload.single('file'), updateItem);
 router.delete('/:id', protectUser, deleteItem);
+router.put('/:id/default', protectUser, changeDefault);
 
 export default router;

@@ -51,7 +51,8 @@ function ListForm(props: ListFormProps) {
                   <MenuItem value={""}>{t('none')}</MenuItem>
               </Select>
             </FormControl>
-            { false && <FormControlLabel control={<Checkbox name="defaultItems" onChange={props.onChecked} checked={props.form.defaultItems} {...labelDefault} color="success" icon={<CiCircleMinus size={'1.5rem'} color='white' />} checkedIcon={<IoAddCircleSharp size={'1.5rem'} />} />} label={t("defaultItems")} /> }
+            <small>{t('prevListItemExplanation')}</small>
+            <FormControlLabel control={<Checkbox name="defaultItems" onChange={props.onChecked} checked={props.form.defaultItems} {...labelDefault} color="success" icon={<CiCircleMinus size={'1.5rem'} color='white' />} checkedIcon={<IoAddCircleSharp size={'1.5rem'} />} />} label={t("defaultItems")} /> 
         </ThemeProvider>
     </form>
   )

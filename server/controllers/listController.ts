@@ -131,6 +131,27 @@ const addList = asyncHandler(
 				list.save();
 			}
 		}
+		if (defaultItems) {
+			const items = await Item.find({ user: user._id, default: true });
+			for (let i = 0; i < items.length; i++) {
+				const item = items[i] as ItemDocument;
+				const amount = item.unit ? 1 : 0;
+				const listItem = await ListItem.create({
+					name: item.name,
+					description: item.description,
+					unit: item.unit,
+					category: item.category,
+					amount,
+					list: list._id,
+					img: item.img,
+				});
+				list.items = [
+					...(list.items as ObjectId[]),
+					listItem._id as ObjectId,
+				];
+			}
+			list.save();
+		}
 		res.status(200).json({
 			success: true,
 			list,

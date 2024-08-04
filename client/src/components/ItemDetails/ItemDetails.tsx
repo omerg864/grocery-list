@@ -10,6 +10,8 @@ import { MdEdit } from "react-icons/md";
 import { IoIosShare } from "react-icons/io";
 import ListItem, { ListItemNew} from "../../interface/ListItemInterface";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
+import { MdOutlineStarBorder } from "react-icons/md";
+import { MdOutlineStar } from "react-icons/md";
 
 
 
@@ -27,6 +29,7 @@ interface ItemDetailsProps {
     amountEdit?: boolean;
     categories?: string[];
     onAutoCompleteChange?: (e: SyntheticEvent<Element, Event>, newValue: string | null) => void;
+    onDefaultIconClick?: (id: string) => void;
 }
 
 function ItemDetails(props: ItemDetailsProps) {
@@ -37,6 +40,8 @@ function ItemDetails(props: ItemDetailsProps) {
     const dimensions = useWindowDimensions();
 
     const units = ['pc', 'kg', 'g', 'l', 'ml', ''];
+
+    const showDefaultIcon = props.disabled && !props.amountEdit ? true : false;
 
     const onImgClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
         e.preventDefault();
@@ -87,6 +92,16 @@ function ItemDetails(props: ItemDetailsProps) {
                     <MdEdit color="black" />
                 </Fragment>}
             </IconButton>
+            {showDefaultIcon && <IconButton onClick={() => props.onDefaultIconClick!((props.item as Item)._id)} style={{
+                position: 'absolute',
+                bottom: 'calc(50% - 1rem)',
+                background: 'var(--color-primary)',
+                left: '-1rem',
+                width: '2rem',
+                height: '2rem'
+            }} aria-label="fingerprint" color="success">
+                    { (props.item as Item).default ?  <MdOutlineStar size={"1.5rem"} color="black" /> :<MdOutlineStarBorder size={"1.5rem"} color="black" />}
+            </IconButton>}
         </div>
             <div className="item-display-details">
                 <TextareaAutosize placeholder={t('description')} name="description" value={props.item.description} onChange={props.onChange} disabled={props.disabled} />

@@ -9,6 +9,7 @@ interface Item {
 	category?: string;
 	imageMemo?: ReactNode;
 	stateUpdated?: Date;
+	default: boolean | null;
 }
 
 

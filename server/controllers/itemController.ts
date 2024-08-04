@@ -76,6 +76,24 @@ const addItem = asyncHandler(
 	}
 );
 
+
+const changeDefault = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { id } = req.params;
+		const item = await Item.findById(id);
+		if (!item) {
+			res.status(404);
+			throw new Error('Item Not Found');
+		}
+		item.default = item.default ? false : true;
+		await item.save();
+		res.status(200).json({
+			success: true,
+			default: item.default,
+		});
+	}
+);
+
 const getItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
@@ -166,4 +184,4 @@ const deleteItem = asyncHandler(
 	}
 );
 
-export { getItems, deleteItem, addItem, updateItem, getItem };
+export { getItems, deleteItem, addItem, updateItem, getItem, changeDefault };

@@ -9,6 +9,7 @@ export interface Item {
 	img?: string;
 	category?: string;
 	user: UserDocument | ObjectId;
+	default: boolean | null;
 }
 
 export interface ItemDocument extends Item, Document {}

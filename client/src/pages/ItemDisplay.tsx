@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import Loading from "../components/Loading/Loading";
 import { useRecoilState } from "recoil";
 import { itemAtom } from "../recoil/atoms";
-import { get } from "../utils/apiRequest";
+import { get, put } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
 import ListItem from "../interface/ListItemInterface";
 
@@ -116,6 +116,19 @@ function ItemDisplay() {
     setIsLoading(false);
   }
 
+  const onDefaultIconClick = async (id: string) => {
+    const defaultSate = (itemState as Item).default ? false : true;
+    setItemState({...itemState, default: !defaultSate});
+    await put(`/api/item/${id}/default`, {}, (data) => {
+      setItemState({...itemState, default: data.default});
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    }, (message) => {
+      toast.error(message);
+      setItemState({...itemState, default: defaultSate});
+    });
+  }
+
   useEffect(() => {
     getItem();
   }, []);
@@ -128,7 +141,7 @@ function ItemDisplay() {
     <main>
         <Header title={itemState.name} {...back} {...side}/>
         <div className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}}>
-          <ItemDetails amountEdit={list} onImgIconClick={onImgIconClick} disabled={true} item={itemState} />
+          <ItemDetails onDefaultIconClick={onDefaultIconClick} amountEdit={list} onImgIconClick={onImgIconClick} disabled={true} item={itemState} />
         </div>
     </main>
   )

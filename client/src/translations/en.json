@@ -44,7 +44,8 @@
         "defaultItems": "Add Default Items",
         "addUsers": "Add Users",
         "search": "Search",
-        "none": "None"
+        "none": "None",
+        "prevListItemExplanation": "*Add items that wasn't deleted or bought from a previous list to this list."
     },
     "Generic": {
         "save": "Save",
@@ -156,7 +157,8 @@
     "ItemEdit": {
         "save": "Save",
         "name": "Item Name",
-        "nameRequired": "Name is required"
+        "nameRequired": "Name is required",
+        "itemUpdated": "Item updated"
     },
     "ItemDisplay": {
         "edit": "Edit",
