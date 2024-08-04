@@ -5,10 +5,11 @@ import './ItemsList.css';
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import Counter from "../Counter/Counter.tsx";
 import { useTranslation } from "react-i18next";
+import ListItem from "../../interface/ListItemInterface.ts";
 
 
 interface ItemsListProps {
-    items: Item[];
+    items: Item[] | ListItem[];
     onSwipeRight?: (id: string) => void;
     onSwipeLeft?: (id: string) => void;
     onItemClicked?: (id: string) => void;
@@ -36,7 +37,7 @@ function ItemsList(props: ItemsListProps) {
         {props.items.length === 0 ? <div style={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}> 
         <img alt="No bundles" style={{width: '60%'}} src="/shopping-cart-icon.png" />
         <Typography variant="h5">{genericT('noItems')}</Typography>
-        </div> : props.items.map((item: Item) => (
+        </div> : props.items.map((item: Item | ListItem) => (
           <Fragment key={item._id} >
           <ItemView rightIcon={props.rightIcon} leftIcon={props.leftIcon} onItemClicked={props.onItemClicked} open={open} setOpen={setOpen} item={item} onSwipeRight={props.onSwipeRight} onSwipeLeft={props.onSwipeLeft}/>
           {props.amounts && <div style={{display: 'flex', gap: '10px', alignItems: 'center', padding: '0.5rem 0'}}>

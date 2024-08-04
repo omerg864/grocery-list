@@ -139,13 +139,13 @@ const updateUser = (0, express_async_handler_1.default)((req, res, next) => __aw
     const userExists = yield userModel_1.default.findOne({
         email: { $regex: new RegExp(email, 'i') },
     });
+    const userReq = req.user;
     if (userExists &&
         userExists._id.toString() !==
-            req.user._id.toString()) {
+            userReq._id.toString()) {
         res.status(400);
         throw new Error('User with that email already exists');
     }
-    const userReq = req.user;
     if (req.file) {
         cloudinary_1.v2.config({
             cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -273,6 +273,7 @@ const verify = (0, express_async_handler_1.default)((req, res, next) => __awaite
     yield user.save();
     res.status(200).json({
         success: true,
+        message: 'verified',
     });
 }));
 exports.verify = verify;

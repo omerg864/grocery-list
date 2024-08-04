@@ -78,7 +78,7 @@ const getList = (0, express_async_handler_1.default)((req, res, next) => __await
 exports.getList = getList;
 const addList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
-    const { title, defaultItems, previousList } = req.body;
+    const { title, defaultItems, prevListItems } = req.body;
     if (!title) {
         res.status(400);
         throw new Error('Title is Required');
@@ -88,6 +88,49 @@ const addList = (0, express_async_handler_1.default)((req, res, next) => __await
         users: [user._id],
         owner: user._id,
     });
+    if (prevListItems) {
+        const prevList = yield listModel_1.default.findById(prevListItems).populate('items');
+        if (prevList) {
+            for (let i = 0; i < prevList.items.length; i++) {
+                const item = prevList.items[i];
+                const listItem = yield listItemModel_1.default.create({
+                    name: item.name,
+                    description: item.description,
+                    unit: item.unit,
+                    amount: item.amount,
+                    category: item.category,
+                    list: list._id,
+                    img: item.img,
+                });
+                list.items = [
+                    ...list.items,
+                    listItem._id,
+                ];
+            }
+            list.save();
+        }
+    }
+    if (defaultItems) {
+        const items = yield itemModel_1.default.find({ user: user._id, default: true });
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            const amount = item.unit ? 1 : 0;
+            const listItem = yield listItemModel_1.default.create({
+                name: item.name,
+                description: item.description,
+                unit: item.unit,
+                category: item.category,
+                amount,
+                list: list._id,
+                img: item.img,
+            });
+            list.items = [
+                ...list.items,
+                listItem._id,
+            ];
+        }
+        list.save();
+    }
     res.status(200).json({
         success: true,
         list,

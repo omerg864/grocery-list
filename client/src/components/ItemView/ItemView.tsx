@@ -6,9 +6,10 @@ import { FaTrash } from "react-icons/fa";
 import { MdAddShoppingCart } from "react-icons/md";
 import ItemListDisplay from '../ItemListDisplay/ItemListDisplay';
 import Cookies from 'universal-cookie';
+import ListItem from '../../interface/ListItemInterface';
 
 interface ItemViewProps {
-    item: Item;
+    item: Item | ListItem;
     onSwipeLeft?: (id: string) => void;
     onSwipeRight?: (id: string) => void;
     open: string | null;

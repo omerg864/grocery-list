@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header/Header.tsx";
 import UsersList from "../components/UsersList/UsersList.tsx";
 import ItemsList from "../components/ItemsList/ItemsList.tsx";
-import Item from "../interface/ItemInterface.ts";
 import ListFilters from "../components/ListFilters/ListFilters.tsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiFileList3Line } from "react-icons/ri";
@@ -31,7 +30,7 @@ function List() {
     const [boughtItems, setBoughtItems] = useState<ListItem[]>(list.boughtItems);
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [filterList, setFilterList] = useState<number>(0);
-    const [displayList, setDisplayList] = useState<Item[]>(items);
+    const [displayList, setDisplayList] = useState<ListItem[]>(items);
     const [dialog, setDialog] = useState<boolean>(false);
     const [userId, setUserId] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);

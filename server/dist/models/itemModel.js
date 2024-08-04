@@ -41,6 +41,9 @@ const ItemScheme = new mongoose.Schema({
     category: {
         type: String
     },
+    default: {
+        type: Boolean,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

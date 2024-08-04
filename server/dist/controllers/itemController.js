@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getItem = exports.updateItem = exports.addItem = exports.deleteItem = exports.getItems = void 0;
+exports.changeDefault = exports.getItem = exports.updateItem = exports.addItem = exports.deleteItem = exports.getItems = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const itemModel_1 = __importDefault(require("../models/itemModel"));
 const modelsConst_1 = require("../utils/modelsConst");
@@ -76,6 +76,21 @@ const addItem = (0, express_async_handler_1.default)((req, res, next) => __await
     });
 }));
 exports.addItem = addItem;
+const changeDefault = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const item = yield itemModel_1.default.findById(id);
+    if (!item) {
+        res.status(404);
+        throw new Error('Item Not Found');
+    }
+    item.default = item.default ? false : true;
+    yield item.save();
+    res.status(200).json({
+        success: true,
+        default: item.default,
+    });
+}));
+exports.changeDefault = changeDefault;
 const getItem = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { id } = req.params;
