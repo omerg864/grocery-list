@@ -12,6 +12,8 @@ import Cookies from 'universal-cookie';
 import { useRecoilState } from 'recoil';
 import { bundlesAtom, updatedBundlesAtom } from '../recoil/atoms';
 import { getMinutesBetweenDates } from '../utils/functions';
+import { IconButton } from '@mui/material';
+import { LuRefreshCw } from 'react-icons/lu';
 
 
 function Bundles() {
@@ -84,7 +86,12 @@ function Bundles() {
   return (
     <main>
       <Header title={t('bundles')} buttonTitle={t('newBundle')} buttonClick={goToNewBundle} />
-      <SearchBar onSearch={filterBundles} placeholder={t('search')} />
+      <div style={{display: 'flex', width: '100%'}}>
+      <IconButton onClick={getBundles}>
+        <LuRefreshCw size={"1.5rem"} color='white'/>
+      </IconButton>
+        <SearchBar onSearch={filterBundles} placeholder={t('search')} />
+      </div>
       <ConfirmationDialog open={open !== ''} content={t('deleteBundleContent')} title={t('deleteBundle')} handleClose={handleClose} handleConfirm={() => deleteBundle(open)} />
       <BundleList onItemClick={onItemClicked} onSwipeRight={onSwipeRight} bundles={displayedBundles} />
     </main>

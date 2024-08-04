@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import Item from '../interface/ItemInterface';
 import { useRecoilState } from "recoil";
 import Bundle from '../interface/BundleInterface';
-import { bundleAtom, itemAtom, itemsAtom, updatedItemsAtom } from '../recoil/atoms';
+import { bundleAtom, itemAtom, itemsDataAtom } from '../recoil/atoms';
 import Loading from '../components/Loading/Loading';
 import Cookies from 'universal-cookie';
 import { get } from '../utils/apiRequest';
@@ -20,11 +20,11 @@ function ItemSelect() {
     const navigate = useNavigate();
     const { id } = useParams();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [categories, setCategories] = useState<string[]>(["Fruits", "Home Essentials"]);
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [bundle, setBundle] = useRecoilState<Bundle>(bundleAtom);
-    const [items, setItems] = useRecoilState<Item[]>(itemsAtom);
-    const [updatedItems, setUpdatedItems] = useRecoilState<Date>(updatedItemsAtom);
+    const [itemsData, setItemsData] = useRecoilState(itemsDataAtom);
+    const [items, setItems] = useState<Item[]>(itemsData.items);
+    const [categories, setCategories] = useState<string[]>(itemsData.categories);
     const [_, setItem] = useRecoilState<Item | ListItem>(itemAtom);
     const [displayedItems, setDisplayedItems] = useState<Item[]>(items);
     const cookies = new Cookies();
@@ -69,8 +69,8 @@ function ItemSelect() {
         setIsLoading(true);
         await get('/api/item', (data) => {
             let itemsTemp = data.items.filter((item: Item) => !bundle.items.find(bundleItem => bundleItem._id === item._id));
+            setItemsData({items: itemsTemp, categories: data.categories, updated: new Date()});
             setItems(itemsTemp);
-            setUpdatedItems(new Date());
             setDisplayedItems(itemsTemp);
             setCategories(data.categories);
         }, {
@@ -80,7 +80,7 @@ function ItemSelect() {
     }
 
     useEffect(() => {
-        if (!items.length || getMinutesBetweenDates(updatedItems, new Date()) > 10) {
+        if (!itemsData.items.length || getMinutesBetweenDates(itemsData.updated, new Date()) > 10) {
             getItems();
         }
     }, []);

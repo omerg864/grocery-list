@@ -26,7 +26,7 @@ function UsersList(props: UsersListProps) {
 
   return (
     <div className='users-list'>
-        <Typography variant='subtitle2' className='users-title' style={{ left: "1rem"}} >{t("sharedWith")}</Typography>
+        <Typography variant='subtitle2' className='users-title' style={{ left: "1rem", right: '1rem'}} >{t("sharedWith")}</Typography>
         <div className={props.onDelete ? 'users' : 'users-no-delete'}>
             {props.users.map(user => {
                 return (

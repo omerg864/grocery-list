@@ -171,7 +171,7 @@ const addNewItem = (0, express_async_handler_1.default)((req, res, next) => __aw
     yield list.save();
     res.status(200).json({
         success: true,
-        item: listItem,
+        item: item,
     });
 }));
 exports.addNewItem = addNewItem;

@@ -35,6 +35,11 @@ import VerifyEmailResend from './pages/VerifyEmailResend.tsx';
 import UserRestrictedRoute from './components/UserRestrictedRoute/UserRestrictedRoute.tsx';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.tsx';
 import Cookies from 'universal-cookie';
+import i18n from "i18next";
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
+import { prefixer } from 'stylis';
+import rtlPlugin from 'stylis-plugin-rtl';
 
 function App() {
 
@@ -59,10 +64,24 @@ function App() {
 
   const [selectedTab, setSelectedTab] = useState<number>(getSelectedTab());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [direction, setDirection] = useState<"rtl" | "ltr">('ltr');
 
   if (cookies.get('userToken') && !isAuthenticated) {
     setIsAuthenticated(true);
   }
+
+  i18n.on('languageChanged', (lng) => {
+    setDirection(i18n.dir(lng));
+  });
+
+  const rtlCache = createCache({
+    key: 'muirtl',
+    stylisPlugins: [prefixer, rtlPlugin],
+  });
+  
+  const ltrCache = createCache({
+    key: 'mui',
+  });
 
   useEffect(() => {
     setSelectedTab(getSelectedTab());
@@ -71,6 +90,7 @@ function App() {
   return (
     <>
     <ToastContainer theme="colored" />
+    <CacheProvider value={direction === 'rtl' ? rtlCache : ltrCache}>
     <Router>
       <Routes>
         {/* lists routes */}
@@ -118,6 +138,7 @@ function App() {
       </Routes>
       <NavBar setSelectedTab={setSelectedTab} selectedTab={selectedTab} />
     </Router>
+    </CacheProvider>
     </>
   )
 }

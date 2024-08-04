@@ -15,6 +15,9 @@ import { post } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
 import { ListItemNew } from "../interface/ListItemInterface";
 import { toast } from "react-toastify";
+import { useRecoilState } from "recoil";
+import Lists from "../interface/ListsInterface";
+import { itemsDataAtom, listsState } from "../recoil/atoms";
 
 
 
@@ -31,6 +34,8 @@ function ItemNew() {
     defaultItem = {name: '', category: "", img: "/item.png", description: "", unit: "pc"};
   }
   const [itemState, setItemState] = useState<ItemNewInterface | ListItemNew>(defaultItem);
+  const [lists, setLists] = useRecoilState<Lists[]>(listsState);
+  const [items, setItems] = useRecoilState(itemsDataAtom);
   const [img, setImg] = useState<File | null>(null);
   const cookies = new Cookies();
 
@@ -92,8 +97,29 @@ function ItemNew() {
       }
       formData.append('saveItem', (itemState as ListItemNew).saveItem ? (itemState as ListItemNew).saveItem.toString() : "true");
     }
-    await post(api_url, formData, (_) => {
+    await post(api_url, formData, (data) => {
       toast.success(t('itemAdded'));
+      if (id) {
+        if (lists.length > 0) {
+          setLists((prev) => {
+            const list = prev.find((list) => list._id === id);
+            if (list) {
+              const newList = {...list, items: list.items + 1};
+              return [...prev.filter((list) => list._id !== id), newList];
+            }
+            return [...prev.filter((list) => list._id !== id)];
+          });
+        }
+      }
+      if (!id || (itemState as ListItemNew).saveItem) {
+        if (items.items.length > 0) {
+          const categories = new Set(items.categories);
+          if (itemState.category) {
+            categories.add(itemState.category);
+          }
+          setItems((prev) => ({...prev, items: [...prev.items, data.item], categories: Array.from(categories)}));
+        }
+      }
       (back.onBack as Function)();
     },{
       'Authorization': `Bearer ${cookies.get('userToken')}`,

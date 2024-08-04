@@ -241,7 +241,7 @@ const addNewItem = asyncHandler(
 		await list.save();
 		res.status(200).json({
 			success: true,
-			item: listItem,
+			item: item,
 		});
 	}
 );

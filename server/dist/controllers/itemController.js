@@ -31,7 +31,14 @@ const getItems = (0, express_async_handler_1.default)((req, res, next) => __awai
         .select(modelsConst_1.itemExclude)
         .limit(limit ? parseInt(limit) : 0);
     if (addCategories) {
-        const categories = [...new Set(items.map((item) => item.category))];
+        let categories = new Set();
+        items.forEach((item) => {
+            if (item.category &&
+                item.category.replace(/\s/g, '').length > 0) {
+                categories.add(item.category);
+            }
+        });
+        categories = Array.from(categories);
         res.status(200).json({
             success: true,
             items,
@@ -134,7 +141,10 @@ const deleteItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('Not authorized');
     }
     if (item.img) {
-        yield Promise.all([(0, functions_1.deleteImage)(item.img, true), itemModel_1.default.deleteOne({ _id: id })]);
+        yield Promise.all([
+            (0, functions_1.deleteImage)(item.img, true),
+            itemModel_1.default.deleteOne({ _id: id }),
+        ]);
     }
     else {
         yield itemModel_1.default.deleteOne({ _id: id });

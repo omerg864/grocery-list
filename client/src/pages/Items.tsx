@@ -12,18 +12,20 @@ import { del, get } from '../utils/apiRequest';
 import Cookies from 'universal-cookie';
 import MemoizedImage from "../components/MemoizedImage/MemoizedImage";
 import { useRecoilState } from 'recoil';
-import { itemsAtom, updatedItemsAtom } from '../recoil/atoms';
+import { itemsDataAtom } from '../recoil/atoms';
 import { getMinutesBetweenDates } from '../utils/functions';
+import { IconButton } from '@mui/material';
+import { LuRefreshCw } from "react-icons/lu";
 
 function Items() {
 
   const { t } = useTranslation('translation', { keyPrefix: 'Items' });
   const navigate = useNavigate();
-  const [items, setItems] = useRecoilState<Item[]>(itemsAtom);
-  const [updatedItems, setUpdatedItems] = useRecoilState<Date>(updatedItemsAtom);
+  const [itemsData, setItemsData] = useRecoilState(itemsDataAtom);
+  const [items, setItems] = useState<Item[]>(itemsData.items);
   const [displayedItems, setDisplayedItems] = useState<Item[]>(items);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>(itemsData.categories);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [open, setOpen] = useState<string>('');
   const cookies = new Cookies();
@@ -84,8 +86,8 @@ function Items() {
         ...item,
         imageMemo: <MemoizedImage className='item-img' src={item.img ? item.img : '/item.png'} alt={item.name} />
       }))
+      setItemsData({items: itemsTemp, categories: data.categories, updated: new Date()});
       setItems(itemsTemp);
-      setUpdatedItems(new Date());
       setDisplayedItems(itemsTemp);
       setCategories(data.categories);
     }, {
@@ -95,7 +97,7 @@ function Items() {
   }
 
   useEffect(() => {
-    if (!items.length || getMinutesBetweenDates(updatedItems, new Date()) > 10) {
+    if (!itemsData.items.length || getMinutesBetweenDates(itemsData.updated, new Date()) > 10) {
       getItems();
     }
   }, [])
@@ -108,7 +110,12 @@ function Items() {
     <main>
     <Header title={t('items')} buttonClick={goToNewItem} buttonTitle={t('newItem')} />
     <SearchBar onSearch={filterItems} placeholder={t("search")} />
-    <CategoryList containerStyle={{padding: '8px'}} categories={categories} selectedCategory={selectedCategory} onSelect={onSelect} />
+    <div style={{display: 'flex', width: '100%'}}>
+      <IconButton onClick={getItems}>
+        <LuRefreshCw size={"1.5rem"} color='white'/>
+      </IconButton>
+      <CategoryList containerStyle={{padding: '8px'}} categories={categories} selectedCategory={selectedCategory} onSelect={onSelect} />
+    </div>
     <ConfirmationDialog open={open !== ''} content={t('deleteItemContent')} title={t('deleteItem')} handleClose={handleClose} handleConfirm={() => deleteItem(open)}/>
     <ItemsList onItemClicked={onItemClicked} items={displayedItems} onSwipeRight={onSwipeRight} />
   </main>

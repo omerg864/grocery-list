@@ -22,7 +22,16 @@ const getItems = asyncHandler(
 			.select(itemExclude)
 			.limit(limit ? parseInt(limit as string) : 0);
 		if (addCategories) {
-			const categories = [...new Set(items.map((item) => item.category))];
+			let categories: Set<string> | Array<string> = new Set<string>();
+			items.forEach((item) => {
+				if (
+					item.category &&
+					item.category.replace(/\s/g, '').length > 0
+				) {
+					(categories as Set<string>).add(item.category);
+				}
+			});
+			categories = Array.from(categories);
 			res.status(200).json({
 				success: true,
 				items,
@@ -53,7 +62,11 @@ const addItem = asyncHandler(
 			user: user._id,
 		});
 		if (req.file) {
-			item.img = await uploadToCloudinary(req.file.buffer, 'SuperCart/items', `${user._id}/${item._id}`);
+			item.img = await uploadToCloudinary(
+				req.file.buffer,
+				'SuperCart/items',
+				`${user._id}/${item._id}`
+			);
 			await item.save();
 		}
 		res.status(200).json({
@@ -67,7 +80,9 @@ const getItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id } = req.params;
-		const item: ItemDocument | null = await Item.findById(id).select(itemExclude);
+		const item: ItemDocument | null = await Item.findById(id).select(
+			itemExclude
+		);
 		if (!item) {
 			res.status(404);
 			throw new Error('Item Not Found');
@@ -105,7 +120,11 @@ const updateItem = asyncHandler(
 			if (item.img) {
 				await deleteImage(item.img, true);
 			}
-			item.img = await uploadToCloudinary(req.file.buffer, 'SuperCart/items', `${user._id}/${item._id}`);
+			item.img = await uploadToCloudinary(
+				req.file.buffer,
+				'SuperCart/items',
+				`${user._id}/${item._id}`
+			);
 		}
 		item.name = name;
 		item.description = description;
@@ -133,7 +152,10 @@ const deleteItem = asyncHandler(
 			throw new Error('Not authorized');
 		}
 		if (item.img) {
-			await Promise.all([deleteImage(item.img, true), Item.deleteOne({ _id: id })]);
+			await Promise.all([
+				deleteImage(item.img, true),
+				Item.deleteOne({ _id: id }),
+			]);
 		} else {
 			await Item.deleteOne({ _id: id });
 		}
