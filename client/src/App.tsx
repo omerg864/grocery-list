@@ -40,6 +40,7 @@ import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import { prefixer } from 'stylis';
 import rtlPlugin from 'stylis-plugin-rtl';
+import Page404 from './pages/Page404.tsx';
 
 function App() {
 
@@ -135,6 +136,7 @@ function App() {
         <Route path="/reset-password/:token" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><ResetPassword /> </UserRestrictedRoute>} /> 
         <Route path="/verify/send" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><VerifyEmailResend /> </UserRestrictedRoute>} />  
         <Route path="/verify/:token" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><VerifyEmail /></UserRestrictedRoute>} />
+        <Route path="*" element={<Page404 />} />
       </Routes>
       <NavBar setSelectedTab={setSelectedTab} selectedTab={selectedTab} />
     </Router>

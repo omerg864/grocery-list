@@ -265,5 +265,9 @@
         "verifyEmailResend": "Verify Email Resend",
         "email": "Email",
         "send": "Send"
+    },
+    "Page404": {
+        "notFound": "Page not found",
+        "pageNotFound": "The page you are looking for does not exist"
     }
 }
