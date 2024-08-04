@@ -97,7 +97,7 @@ const getList = asyncHandler(
 const addList = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
-		const { title, defaultItems, previousList } = req.body;
+		const { title, defaultItems, prevListItems } = req.body;
 		if (!title) {
 			res.status(400);
 			throw new Error('Title is Required');
@@ -107,6 +107,30 @@ const addList = asyncHandler(
 			users: [user._id],
 			owner: user._id,
 		});
+		if (prevListItems) {
+			const prevList = await List.findById(prevListItems).populate(
+				'items'
+			);
+			if (prevList) {
+				for (let i = 0; i < prevList.items.length; i++) {
+					const item = prevList.items[i] as ListItemDocument;
+					const listItem = await ListItem.create({
+						name: item.name,
+						description: item.description,
+						unit: item.unit,
+						amount: item.amount,
+						category: item.category,
+						list: list._id,
+						img: item.img,
+					});
+					list.items = [
+						...(list.items as ObjectId[]),
+						listItem._id as ObjectId,
+					];
+				}
+				list.save();
+			}
+		}
 		res.status(200).json({
 			success: true,
 			list,
@@ -678,7 +702,6 @@ const deletePermanently = asyncHandler(
 	}
 );
 
-
 const deleteAllListsUserDeleted = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
@@ -749,5 +772,5 @@ export {
 	getDeletedLists,
 	restoreList,
 	deletePermanently,
-	deleteAllListsUserDeleted
+	deleteAllListsUserDeleted,
 };

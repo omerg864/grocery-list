@@ -42,7 +42,8 @@
         "previousListItems": "Add Previous List Items",
         "defaultItems": "Add Default Items",
         "addUsers": "Add Users",
-        "search": "Search"
+        "search": "Search",
+        "none": "None"
     },
     "Generic": {
         "save": "Save",
@@ -53,11 +54,11 @@
         "loading": "Loading",
         "noData": "No data",
         "noResults": "No results",
-        "noItems": "No items",
-        "noLists": "No lists",
+        "noItems": "No items Here",
+        "noLists": "No lists Here",
         "noUsers": "No users",
-        "noNotifications": "No notifications",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "noBundles": "No bundles Here"
     },
     "Login": {
         "login": "Login",
@@ -140,7 +141,13 @@
         "category": "Category",
         "unit": "Unit",
         "description": "Description",
-        "amount": "Amount"
+        "amount": "Amount",
+        "kg": "kg",
+        "g": "gram",
+        "l": "Liters",
+        "ml": "ml",
+        "pc": "Pieces",
+        "": "None"
     },
     "ItemEdit": {
         "save": "Save",
@@ -207,7 +214,13 @@
     },
     "ItemsList": {
         "amount": "Amount",
-        "unit": "Unit"
+        "unit": "Unit",
+        "kg": "kg",
+        "g": "gram",
+        "l": "Liters",
+        "ml": "ml",
+        "pc": "Pieces",
+        "": "None"
     },
     "BundleAdd": {
         "addBundle": "Add Bundle"

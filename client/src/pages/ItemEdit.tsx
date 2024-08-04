@@ -1,6 +1,6 @@
 import Item from "../interface/ItemInterface";
 import Header from "../components/Header/Header";
-import { useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { SelectChangeEvent, TextField, ThemeProvider, useTheme } from "@mui/material";
 import ItemDetails from "../components/ItemDetails/ItemDetails";
@@ -10,11 +10,12 @@ import { useTranslation } from "react-i18next";
 import { HiOutlineSave } from "react-icons/hi";
 import formTheme from "../themes/formTheme";
 import { useRecoilState } from "recoil";
-import { itemAtom } from "../recoil/atoms";
+import { itemAtom, itemsDataAtom } from "../recoil/atoms";
 import { get, put } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
 import { toast } from "react-toastify";
 import ListItem from "../interface/ListItemInterface";
+import { getMinutesBetweenDates } from "../utils/functions";
 
 
 
@@ -25,6 +26,7 @@ function ItemEdit() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [itemState, setItemState] = useRecoilState<Item | ListItem>(itemAtom);
+  const [items, setItems] = useRecoilState(itemsDataAtom);
   const [img, setImg] = useState<File | null>(null);
   const cookies = new Cookies();
 
@@ -69,6 +71,10 @@ function ItemEdit() {
     } else {
       setItemState(prev => ({...prev, unit: value}));
     }
+  }
+
+  const onAutoCompleteChange = (_: SyntheticEvent<Element, Event>, newVal: string | null) => {
+    setItemState(prev => ({...prev, category: newVal ? newVal : ""}));
   }
 
   const addCounter = () => {
@@ -128,13 +134,37 @@ function ItemEdit() {
     }
   }
 
-  const getItem = async () => {
-    setIsLoading(true);
+  const getItem = async (loading?: boolean) => {
+    if (loading) {
+      setIsLoading(true);
+    }
     await get(api_url, (data) => {
       setItemState(data.item);
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,
     })
+    if (loading) {
+      setIsLoading(false);
+    }
+  }
+
+  const getItems = async (loading?: boolean) => {
+    if (loading) {
+      setIsLoading(true);
+    }
+    await get('/api/item/', (data) => {
+      setItems({items: data.items, categories: data.categories, updated: new Date()});
+    }, {
+      'Authorization': `Bearer ${cookies.get('userToken')}`,
+    })
+    if (loading) {
+      setIsLoading(false);
+    }  
+  }
+
+  const getData = async () => {
+    setIsLoading(true);
+    await Promise.all([getItem(), getItems()]);
     setIsLoading(false);
   }
 
@@ -146,7 +176,15 @@ function ItemEdit() {
       itemId = id;
     }
     if (!itemState._id || itemState._id != itemId) {
-      getItem();
+      if (items.items.length === 0 || getMinutesBetweenDates(new Date(items.updated), new Date()) > 10) {
+        getData();
+      } else {
+        getItem(true);
+      }
+    } else {
+      if (items.items.length === 0 || getMinutesBetweenDates(new Date(items.updated), new Date()) > 10) {
+        getItems(true);
+      }
     }
   }, []);
 
@@ -161,7 +199,7 @@ function ItemEdit() {
           <ThemeProvider theme={formTheme(outerTheme)}>
           <TextField required name="name" color='success' className='white-color-input' fullWidth value={itemState.name} label={t('name')} onChange={onChange} variant="outlined" />
           </ThemeProvider>
-          <ItemDetails amountEdit={item !== undefined} onImgIconClick={onImgIconClick} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
+          <ItemDetails onAutoCompleteChange={onAutoCompleteChange} categories={items.categories} amountEdit={item !== undefined} onImgIconClick={onImgIconClick} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
           <GlassButton endIcon={<HiOutlineSave size={"1.5rem"} color='white'/>} text={t('save')} style={{width: "100%", color: "white"}} type="submit"/>
         </form>
     </main>

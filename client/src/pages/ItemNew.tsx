@@ -1,6 +1,6 @@
-import { ItemNew as ItemNewInterface } from "../interface/ItemInterface";
+import Item, { ItemNew as ItemNewInterface } from "../interface/ItemInterface";
 import Header from "../components/Header/Header";
-import { useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Checkbox, FormControlLabel, SelectChangeEvent, TextField, ThemeProvider, useTheme } from "@mui/material";
 import ItemDetails from "../components/ItemDetails/ItemDetails";
@@ -11,13 +11,15 @@ import { IoMdAdd } from "react-icons/io";
 import formTheme from "../themes/formTheme";
 import { IoAddCircleSharp } from "react-icons/io5";
 import { CiCircleMinus } from "react-icons/ci";
-import { post } from "../utils/apiRequest";
+import { get, post } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
 import { ListItemNew } from "../interface/ListItemInterface";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import Lists from "../interface/ListsInterface";
 import { itemsDataAtom, listsState } from "../recoil/atoms";
+import { getMinutesBetweenDates } from "../utils/functions";
+import MemoizedImage from "../components/MemoizedImage/MemoizedImage";
 
 
 
@@ -36,6 +38,7 @@ function ItemNew() {
   const [itemState, setItemState] = useState<ItemNewInterface | ListItemNew>(defaultItem);
   const [lists, setLists] = useRecoilState<Lists[]>(listsState);
   const [items, setItems] = useRecoilState(itemsDataAtom);
+  const [categories, setCategories] = useState<string[]>(items.categories);
   const [img, setImg] = useState<File | null>(null);
   const cookies = new Cookies();
 
@@ -59,6 +62,10 @@ function ItemNew() {
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setItemState(prev => ({...prev, [name]: value}));
+  }
+
+  const onAutoCompleteChange = (_: SyntheticEvent<Element, Event>, newVal: string | null) => {
+    setItemState(prev => ({...prev, category: newVal ? newVal : ""}));
   }
 
   const onChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -143,6 +150,27 @@ function ItemNew() {
 
   const label = { inputProps: { 'aria-label': t("saveItem") } };
 
+const getItems = async () => {
+  setIsLoading(true);
+  await get('/api/item/', (data) => {
+    let itemsTemp: Item[] = data.items.map((item: Item) => ({
+      ...item,
+      imageMemo: <MemoizedImage className='item-img' src={item.img ? item.img : '/item.png'} alt={item.name} />
+    }))
+    setItems({items: itemsTemp, categories: data.categories, updated: new Date()});
+    setCategories(data.categories);
+  }, {
+    'Authorization': `Bearer ${cookies.get('userToken')}`,
+  })
+  setIsLoading(false);
+}
+
+  useEffect(() => {
+    if (!items.items.length || getMinutesBetweenDates(items.updated, new Date()) > 10) {
+      getItems();
+    }
+  }, []);
+
   if (isLoading) {
     return <Loading />;
   }
@@ -154,7 +182,7 @@ function ItemNew() {
           <ThemeProvider theme={formTheme(outerTheme)}>
             <TextField required name="name" color='success' className='white-color-input' fullWidth value={itemState.name} label={t('name')} onChange={onChange} variant="outlined" />
           </ThemeProvider>
-          <ItemDetails amountEdit={id !== undefined} onImgIconClick={onImgIconClick} img={itemState.img} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
+          <ItemDetails categories={categories} onAutoCompleteChange={onAutoCompleteChange} amountEdit={id !== undefined} onImgIconClick={onImgIconClick} img={itemState.img} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
           {id && <FormControlLabel control={<Checkbox name="saveItem" onChange={onChecked} checked={itemState.saveItem} {...label} color="success" icon={<CiCircleMinus size={'1.5rem'} color='white' />} checkedIcon={<IoAddCircleSharp size={'1.5rem'} />} />} label={t("saveItem")} />}
           <GlassButton endIcon={<IoMdAdd size={"1.5rem"} color='white'/>} text={t('create')} style={{width: "100%", color: "white"}} type="submit"/>
         </form>

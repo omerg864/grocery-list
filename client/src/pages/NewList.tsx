@@ -11,11 +11,12 @@ import { useRecoilState } from "recoil";
 import Lists from "../interface/ListsInterface";
 import { listsState, updatedListsAtom } from "../recoil/atoms";
 import { getMinutesBetweenDates } from "../utils/functions";
+import { SelectChangeEvent } from "@mui/material";
 
 function NewList() {
 
   const { t } = useTranslation('translation', { keyPrefix: 'NewList' });
-  const [form, setForm] = useState<ListFormInterface>({ title: '', prevItems: true, defaultItems: true});
+  const [form, setForm] = useState<ListFormInterface>({ title: '', prevListItems: '', defaultItems: true});
   const [lists, setLists] = useRecoilState<Lists[]>(listsState);
   const [updatedLists, setUpdatedLists] = useRecoilState<Date>(updatedListsAtom);
   const navigate = useNavigate();
@@ -35,11 +36,16 @@ function NewList() {
     }
   }
 
+  const onSelectionChange = (e: SelectChangeEvent) => {
+    const value = e.target.value as string;
+    setForm(prev => ({...prev, prevListItems: value}));
+  }
+
   const createList = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     await post('/api/list', form, () => {
-      getLists();
+      setLists([]);
       navigate('/');
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,
@@ -80,7 +86,7 @@ function NewList() {
   return (
     <main>
       <Header title={t('newList')} onBack={backClick} buttonTitle={t('create')} buttonClick={submitForm}/>
-      <ListForm submit={createList} formRef={formRef} form={form} onChange={onChange} onChecked={onChecked} />
+      <ListForm onSelectionChange={onSelectionChange} lists={lists} submit={createList} formRef={formRef} form={form} onChange={onChange} onChecked={onChecked} />
     </main>
   )
 }

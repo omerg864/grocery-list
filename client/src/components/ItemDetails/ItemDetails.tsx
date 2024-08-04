@@ -1,7 +1,7 @@
 import Item, { ItemNew } from "../../interface/ItemInterface";
-import { Fragment } from "react";
+import { Fragment, SyntheticEvent } from "react";
 import './ItemDetails.css';
-import { FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, ThemeProvider, useTheme } from "@mui/material";
+import { Autocomplete, FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, ThemeProvider, useTheme } from "@mui/material";
 import { TextareaAutosize } from '@mui/base/TextareaAutosize';
 import { useTranslation } from "react-i18next";
 import Counter from '../Counter/Counter';
@@ -25,6 +25,8 @@ interface ItemDetailsProps {
     img?: string | null;
     enableAmount?: boolean;
     amountEdit?: boolean;
+    categories?: string[];
+    onAutoCompleteChange?: (e: SyntheticEvent<Element, Event>, newValue: string | null) => void;
 }
 
 function ItemDetails(props: ItemDetailsProps) {
@@ -89,7 +91,30 @@ function ItemDetails(props: ItemDetailsProps) {
             <div className="item-display-details">
                 <TextareaAutosize placeholder={t('description')} name="description" value={props.item.description} onChange={props.onChange} disabled={props.disabled} />
                 <ThemeProvider theme={formTheme(outerTheme)}>
-                <TextField name="category" color='success' className='white-color-input' fullWidth value={props.item.category} InputLabelProps={{ disabled: props.disabled}} label={t('category')} onChange={props.onChange} disabled={props.disabled} variant="outlined" />
+                {props.categories ? <Autocomplete
+                    freeSolo
+                    color="success"
+                    id="category"
+                    disableClearable
+                    options={props.categories}
+                    value={props.item.category}
+                    onChange={props.onAutoCompleteChange}
+                    renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={t('category')}
+                        InputProps={{
+                        ...params.InputProps,
+                        type: 'search',
+                        }}
+                        onChange={props.onChange}
+                        value={props.item.category}
+                        color="success"
+                        name={"category"}
+                    />
+                    )}
+                /> : 
+                <TextField name="category" color='success' className='white-color-input' fullWidth value={props.item.category} InputLabelProps={{ disabled: props.disabled}} label={t('category')} onChange={props.onChange} disabled={props.disabled} variant="outlined" />}
                 {props.amountEdit ? <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
                 {props.item.unit !== '' && (props.item.unit === 'pc' ? <Counter handleChange={props.onChange} addCounter={props.addCounter} removeCounter={props.removeCounter} count={(props.item as ListItem).amount!} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false} />: 
                         <TextField required name="amount" onChange={props.onChange} color='success' type="number" className='white-color-input' fullWidth value={(props.item as ListItem).amount} label={t('amount')} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false}  variant="outlined" />)}
@@ -105,7 +130,7 @@ function ItemDetails(props: ItemDetailsProps) {
                                 onChange={props.onSelectionChange}
                             >
                                 {units.map((unit) => (
-                                    <MenuItem key={unit} value={unit}>{unit}</MenuItem>
+                                    <MenuItem key={unit} value={unit}>{t(unit)}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -121,7 +146,7 @@ function ItemDetails(props: ItemDetailsProps) {
                                 onChange={props.onSelectionChange}
                             >
                                 {units.map((unit) => (
-                                    <MenuItem key={unit} value={unit}>{unit}</MenuItem>
+                                    <MenuItem key={unit} value={unit}>{t(unit)}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>}

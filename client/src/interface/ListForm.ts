@@ -2,7 +2,7 @@
 
 interface ListForm {
 	title: string;
-	prevItems: boolean;
+	prevListItems: string;
 	defaultItems: boolean;
 }
 
