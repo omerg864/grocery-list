@@ -9,6 +9,8 @@ import GlassButton from '../components/GlassButton/GlassButton';
 import PasswordRules from '../components/PasswordRules/PasswordRules';
 import { MdLockReset } from "react-icons/md";
 import { post } from '../utils/apiRequest';
+import { toast } from 'react-toastify';
+import { password_regex } from '../utils/regex';
 
 function ResetPassword() {
   const { t } = useTranslation('translation', { keyPrefix: 'ResetPassword' });
@@ -20,6 +22,14 @@ function ResetPassword() {
   const outerTheme = useTheme();
 
   const resetPassword = async () => {
+    if(form.password !== form.password2) {
+      toast.error(t('passwordsDontMatch'));
+      return;
+    }
+    if(!password_regex.test(form.password)) {
+      toast.error(t('invalidPassword'));
+      return;
+    }
     setIsLoading(true);
     await post(`/api/user/reset-password/${token}`, { password: form.password}, (_) => {
        navigate('/login');

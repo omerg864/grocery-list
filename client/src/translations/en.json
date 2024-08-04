@@ -35,7 +35,8 @@
         "name": "Name",
         "description": "Description",
         "shareWith": "Share with",
-        "create": "Create List"
+        "create": "Create List",
+        "titleRequired": "Title is required"
     },
     "ListForm": {
         "title": "Title",
@@ -101,7 +102,8 @@
         "passwordsDontMatch": "Passwords don't match",
         "invalidEmail": "Invalid email",
         "invalidPassword": "Invalid password",
-        "preferencesChanged": "Preferences changed"
+        "preferencesChanged": "Preferences changed",
+        "fillAllFields": "Please fill all fields"
     },
     "Notifications": {
         "notifications": "Notifications",
@@ -135,7 +137,9 @@
     "ResetPassword": {
         "resetPassword": "Reset Password",
         "password": "Password",
-        "confirmPassword": "Confirm Password"
+        "confirmPassword": "Confirm Password",
+        "passwordsDontMatch": "Passwords don't match",
+        "invalidPassword": "Invalid password"
     },
     "ItemDetails": {
         "category": "Category",
@@ -151,7 +155,8 @@
     },
     "ItemEdit": {
         "save": "Save",
-        "name": "Item Name"
+        "name": "Item Name",
+        "nameRequired": "Name is required"
     },
     "ItemDisplay": {
         "edit": "Edit",
@@ -164,7 +169,8 @@
         "newItem": "New Item",
         "create": "Create Item",
         "saveItem": "Save Item",
-        "itemAdded": "Item added to the list"
+        "itemAdded": "Item added to the list",
+        "nameRequired": "Name is required"
     },
     "ItemAdd": {
         "add": "Add Item",
@@ -183,7 +189,9 @@
     "BundleEdit": {
         "title": "Title",
         "save": "Save",
-        "addItem": "Add Item"
+        "addItem": "Add Item",
+        "titleRequired": "Title is required",
+        "itemsRequired": "At least one item is required"
     },
     "ItemSelect": {
         "search": "Search",
@@ -196,7 +204,9 @@
         "title": "Title",
         "description": "Description",
         "addItem":"Add Item",
-        "create": "Create Bundle"
+        "create": "Create Bundle",
+        "titleRequired": "Title is required",
+        "itemsRequired": "At least one item is required"
     },
     "BundleSelect": {
         "search": "Search",

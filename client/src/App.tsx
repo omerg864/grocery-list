@@ -134,7 +134,7 @@ function App() {
         <Route path="/forgot-password" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><ForgotPassword /> </UserRestrictedRoute>} />
         <Route path="/reset-password/:token" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><ResetPassword /> </UserRestrictedRoute>} /> 
         <Route path="/verify/send" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><VerifyEmailResend /> </UserRestrictedRoute>} />  
-        <Route path="/verify/:token" element={<VerifyEmail />} />
+        <Route path="/verify/:token" element={<UserRestrictedRoute isAuthenticated={isAuthenticated}><VerifyEmail /></UserRestrictedRoute>} />
       </Routes>
       <NavBar setSelectedTab={setSelectedTab} selectedTab={selectedTab} />
     </Router>

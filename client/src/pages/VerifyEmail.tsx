@@ -4,6 +4,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Typography } from '@mui/material';
 import Loading from '../components/Loading/Loading';
+import { get } from '../utils/apiRequest';
+import { toast } from 'react-toastify';
 
 function VerifyEmail() {
 
@@ -16,13 +18,22 @@ function VerifyEmail() {
 
     const verifyEmail = async () => {
         setIsLoading(true);
-        setMessage('verified');
-        console.log(token);
+        await get(`/api/user/verify/${token}`, (data) => {
+            if (data.message === 'verified') {
+                setMessage('emailVerified');
+                toast.success(t('emailVerified'));
+                navigate('/');
+            } else {
+                setMessage(data.message);
+                toast.error(t(data.message));
+            }
+        }, {}, (_) => {
+            setMessage('notVerified');
+        });
         setIsLoading(false);
     }
 
     useEffect(() => {
-        // Verify email
         verifyEmail();
     }, []);
 

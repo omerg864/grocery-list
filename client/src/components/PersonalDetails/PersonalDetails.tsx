@@ -10,6 +10,7 @@ import Cookies from 'universal-cookie';
 import { getCookieExpiration } from '../../utils/functions';
 import { put } from '../../utils/apiRequest';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
+import { email_regex } from '../../utils/regex';
 
 
 interface PersonalDetailsProps {
@@ -46,6 +47,14 @@ function PersonalDetails(props: PersonalDetailsProps) {
   }
 
   const changeDetails = async () => {
+    if (form.f_name === '' || form.l_name === '' || form.email === '') {
+      toast.error(t('fillAllFields'));
+      return;
+    }
+    if (!email_regex.test(form.email)) {
+      toast.error(t('invalidEmail'));
+      return;
+    }
     props.setIsLoading(true);
     let formData = new FormData();
     if(img) {

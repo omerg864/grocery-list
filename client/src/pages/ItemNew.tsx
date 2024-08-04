@@ -87,6 +87,10 @@ function ItemNew() {
   }
 
   const createItem = async () => {
+    if (!itemState.name) {
+      toast.error(t('nameRequired'));
+      return;
+    }
     setIsLoading(true);
     let formData = new FormData();
     if(img) {

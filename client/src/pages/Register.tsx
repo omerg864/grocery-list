@@ -62,7 +62,7 @@ function Register() {
   return (
     <main>
     <Header title={t('register')} buttonClick={goToLogin} buttonTitle={t('haveAccount')} endIcon={<CiLogin size={"1.5rem"} color='black'/>}  />
-      <form className='list-form' onSubmit={register}>
+    <form className='list-form' onSubmit={register}>
       <ThemeProvider theme={formTheme(outerTheme)}>
         <TextField name="f_name" required  color='success' className='white-color-input' fullWidth onChange={onChange} value={form.f_name} label={t('firstName')} variant="outlined" />
         <TextField name="l_name" required color='success' className='white-color-input' fullWidth onChange={onChange} value={form.l_name} label={t('lastName')} variant="outlined" />

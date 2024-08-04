@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import Cookies from 'universal-cookie';
 import { put } from '../../utils/apiRequest';
 import { toast } from 'react-toastify';
+import { password_regex } from '../../utils/regex';
 
 
 interface PasswordChangeProps {
@@ -22,6 +23,14 @@ function PasswordChange(props: PasswordChangeProps) {
   const cookies = new Cookies();
 
   const resetPassword = async() => {
+    if(form.password !== form.password2) {
+      toast.error(t('passwordsDontMatch'));
+      return;
+    }
+    if(!password_regex.test(form.password)) {
+      toast.error(t('invalidPassword'));
+      return;
+    }
     props.setIsLoading(true);
     await put('/api/user/update-password', form, (_) => {
       toast.success(t('passwordChanged'));

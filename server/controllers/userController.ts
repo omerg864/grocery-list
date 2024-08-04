@@ -135,18 +135,18 @@ const updateUser = asyncHandler(
 			res.status(400);
 			throw new Error('Please upload an image file');
 		}
-		const userExists = await User.findOne({
+		const userExists: UserDocument | null = await User.findOne({
 			email: { $regex: new RegExp(email, 'i') },
 		});
+		const userReq = (req as RequestWithUser).user;
 		if (
 			userExists &&
 			(userExists._id as ObjectId).toString() !==
-				((req as RequestWithUser).user._id as ObjectId).toString()
+				(userReq._id as ObjectId).toString()
 		) {
 			res.status(400);
 			throw new Error('User with that email already exists');
 		}
-		const userReq = (req as RequestWithUser).user;
 		if (req.file) {
 			cloudinary.config({
 				cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -202,7 +202,7 @@ const resetPasswordToken = asyncHandler(async (req, res, next) => {
 		res.status(400);
 		throw new Error('Invalid token');
 	}
-	const user = await User.findOne({
+	const user: UserDocument | null = await User.findOne({
 		resetPasswordToken: token,
 	});
 	if (!user) {
@@ -279,6 +279,7 @@ const verify = asyncHandler(
 		await user.save();
 		res.status(200).json({
 			success: true,
+			message: 'verified',
 		});
 	}
 );

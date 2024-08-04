@@ -12,6 +12,7 @@ import Lists from "../interface/ListsInterface";
 import { listsState, updatedListsAtom } from "../recoil/atoms";
 import { getMinutesBetweenDates } from "../utils/functions";
 import { SelectChangeEvent } from "@mui/material";
+import { toast } from "react-toastify";
 
 function NewList() {
 
@@ -42,6 +43,10 @@ function NewList() {
   }
 
   const createList = async (e: FormEvent<HTMLFormElement>) => {
+    if (!form.title) {
+      toast.error(t('titleRequired'));
+      return;
+    }
     e.preventDefault();
     setIsLoading(true);
     await post('/api/list', form, () => {
