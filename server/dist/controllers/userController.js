@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePreferences = exports.resendVerificationEmail = exports.updateUser = exports.resetPasswordEmail = exports.resetPasswordToken = exports.updateUserPassword = exports.getUser = exports.register = exports.verify = exports.login = void 0;
+exports.googleAuth = exports.updatePreferences = exports.resendVerificationEmail = exports.updateUser = exports.resetPasswordEmail = exports.resetPasswordToken = exports.updateUserPassword = exports.getUser = exports.register = exports.verify = exports.login = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -22,6 +22,8 @@ const modelsConst_1 = require("../utils/modelsConst");
 const functions_1 = require("../utils/functions");
 const cloudinary_1 = require("cloudinary");
 const upload_1 = require("../config/upload");
+const google_1 = __importDefault(require("../config/google"));
+const axios_1 = __importDefault(require("axios"));
 const generateToken = (id) => {
     return jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: '30d',
@@ -329,3 +331,54 @@ const updatePreferences = (0, express_async_handler_1.default)((req, res, next) 
     });
 }));
 exports.updatePreferences = updatePreferences;
+const googleAuth = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { code } = req.body;
+    if (!code) {
+        res.status(400);
+        throw new Error('Invalid code');
+    }
+    const googleRes = yield google_1.default.getToken(code);
+    google_1.default.setCredentials(googleRes.tokens);
+    const userRes = yield axios_1.default.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`);
+    if (!userRes.data.email) {
+        res.status(400);
+        throw new Error('Invalid email');
+    }
+    const user = yield userModel_1.default.findOne({ email: { $regex: new RegExp(`^${userRes.data.email}$`, 'i') } });
+    if (!user) {
+        // Register user
+        const salt = yield bcrypt_1.default.genSalt(10);
+        const hashedPassword = yield bcrypt_1.default.hash(userRes.data.email, salt);
+        const newUser = yield userModel_1.default.create({
+            f_name: userRes.data.given_name,
+            l_name: userRes.data.family_name || 'Doe',
+            email: userRes.data.email,
+            password: hashedPassword,
+            avatar: userRes.data.picture,
+            isVerified: true,
+        });
+        const token = generateToken(newUser._id);
+        const userEx = yield userModel_1.default.findById(newUser._id).select(modelsConst_1.userExclude);
+        res.status(200).json({
+            success: true,
+            reset: true,
+            user: userEx,
+            token,
+        });
+    }
+    else {
+        // Login user
+        if (!user.isVerified) {
+            user.isVerified = true;
+            yield user.save();
+        }
+        const token = generateToken(user._id);
+        const userEx = yield userModel_1.default.findById(user._id).select(modelsConst_1.userExclude);
+        res.status(200).json({
+            success: true,
+            user: userEx,
+            token,
+        });
+    }
+}));
+exports.googleAuth = googleAuth;

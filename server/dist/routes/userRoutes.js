@@ -18,4 +18,5 @@ router.post('/reset-password/:token', userController_1.resetPasswordToken);
 router.put('/update-password', authMiddleware_1.protectUser, userController_1.updateUserPassword);
 router.put('/', authMiddleware_1.protectUser, upload_1.upload.single('file'), userController_1.updateUser);
 router.put('/preferences', authMiddleware_1.protectUser, userController_1.updatePreferences);
+router.post('/google', userController_1.googleAuth);
 exports.default = router;
