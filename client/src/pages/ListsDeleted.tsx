@@ -75,18 +75,20 @@ function ListsDeleted() {
         navigate('/');
     }
 
-    const getLists = async () => {
-        setIsLoading(true);
+    const getLists = async (loading?: boolean) => {
+        if (loading)
+            setIsLoading(true);
         await get('/api/list/deleted', (data) => {
             setLists(data.lists);
         }, {
             'Authorization': `Bearer ${cookies.get('userToken')}`,
         });
-        setIsLoading(false);
+        if (loading)
+            setIsLoading(false);
     }
 
     useEffect(() => {
-        getLists()
+        getLists(true)
     }, []);
 
     if (isLoading) {

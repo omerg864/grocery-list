@@ -37,7 +37,6 @@ function Bundles() {
   }
 
   const onSwipeRight = (id: string) => {
-    console.log('swiped right', id);
     setOpen(id);
   }
 

@@ -12,9 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBundle = exports.deleteBundle = exports.updateBundle = exports.addBundle = exports.getBundles = void 0;
+exports.shareBundle = exports.getBundle = exports.deleteBundle = exports.updateBundle = exports.addBundle = exports.getBundles = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const bundleModel_1 = __importDefault(require("../models/bundleModel"));
+const itemModel_1 = __importDefault(require("../models/itemModel"));
 const getBundles = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { limit } = req.query;
@@ -26,16 +27,11 @@ const getBundles = (0, express_async_handler_1.default)((req, res, next) => __aw
 }));
 exports.getBundles = getBundles;
 const getBundle = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = req.user;
     const { id } = req.params;
     const bundle = yield bundleModel_1.default.findById(id).populate('items');
     if (!bundle) {
         res.status(404);
         throw new Error('Bundle Not Found');
-    }
-    if (bundle.user.toString() !== user._id.toString()) {
-        res.status(403);
-        throw new Error('Not Authorized');
     }
     res.status(200).json({
         success: true,
@@ -105,3 +101,36 @@ const deleteBundle = (0, express_async_handler_1.default)((req, res, next) => __
     });
 }));
 exports.deleteBundle = deleteBundle;
+const shareBundle = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const { id } = req.params;
+    const bundle = yield bundleModel_1.default.findById(id).populate('items');
+    if (!bundle) {
+        res.status(404);
+        throw new Error('Bundle Not Found');
+    }
+    let items = [];
+    for (let i = 0; i < bundle.items.length; i++) {
+        const itemContext = bundle.items[i];
+        const item = yield itemModel_1.default.create({
+            name: itemContext.name,
+            description: itemContext.description,
+            unit: itemContext.unit,
+            category: itemContext.category,
+            img: itemContext.img,
+            user: user._id
+        });
+        items.push(item._id);
+    }
+    const newBundle = yield bundleModel_1.default.create({
+        title: bundle.title,
+        description: bundle.description,
+        items,
+        user: user._id
+    });
+    res.status(200).json({
+        success: true,
+        bundle: newBundle
+    });
+}));
+exports.shareBundle = shareBundle;

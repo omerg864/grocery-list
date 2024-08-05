@@ -70,5 +70,9 @@ const ListScheme = new mongoose.Schema({
             ref: 'User',
         },
     ],
+    token: {
+        type: String,
+        required: true,
+    }
 }, { timestamps: true });
 exports.default = mongoose.model('List', ListScheme);

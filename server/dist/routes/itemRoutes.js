@@ -14,4 +14,5 @@ router.post('/', authMiddleware_1.protectUser, upload_1.upload.single('file'), i
 router.put('/:id', authMiddleware_1.protectUser, upload_1.upload.single('file'), itemController_1.updateItem);
 router.delete('/:id', authMiddleware_1.protectUser, itemController_1.deleteItem);
 router.put('/:id/default', authMiddleware_1.protectUser, itemController_1.changeDefault);
+router.post('/:id/share', authMiddleware_1.protectUser, itemController_1.shareItem);
 exports.default = router;

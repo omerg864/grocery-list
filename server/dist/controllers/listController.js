@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAllListsUserDeleted = exports.deletePermanently = exports.restoreList = exports.getDeletedLists = exports.deleteForMe = exports.deleteForAll = exports.addBundleItems = exports.restoreFromBought = exports.restoreFromDeleted = exports.sendToBought = exports.sendToDeleted = exports.addExistingItem = exports.addNewItem = exports.addList = exports.getList = exports.getLists = void 0;
+exports.removeUserFromList = exports.createShareToken = exports.getSharedList = exports.resetListShareToken = exports.shareList = exports.deleteAllListsUserDeleted = exports.deletePermanently = exports.restoreList = exports.getDeletedLists = exports.deleteForMe = exports.deleteForAll = exports.addBundleItems = exports.restoreFromBought = exports.restoreFromDeleted = exports.sendToBought = exports.sendToDeleted = exports.addExistingItem = exports.addNewItem = exports.changeListTitle = exports.addList = exports.getList = exports.getLists = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const listModel_1 = __importDefault(require("../models/listModel"));
 const modelsConst_1 = require("../utils/modelsConst");
@@ -21,6 +21,9 @@ const listItemModel_1 = __importDefault(require("../models/listItemModel"));
 const bundleModel_1 = __importDefault(require("../models/bundleModel"));
 const upload_1 = require("../config/upload");
 const functions_1 = require("../utils/functions");
+const crypto_1 = __importDefault(require("crypto"));
+const receiptModel_1 = __importDefault(require("../models/receiptModel"));
+const cloudinary_1 = require("cloudinary");
 const getLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const lists = yield listModel_1.default.find({ users: user._id });
@@ -76,6 +79,56 @@ const getList = (0, express_async_handler_1.default)((req, res, next) => __await
     });
 }));
 exports.getList = getList;
+const changeListTitle = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const { title } = req.body;
+    const { id } = req.params;
+    const list = yield listModel_1.default.findById(id);
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+    let found = false;
+    list.users.forEach((listUser) => {
+        if (listUser.toString() ===
+            user._id.toString()) {
+            found = true;
+        }
+    });
+    if (!found) {
+        res.status(403);
+        throw new Error('Not Authorized');
+    }
+    list.title = title;
+    yield list.save();
+    res.status(200).json({
+        success: true,
+    });
+}));
+exports.changeListTitle = changeListTitle;
+const removeUserFromList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const { id, userId } = req.params;
+    const list = yield listModel_1.default.findById(id);
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+    if (list.owner.toString() !== user._id.toString()) {
+        res.status(403);
+        throw new Error('Not Authorized');
+    }
+    if (list.owner.toString() === userId) {
+        res.status(400);
+        throw new Error('Cannot Remove Owner');
+    }
+    list.users = list.users.filter((listUser) => listUser.toString() !== userId.toString());
+    yield list.save();
+    res.status(200).json({
+        success: true,
+    });
+}));
+exports.removeUserFromList = removeUserFromList;
 const addList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { title, defaultItems, prevListItems } = req.body;
@@ -83,10 +136,15 @@ const addList = (0, express_async_handler_1.default)((req, res, next) => __await
         res.status(400);
         throw new Error('Title is Required');
     }
+    let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+    while (yield listModel_1.default.findOne({ token: generatedToken })) {
+        generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+    }
     const list = yield listModel_1.default.create({
         title,
         users: [user._id],
         owner: user._id,
+        token: generatedToken
     });
     if (prevListItems) {
         const prevList = yield listModel_1.default.findById(prevListItems).populate('items');
@@ -375,7 +433,6 @@ const addBundleItems = (0, express_async_handler_1.default)((req, res, next) => 
     }
     for (let i = 0; i < bundleContext.items.length; i++) {
         const item = bundleContext.items[i];
-        console.log(item._id);
         const info = amounts.find((a) => a.id === item._id.toString());
         const listItem = yield listItemModel_1.default.create({
             name: item.name,
@@ -409,8 +466,13 @@ const deleteForAll = (0, express_async_handler_1.default)((req, res, next) => __
         res.status(403);
         throw new Error('Not Authorized');
     }
+    let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+    while (yield listModel_1.default.findOne({ token: generatedToken })) {
+        generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+    }
     list.users = [];
     list.deletedUsers = [user._id];
+    list.token = generatedToken;
     yield list.save();
     res.status(200).json({
         success: true,
@@ -492,6 +554,23 @@ const restoreList = (0, express_async_handler_1.default)((req, res, next) => __a
     }
 }));
 exports.restoreList = restoreList;
+const deleteListReceipts = (listId) => __awaiter(void 0, void 0, void 0, function* () {
+    const receipts = yield receiptModel_1.default.find({ list: listId });
+    cloudinary_1.v2.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+    for (let i = 0; i < receipts.length; i++) {
+        const public_id = (0, functions_1.extractPublicId)(receipts[i].img);
+        yield cloudinary_1.v2.uploader.destroy(public_id, (error, result) => {
+            if (error) {
+                console.log(error);
+            }
+        });
+    }
+    yield receiptModel_1.default.deleteMany({ list: listId });
+});
 const deletePermanently = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { id } = req.params;
@@ -532,16 +611,13 @@ const deletePermanently = (0, express_async_handler_1.default)((req, res, next) 
             }
             listItemModel_1.default.deleteOne({ _id: item._id });
         }
+        deleteListReceipts(list._id);
         yield listModel_1.default.deleteOne({ _id: list._id });
     }
     else {
         // remove user
-        list.users = list.users.filter((listUser) => listUser.toString() !==
+        list.deletedUsers = list.deletedUsers.filter((listUser) => listUser.toString() !==
             user._id.toString());
-        list.deletedUsers = [
-            ...list.deletedUsers,
-            user._id,
-        ];
         yield list.save();
     }
     res.status(200).json({
@@ -551,7 +627,7 @@ const deletePermanently = (0, express_async_handler_1.default)((req, res, next) 
 exports.deletePermanently = deletePermanently;
 const deleteAllListsUserDeleted = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
-    const lists = yield listModel_1.default.find({ deletedUsers: user._id });
+    const lists = yield listModel_1.default.find({ deletedUsers: user._id }).populate('items deletedItems boughtItems');
     for (let i = 0; i < lists.length; i++) {
         const list = lists[i];
         let owner = false;
@@ -581,6 +657,7 @@ const deleteAllListsUserDeleted = (0, express_async_handler_1.default)((req, res
                 }
                 listItemModel_1.default.deleteOne({ _id: item._id });
             }
+            deleteListReceipts(list._id);
             yield listModel_1.default.deleteOne({ _id: list._id });
         }
         else {
@@ -599,3 +676,112 @@ const deleteAllListsUserDeleted = (0, express_async_handler_1.default)((req, res
     });
 }));
 exports.deleteAllListsUserDeleted = deleteAllListsUserDeleted;
+const createShareToken = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const lists = yield listModel_1.default.find();
+    for (let i = 0; i < lists.length; i++) {
+        let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+        while (yield listModel_1.default.findOne({ token: generatedToken })) {
+            generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+        }
+        const list = lists[i];
+        list.token = generatedToken;
+        yield list.save();
+    }
+    res.status(200).json({
+        success: true
+    });
+}));
+exports.createShareToken = createShareToken;
+const getSharedList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.params;
+    const list = yield listModel_1.default.findOne({ token }).populate('users');
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+    const listDisplay = {
+        title: list.title,
+        items: list.items.length,
+        createdAt: list.createdAt,
+        updatedAt: list.updatedAt,
+        users: list.users.map((user) => ({
+            _id: user._id,
+            f_name: user.f_name,
+            l_name: user.l_name,
+            avatar: user.avatar
+        }))
+    };
+    res.status(200).json({
+        success: true,
+        list: listDisplay
+    });
+}));
+exports.getSharedList = getSharedList;
+const shareList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const { token } = req.params;
+    const list = yield listModel_1.default.findOne({ token });
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+    let found = false;
+    for (let i = 0; i < list.users.length; i++) {
+        if (list.users[i].toString() === user._id.toString()) {
+            found = true;
+            break;
+        }
+    }
+    if (found) {
+        res.status(400);
+        throw new Error('Already in List');
+    }
+    for (let i = 0; i < list.deletedUsers.length; i++) {
+        if (list.users[i].toString() === user._id.toString()) {
+            found = true;
+            break;
+        }
+    }
+    if (found) {
+        res.status(400);
+        throw new Error('Already in List');
+    }
+    list.users = [...list.users, user._id];
+    yield list.save();
+    res.status(200).json({
+        success: true,
+        id: list._id
+    });
+}));
+exports.shareList = shareList;
+const resetListShareToken = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const { id } = req.params;
+    const list = yield listModel_1.default.findById(id);
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+    let found = false;
+    for (let i = 0; i < list.users.length; i++) {
+        if (list.users[i].toString() === user._id.toString()) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        res.status(403);
+        throw new Error('Not Authorized');
+    }
+    let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+    while (yield listModel_1.default.findOne({ token: generatedToken })) {
+        generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+    }
+    list.token = generatedToken;
+    yield list.save();
+    res.status(200).json({
+        success: true,
+        token: generatedToken
+    });
+}));
+exports.resetListShareToken = resetListShareToken;

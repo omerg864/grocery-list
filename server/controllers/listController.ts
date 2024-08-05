@@ -570,7 +570,6 @@ const addBundleItems = asyncHandler(
 		}
 		for (let i = 0; i < bundleContext.items.length; i++) {
 			const item = bundleContext.items[i] as ItemDocument;
-			console.log(item._id);
 			const info = amounts.find(
 				(a: { id: string; amount: number | undefined; unit: string }) =>
 					a.id === (item._id as ObjectId).toString()
@@ -797,15 +796,11 @@ const deletePermanently = asyncHandler(
 			await List.deleteOne({ _id: list._id });
 		} else {
 			// remove user
-			list.users = (list.users as ObjectId[]).filter(
+			list.deletedUsers = (list.deletedUsers as ObjectId[]).filter(
 				(listUser) =>
 					(listUser as ObjectId).toString() !==
 					(user._id as ObjectId).toString()
 			);
-			list.deletedUsers = [
-				...(list.deletedUsers as ObjectId[]),
-				user._id as ObjectId,
-			];
 			await list.save();
 		}
 		res.status(200).json({

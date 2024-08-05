@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeDefault = exports.getItem = exports.updateItem = exports.addItem = exports.deleteItem = exports.getItems = void 0;
+exports.shareItem = exports.changeDefault = exports.getItem = exports.updateItem = exports.addItem = exports.deleteItem = exports.getItems = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const itemModel_1 = __importDefault(require("../models/itemModel"));
 const modelsConst_1 = require("../utils/modelsConst");
 const functions_1 = require("../utils/functions");
 const upload_1 = require("../config/upload");
+const bundleModel_1 = __importDefault(require("../models/bundleModel"));
 const getItems = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     let { category, limit } = req.query;
@@ -99,10 +100,6 @@ const getItem = (0, express_async_handler_1.default)((req, res, next) => __await
         res.status(404);
         throw new Error('Item Not Found');
     }
-    if (item.user.toString() !== user._id.toString()) {
-        res.status(401);
-        throw new Error('Not authorized');
-    }
     res.status(200).json({
         success: true,
         item,
@@ -155,6 +152,16 @@ const deleteItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         res.status(401);
         throw new Error('Not authorized');
     }
+    const bundlesFound = yield bundleModel_1.default.find({ items: item._id });
+    for (let bundle of bundlesFound) {
+        if (bundle.items.length > 1) {
+            bundle.items = bundle.items.filter((bundleItem) => bundleItem.toString() !== item._id.toString());
+            bundle.save();
+        }
+        else {
+            bundleModel_1.default.findByIdAndDelete(bundle._id);
+        }
+    }
     if (item.img) {
         yield Promise.all([
             (0, functions_1.deleteImage)(item.img, true),
@@ -170,3 +177,25 @@ const deleteItem = (0, express_async_handler_1.default)((req, res, next) => __aw
     });
 }));
 exports.deleteItem = deleteItem;
+const shareItem = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const { id } = req.params;
+    const item = yield itemModel_1.default.findById(id);
+    if (!item) {
+        res.status(404);
+        throw new Error('Item not found');
+    }
+    const newItem = yield itemModel_1.default.create({
+        name: item.name,
+        description: item.description,
+        unit: item.unit,
+        category: item.category,
+        img: item.img,
+        user: user._id,
+    });
+    res.status(200).json({
+        success: true,
+        item: newItem,
+    });
+}));
+exports.shareItem = shareItem;

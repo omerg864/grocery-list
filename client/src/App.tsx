@@ -95,7 +95,7 @@ function App() {
     <Router>
       <Routes>
         {/* lists routes */}
-        <Route path="/" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Lists /></ProtectedRoute>} /> {/* TODO: test delete for me and all */}
+        <Route path="/" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Lists /></ProtectedRoute>} /> 
         <Route path="/lists/new" element={<ProtectedRoute isAuthenticated={isAuthenticated}><NewList /></ProtectedRoute>} />
         <Route path="/lists/deleted" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListsDeleted /></ProtectedRoute>} />
         <Route path="/lists/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><List /></ProtectedRoute>} />
@@ -124,10 +124,10 @@ function App() {
         <Route path="/bundles/:id/edit/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         <Route path="/bundles/:id/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         {/* share routes */}
-        <Route path="/join/:token" element={<ProtectedRoute isAuthenticated={isAuthenticated}><JoinList /></ProtectedRoute>} /> {/* TODO: join list */}
-        <Route path="/share/bundle/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareBundle /></ProtectedRoute>} /> {/* TODO: share Bundle */}
-        <Route path="/share/item/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} /> {/* TODO: share Item */}
-        <Route path="/share/listitem/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} /> {/* TODO: share list Item change component */}
+        <Route path="/join/:token" element={<ProtectedRoute isAuthenticated={isAuthenticated}><JoinList /></ProtectedRoute>} />
+        <Route path="/share/bundle/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareBundle /></ProtectedRoute>} />
+        <Route path="/share/item/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} />
+        <Route path="/share/listitem/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} /> 
         {/* profile routes */}
         <Route path="/profile" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Profile setIsAuthenticated={setIsAuthenticated}  /></ProtectedRoute>} />
         {/* authentication routes */}

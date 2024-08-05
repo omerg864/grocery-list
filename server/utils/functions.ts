@@ -77,7 +77,6 @@ export const deleteImage = async (img: string, item?: boolean) => {
     const public_id = extractPublicId(img);
     const [listItemsWithSameImg, ItemWithTheSameImg] = await Promise.all([ListItem.find({ img: img }), Item.find({ img: img })]);
     let deleteImage = item ? checkItem(listItemsWithSameImg, ItemWithTheSameImg) : checkListItem(listItemsWithSameImg, ItemWithTheSameImg);
-    console.log(deleteImage, listItemsWithSameImg, ItemWithTheSameImg);
     if (deleteImage) {
         await cloudinary.uploader.destroy(public_id, (error, result) => {
             if (error) {

@@ -231,14 +231,6 @@ function List() {
     const filterItems = (search: string) => {
         setDisplayList(items.filter((item) => item.name.toLowerCase().includes(search)));
     }
-    let deleteAction = {};
-
-    if (list.owner) {
-        deleteAction = { onDelete: openDialog };
-    } else {
-        deleteAction = {};
-    }
-
     let swipeRight = {};
 
     switch (filterList) {
@@ -305,7 +297,7 @@ function List() {
                 <TextField required name="title" color='success' fullWidth value={list.title} label={t('title')} onChange={handleChangeTitle} variant="outlined" />
             </div>
         </ConfirmationDialog>
-        <UsersList onReset={openTokenDialog} onAdd={addUser} {...deleteAction} users={users} />
+        <UsersList owner={list.owner} onReset={openTokenDialog} onAdd={addUser} onDelete={openDialog} users={users} />
         <SearchBar onSearch={filterItems} placeholder={t("search")} />
         <div style={{display: 'flex', width: '100%'}}>
             <IconButton onClick={getList}>

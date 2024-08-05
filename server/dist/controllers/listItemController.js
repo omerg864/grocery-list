@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateItem = exports.getItem = void 0;
+exports.getSharedItem = exports.shareItem = exports.updateItem = exports.getItem = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const listItemModel_1 = __importDefault(require("../models/listItemModel"));
 const functions_1 = require("../utils/functions");
 const upload_1 = require("../config/upload");
+const itemModel_1 = __importDefault(require("../models/itemModel"));
 const getItem = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { id } = req.params;
@@ -92,3 +93,46 @@ const updateItem = (0, express_async_handler_1.default)((req, res, next) => __aw
     });
 }));
 exports.updateItem = updateItem;
+const shareItem = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const { id } = req.params;
+    const item = yield listItemModel_1.default.findById(id);
+    if (!item) {
+        res.status(404);
+        throw new Error('Item Not Found');
+    }
+    const newItem = yield itemModel_1.default.create({
+        name: item.name,
+        description: item.description,
+        unit: item.unit,
+        category: item.category,
+        img: item.img,
+        user: user._id,
+    });
+    res.status(200).json({
+        success: true,
+        item: newItem,
+    });
+}));
+exports.shareItem = shareItem;
+const getSharedItem = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const { id } = req.params;
+    const item = yield listItemModel_1.default.findById(id);
+    if (!item) {
+        res.status(404);
+        throw new Error('Item Not Found');
+    }
+    const itemDisplay = {
+        name: item.name,
+        description: item.description,
+        unit: item.unit,
+        category: item.category,
+        img: item.img,
+    };
+    res.status(200).json({
+        success: true,
+        item: itemDisplay,
+    });
+}));
+exports.getSharedItem = getSharedItem;

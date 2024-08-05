@@ -12,4 +12,5 @@ router.post('/', authMiddleware_1.protectUser, bundleController_1.addBundle);
 router.put('/:id', authMiddleware_1.protectUser, bundleController_1.updateBundle);
 router.delete('/:id', authMiddleware_1.protectUser, bundleController_1.deleteBundle);
 router.get('/:id', authMiddleware_1.protectUser, bundleController_1.getBundle);
+router.post('/:id/share', authMiddleware_1.protectUser, bundleController_1.shareBundle);
 exports.default = router;

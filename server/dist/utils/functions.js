@@ -84,7 +84,6 @@ const deleteImage = (img, item) => __awaiter(void 0, void 0, void 0, function* (
     const public_id = (0, exports.extractPublicId)(img);
     const [listItemsWithSameImg, ItemWithTheSameImg] = yield Promise.all([listItemModel_1.default.find({ img: img }), itemModel_1.default.find({ img: img })]);
     let deleteImage = item ? checkItem(listItemsWithSameImg, ItemWithTheSameImg) : checkListItem(listItemsWithSameImg, ItemWithTheSameImg);
-    console.log(deleteImage, listItemsWithSameImg, ItemWithTheSameImg);
     if (deleteImage) {
         yield cloudinary_1.v2.uploader.destroy(public_id, (error, result) => {
             if (error) {

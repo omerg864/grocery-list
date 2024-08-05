@@ -15,6 +15,7 @@ interface UsersListProps {
     onClick?: (id: string) => void;
     onAdd?: () => void;
     onReset?: () => void;
+    owner?: boolean;
 }
 function UsersList(props: UsersListProps) {
     
@@ -37,11 +38,11 @@ function UsersList(props: UsersListProps) {
   return (
     <div className='users-list'>
         <Typography variant='subtitle2' className='users-title' style={{ left: "1rem", right: '1rem'}} >{props.onAdd ? t("sharedWith") : t("usersInList")}</Typography>
-        <div className={props.onDelete ? 'users' : 'users-no-delete'}>
+        <div className={props.owner ? 'users' : 'users-no-delete'}>
             {props.users.map(user => {
                 return (
                     <Fragment key={user._id}>
-                        {props.onDelete ? <StyledBadge style={{margin: '10px'}} color='error' badgeContent={<span style={{cursor: 'pointer', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex'}} 
+                        {props.owner ? <StyledBadge style={{margin: '10px'}} color='error' badgeContent={<span style={{cursor: 'pointer', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex'}} 
                         onClick={() => props.onDelete!(user._id)}><IoMdClose /></span>} >
                             {props.onClick ? <IconButton style={{padding: 0}} onClick={() => props.onClick!(user._id)} key={user._id}>
                             <UserAvatar user={user} />

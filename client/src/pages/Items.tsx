@@ -55,7 +55,6 @@ function Items() {
   }
 
   const onSwipeRight = async (id: string) => {
-    console.log('swiped right', id);
     setOpen(id);
   }
 
