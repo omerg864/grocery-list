@@ -13,6 +13,7 @@ import { addDays } from "../utils/functions";
 import Loading from "../components/Loading/Loading";
 import { post } from "../utils/apiRequest";
 import { toast } from "react-toastify";
+import GoogleLogin from "../components/GoogleLogin/GoogleLogin";
 
 
 interface LoginProps {
@@ -48,6 +49,30 @@ function Login(props: LoginProps) {
     setIsLoading(false);
   }
 
+  const responseGoogle = async (authResult: any) => {
+		try {
+			if (authResult["code"]) {
+				await post(`/api/user/google`, {
+					code: authResult.code,
+				} , (data) => {
+          if (data.reset) {
+            toast.info(t('resetPasswordToLogin'));
+          }
+          let date30 = addDays(new Date(), 30);
+          cookies.set('userToken', data.token, { path: '/', secure: true, expires: date30 });
+          cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: date30 });
+          props.setIsAuthenticated(true);
+          navigate('/');
+				}, {});
+			} else {
+				console.log(authResult);
+				throw new Error(authResult);
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	};
+
   const goToRegister = () => {
     navigate('/register');
   }
@@ -72,6 +97,7 @@ function Login(props: LoginProps) {
           <TextField name="email" required type="email" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.email} label={t('email')} variant="outlined" />
           <TextField name="password" required type="password" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.password} label={t('password')} variant="outlined" />
           <GlassButton endIcon={<CiLogin size={"1.5rem"} color='white'/>} text={t('login')} style={{width: "100%", color: "white"}} type="submit"/>
+          <GoogleLogin authResponse={responseGoogle}/>
       </ThemeProvider>
     </form>
     </main>

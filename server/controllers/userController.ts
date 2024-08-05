@@ -11,6 +11,8 @@ import { v2 as cloudinary } from 'cloudinary';
 import { ObjectId } from 'mongoose';
 import { UserDocument } from '../interface/userInterface';
 import { uploadToCloudinary } from '../config/upload';
+import googleAuthClient from '../config/google';
+import axios from 'axios';
 
 const generateToken = (id: string) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET!, {
@@ -291,7 +293,7 @@ const resendVerificationEmail = asyncHandler(
 			res.status(400);
 			throw new Error('Invalid email');
 		}
-		const user = await User.findOne({
+		const user: UserDocument | null = await User.findOne({
 			email: { $regex: new RegExp(`^${email}$`, 'i') },
 		});
 		if (!user) {
@@ -344,6 +346,62 @@ const updatePreferences = asyncHandler(
 	}
 );
 
+const googleAuth = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+	const { code } = req.body;
+	if (!code) {
+		res.status(400);
+		throw new Error('Invalid code');
+	}
+
+	const googleRes = await googleAuthClient.getToken(code);
+    
+    googleAuthClient.setCredentials(googleRes.tokens);
+
+    const userRes = await axios.get(
+        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
+	);
+	if (!userRes.data.email) {
+		res.status(400);
+		throw new Error('Invalid email');
+	}
+	const user = await User.findOne({email: { $regex: new RegExp(`^${userRes.data.email}$`, 'i') }});
+	if (!user) {
+		// Register user
+		const salt = await bcrypt.genSalt(10);
+		const hashedPassword = await bcrypt.hash(userRes.data.email, salt);
+		const newUser = await User.create({
+			f_name: userRes.data.given_name,
+			l_name: userRes.data.family_name || 'Doe',
+			email: userRes.data.email,
+			password: hashedPassword,
+			avatar: userRes.data.picture,
+			isVerified: true,
+		});
+		const token = generateToken(newUser._id as string);
+		const userEx = await User.findById(newUser._id).select(userExclude);
+		res.status(200).json({
+			success: true,
+			reset: true,
+			user: userEx,
+			token,
+		});
+	} else {
+		// Login user
+		if (!user.isVerified) {
+			user.isVerified = true;
+			await user.save();
+		}
+		const token = generateToken(user._id as string);
+		const userEx = await User.findById(user._id).select(userExclude);
+		res.status(200).json({
+			success: true,
+			user: userEx,
+			token,
+		});
+	}
+});
+
 
 export {
 	login,
@@ -355,5 +413,6 @@ export {
 	resetPasswordEmail,
 	updateUser,
 	resendVerificationEmail,
-	updatePreferences
+	updatePreferences,
+	googleAuth
 };

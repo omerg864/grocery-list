@@ -41,6 +41,7 @@ import createCache from '@emotion/cache';
 import { prefixer } from 'stylis';
 import rtlPlugin from 'stylis-plugin-rtl';
 import Page404 from './pages/Page404.tsx';
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 function App() {
 
@@ -92,6 +93,7 @@ function App() {
     <>
     <ToastContainer theme="colored" />
     <CacheProvider value={direction === 'rtl' ? rtlCache : ltrCache}>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
     <Router>
       <Routes>
         {/* lists routes */}
@@ -141,6 +143,7 @@ function App() {
       </Routes>
       <NavBar setSelectedTab={setSelectedTab} selectedTab={selectedTab} />
     </Router>
+    </GoogleOAuthProvider>
     </CacheProvider>
     </>
   )

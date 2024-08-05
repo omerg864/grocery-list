@@ -70,7 +70,8 @@
         "noUsers": "No users",
         "confirm": "Confirm",
         "noBundles": "No bundles Here",
-        "title": "Title"
+        "title": "Title",
+        "google": "Continue with Google"
     },
     "Login": {
         "login": "Login",
@@ -78,7 +79,8 @@
         "password": "Password",
         "forgotPassword": "Forgot password?",
         "noAccount": "Don't have an account?",
-        "verifyEmailResend": "please verify your email address to login. you can resend the verification email here."
+        "verifyEmailResend": "please verify your email address to login. you can resend the verification email here.",
+        "resetPasswordToLogin": "Please reset your password in the profile tab to login without a google account."
     },
     "Register": {
         "register": "Register",

@@ -18,7 +18,6 @@ function NavBar(props: NavBarProps) {
     const { t } = useTranslation('translation', { keyPrefix: 'NavBar' });
 
     const changeTab = (_e: React.SyntheticEvent, newValue: number) => {
-        // TODO: navigate to the correct page
         props.setSelectedTab(newValue);
         switch(newValue){
             case 0:
