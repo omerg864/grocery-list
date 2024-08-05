@@ -1,6 +1,9 @@
 import express from 'express';
 import { protectUser } from '../middleware/authMiddleware';
-import { getLists, getList, addList, addNewItem, addExistingItem, sendToDeleted, sendToBought, restoreFromBought, restoreFromDeleted, addBundleItems, deleteForAll, deleteForMe, getDeletedLists, restoreList, deletePermanently, deleteAllListsUserDeleted, shareList, resetListShareToken, getSharedList, createShareToken } from '../controllers/listController';
+import { getLists, getList, addList, addNewItem, addExistingItem, sendToDeleted, sendToBought, 
+    restoreFromBought, restoreFromDeleted, addBundleItems, deleteForAll, deleteForMe, getDeletedLists, 
+    restoreList, deletePermanently, deleteAllListsUserDeleted, shareList, resetListShareToken, getSharedList, 
+    createShareToken, changeListTitle, removeUserFromList } from '../controllers/listController';
 import { upload } from '../config/upload';
 
 
@@ -10,6 +13,8 @@ const router = express.Router();
 router.get('/', protectUser, getLists);
 router.post('/', protectUser, addList);
 router.get('/deleted', protectUser, getDeletedLists);
+router.put('/:id', protectUser, changeListTitle);
+router.delete('/:id/user/:userId', protectUser, removeUserFromList);
 router.get('/:id', protectUser, getList);
 router.post('/:id/item', protectUser, upload.single('file'), addNewItem);
 router.post('/:id/item/:item', protectUser, addExistingItem);

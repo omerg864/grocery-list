@@ -10,7 +10,12 @@
         "receipts": "Receipts",
         "newTokenGenerated": "New token generated",
         "resetShareToken": "Reset Share Token",
-        "resetShareTokenContent": "Are you sure you want to reset the share token? This will generate a new token and the old one will no longer work."
+        "resetShareTokenContent": "Are you sure you want to reset the share token? This will generate a new token and the old one will no longer work.",
+        "titleDialog": "Change list title",
+        "titleDialogContent": "",
+        "title": "Title",
+        "change": "Change",
+        "cancel": "Cancel"
     },
     "UsersList": {
         "sharedWith": "Shared with",
@@ -64,7 +69,8 @@
         "noLists": "No lists Here",
         "noUsers": "No users",
         "confirm": "Confirm",
-        "noBundles": "No bundles Here"
+        "noBundles": "No bundles Here",
+        "title": "Title"
     },
     "Login": {
         "login": "Login",

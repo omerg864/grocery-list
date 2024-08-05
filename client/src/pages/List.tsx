@@ -5,7 +5,7 @@ import ItemsList from "../components/ItemsList/ItemsList.tsx";
 import ListFilters from "../components/ListFilters/ListFilters.tsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiFileList3Line } from "react-icons/ri";
-import { IconButton, Tooltip } from "@mui/material";
+import { Button, IconButton, TextField, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ListInterface from "../interface/ListInterface.ts";
 import SearchBar from "../components/SearchBar/SearchBar.tsx";
@@ -15,15 +15,18 @@ import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDia
 import { TbShoppingCartPlus } from "react-icons/tb";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 import Loading from "../components/Loading/Loading.tsx";
-import { get, put } from "../utils/apiRequest.ts";
+import { del, get, put } from "../utils/apiRequest.ts";
 import Cookies from "universal-cookie";
 import { useRecoilState } from "recoil";
-import { listAtom } from "../recoil/atoms.ts";
+import { listAtom, listsState } from "../recoil/atoms.ts";
 import ListItem from "../interface/ListItemInterface.ts";
 import { LuRefreshCw } from "react-icons/lu";
+import Lists from "../interface/ListsInterface.ts";
 
 function List() {
     const [list, setList] = useRecoilState<ListInterface>(listAtom);
+    const [listName, setListName] = useState<string>(list.title);
+    const [_, setLists] = useRecoilState<Lists[]>(listsState);
     const [users, setUsers] = useState<User[]>([ ]);
     const [items, setItems] = useState<ListItem[]>([]);
     const [deletedItems, setDeletedItems] = useState<ListItem[]>(list.deletedItems);
@@ -33,6 +36,7 @@ function List() {
     const [displayList, setDisplayList] = useState<ListItem[]>(items);
     const [dialog, setDialog] = useState<boolean>(false);
     const [tokenDialog, setTokenDialog] = useState<boolean>(false);
+    const [titleDialog, setTitleDialog] = useState<boolean>(false);
     const [userId, setUserId] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const cookies = new Cookies();
@@ -139,9 +143,15 @@ function List() {
         });
     }
 
-    const deleteUser = () => {
-        setUsers((prev) => prev.filter((user) => user._id !== userId));
-        closeDialog();
+    const deleteUser = async () => {
+        setIsLoading(true);
+        await del(`/api/list/${list._id}/user/${userId}`, (_) => {
+            setUsers((prev) => prev.filter((user) => user._id !== userId));
+            closeDialog();
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        });
+        setIsLoading(false);
     }
 
     const openDialog = (id: string) => {
@@ -162,6 +172,15 @@ function List() {
         setTokenDialog(false);
     }
 
+    const openTitleDialog = () => {
+        setTitleDialog(true);
+    }
+
+    const closeTitleDialog = () => {
+        setTitleDialog(false);
+        setList((prev) => ({...prev, title: listName}));
+    }
+
     const onItemClicked = (id: string) => {
         navigate(`/lists/${list._id}/item/${id}`);
     }
@@ -178,6 +197,22 @@ function List() {
         }, {
             'Authorization': `Bearer ${cookies.get('userToken')}`,
         })
+    }
+
+    const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setList((prev) => ({...prev, title: e.target.value}));
+    }
+
+    const changeListTitle = async () => {
+        setIsLoading(true);
+        await put(`/api/list/${list._id}`, { title: list.title }, (data) => {
+            setLists((prev) => prev.map((l) => l._id === list._id ? data.list : l));
+            setListName(list.title);
+            closeTitleDialog();
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        });
+        setIsLoading(false);
     }
 
     const addUser = () => {
@@ -233,6 +268,7 @@ function List() {
         setIsLoading(true);
         await get(`/api/list/${id}`, (data) => {
             setList(data.list);
+            setListName(data.list.title);
             setItems(data.list.items);
             setDeletedItems(data.list.deletedItems);
             setBoughtItems(data.list.boughtItems);
@@ -256,11 +292,19 @@ function List() {
 
   return (
     <main>
-        <Header buttonTitle={t("addItem")} title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<Tooltip title={t('receipts')}><IconButton onClick={goToReceipt}>
+        <Header onTitleClick={openTitleDialog} buttonTitle={t("addItem")} title={list.title} onBack={backClick} buttonClick={newSelectItem} sideButton={<Tooltip title={t('receipts')}><IconButton onClick={goToReceipt}>
             <RiFileList3Line color='white'/>
         </IconButton></Tooltip>} />
         <ConfirmationDialog title={t('deleteUserTitle')} content={t('deleteUserContent')} open={dialog} handleClose={closeDialog} handleConfirm={deleteUser}  />
         <ConfirmationDialog title={t('resetShareToken')} content={t('resetShareTokenContent')} open={tokenDialog} handleClose={closeTokenDialog} handleConfirm={resetToken}  />
+        <ConfirmationDialog title={t('titleDialog')} content={t('titleDialogContent')} open={titleDialog} handleClose={closeTitleDialog}buttons={<div className="dialog-buttons">
+            <Button onClick={closeDialog} variant='outlined' color="error">{t('cancel')}</Button>
+            <Button onClick={changeListTitle} variant='outlined' color="primary" autoFocus>{t('change')}</Button>
+        </div>} >
+            <div style={{padding: '1rem 0'}}>
+                <TextField required name="title" color='success' fullWidth value={list.title} label={t('title')} onChange={handleChangeTitle} variant="outlined" />
+            </div>
+        </ConfirmationDialog>
         <UsersList onReset={openTokenDialog} onAdd={addUser} {...deleteAction} users={users} />
         <SearchBar onSearch={filterItems} placeholder={t("search")} />
         <div style={{display: 'flex', width: '100%'}}>

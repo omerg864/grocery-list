@@ -14,6 +14,7 @@ interface ListHeaderProps {
   sideButton?: ReactNode|undefined;
   buttonTitle?: string;
   endIcon?: ReactNode;
+  onTitleClick?: () => void;
 }
 
 function ListHeader(props: ListHeaderProps) {
@@ -26,7 +27,9 @@ function ListHeader(props: ListHeaderProps) {
           {props.onBack ? <IconButton onClick={props.onBack} > 
             <ArrowBack color='white'/>
           </IconButton> : (props.sideButton ? <div style={{width: '2.5rem'}}></div> : <div></div>)}
-          <Typography sx={{minHeight: '2.625rem', textAlign: 'center', lineBreak: 'anywhere', whiteSpace: 'normal'}} variant='h4'>{props.title}</Typography>
+          <div style={{width: 'fit-content'}} onClick={props.onTitleClick}>
+            <Typography sx={{minHeight: '2.625rem', textAlign: 'center', lineBreak: 'anywhere', whiteSpace: 'normal'}} variant='h4'>{props.title}</Typography> 
+          </div>
           {props.sideButton ? props.sideButton : (props.onBack ? <div style={{width: '2.5rem'}}></div> : <div></div>)}
         </div>
         {props.buttonClick && <GlassButton endIcon={endIcon} text={props.buttonTitle || ""} style={{width: "80%", color: "black"}} onClick={props.buttonClick}/>}

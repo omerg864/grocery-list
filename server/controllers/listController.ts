@@ -12,8 +12,11 @@ import Bundle from '../models/bundleModel';
 import { ItemDocument } from '../interface/itemInterface';
 import { ListItemDocument } from '../interface/listItemInterface';
 import { uploadToCloudinary } from '../config/upload';
-import { deleteImage } from '../utils/functions';
+import { deleteImage, extractPublicId } from '../utils/functions';
 import crypto from 'crypto';
+import Receipt from '../models/receiptModel';
+import { v2 as cloudinary} from 'cloudinary';
+import { ReceiptDocument } from '../interface/receiptInterface';
 
 const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -91,6 +94,64 @@ const getList = asyncHandler(
 		res.status(200).json({
 			success: true,
 			list: listDisplay,
+		});
+	}
+);
+
+const changeListTitle = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { title } = req.body;
+		const { id } = req.params;
+		const list = await List.findById(id);
+		if (!list) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
+		let found = false;
+		list.users.forEach((listUser) => {
+			if (
+				(listUser as ObjectId).toString() ===
+				(user._id as ObjectId).toString()
+			) {
+				found = true;
+			}
+		});
+		if (!found) {
+			res.status(403);
+			throw new Error('Not Authorized');
+		}
+		list.title = title;
+		await list.save();
+		res.status(200).json({
+			success: true,
+		});
+});
+
+const removeUserFromList = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id, userId } = req.params;
+		const list = await List.findById(id);
+		if (!list) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
+		if (list.owner.toString() !== (user._id as ObjectId).toString()) {
+			res.status(403);
+			throw new Error('Not Authorized');
+		}
+		if (list.owner.toString() === userId) {
+			res.status(400);
+			throw new Error('Cannot Remove Owner');
+		}
+		list.users = (list.users as ObjectId[]).filter(
+			(listUser) =>
+				(listUser as ObjectId).toString() !== userId.toString()
+		);
+		await list.save();
+		res.status(200).json({
+			success: true,
 		});
 	}
 );
@@ -666,6 +727,24 @@ const restoreList = asyncHandler(
 	}
 );
 
+const deleteListReceipts = async (listId: unknown) => {
+	const receipts: ReceiptDocument[] = await Receipt.find({ list: listId });
+	cloudinary.config({
+		cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+		api_key: process.env.CLOUDINARY_API_KEY,
+		api_secret: process.env.CLOUDINARY_API_SECRET,
+	});
+	for (let i = 0; i < receipts.length; i++) {
+		const public_id = extractPublicId(receipts[i].img);
+		await cloudinary.uploader.destroy(public_id, (error, result) => {
+			if (error) {
+				console.log(error);
+			}
+		});
+	}
+	await Receipt.deleteMany({ list: listId });
+}
+
 const deletePermanently = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
@@ -714,6 +793,7 @@ const deletePermanently = asyncHandler(
 				}
 				ListItem.deleteOne({ _id: item._id });
 			}
+			deleteListReceipts(list._id);
 			await List.deleteOne({ _id: list._id });
 		} else {
 			// remove user
@@ -737,7 +817,7 @@ const deletePermanently = asyncHandler(
 const deleteAllListsUserDeleted = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
-		const lists = await List.find({ deletedUsers: user._id });
+		const lists = await List.find({ deletedUsers: user._id }).populate('items deletedItems boughtItems');
 		for (let i = 0; i < lists.length; i++) {
 			const list: ListDocument = lists[i];
 			let owner = false;
@@ -767,6 +847,7 @@ const deleteAllListsUserDeleted = asyncHandler(
 					}
 					ListItem.deleteOne({ _id: item._id });
 				}
+				deleteListReceipts(list._id);
 				await List.deleteOne({ _id: list._id });
 			} else {
 				// remove user
@@ -901,6 +982,7 @@ export {
 	getLists,
 	getList,
 	addList,
+	changeListTitle,
 	addNewItem,
 	addExistingItem,
 	sendToDeleted,
@@ -917,5 +999,6 @@ export {
 	shareList,
 	resetListShareToken,
 	getSharedList,
-	createShareToken
+	createShareToken,
+	removeUserFromList
 };
