@@ -1,6 +1,7 @@
 import { CardActionArea, Typography } from "@mui/material"
 import Item from "../../interface/ItemInterface"
 import ListItem from "../../interface/ListItemInterface";
+import { useTranslation } from "react-i18next";
 
 
 interface ItemListDisplayProps {
@@ -9,6 +10,9 @@ interface ItemListDisplayProps {
 
 
 function ItemListDisplay(props: ItemListDisplayProps) {
+
+  const { t } = useTranslation('translation', { keyPrefix: 'ItemsList' });
+
   return (
     <CardActionArea className='item-container'>
         <div className='item-view'>
@@ -16,7 +20,7 @@ function ItemListDisplay(props: ItemListDisplayProps) {
             <div className="item-details">
                 <Typography sx={{margin: 0, fontWeight: 700}} variant='h6'>{props.item.name}</Typography>
                 <Typography sx={{minHeight: '1.245rem'}} variant='caption'>{props.item.description}</Typography>
-                {props.item.unit && ((props.item as ListItem).amount && <Typography sx={{margin: 0, fontWeight: 700}} variant='h6'>{(props.item as ListItem).amount} {props.item.unit}</Typography>)}
+                {props.item.unit && ((props.item as ListItem).amount && <Typography sx={{margin: 0, fontWeight: 700}} variant='h6'>{(props.item as ListItem).amount} {t(props.item.unit)}</Typography>)}
             </div>
         </div>
     </CardActionArea>

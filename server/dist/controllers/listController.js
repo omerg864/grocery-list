@@ -26,7 +26,9 @@ const receiptModel_1 = __importDefault(require("../models/receiptModel"));
 const cloudinary_1 = require("cloudinary");
 const getLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
-    const lists = yield listModel_1.default.find({ users: user._id });
+    const lists = yield listModel_1.default.find({ users: user._id }).sort({
+        updatedAt: -1,
+    });
     const listsDisplay = lists.map((list) => (Object.assign(Object.assign({}, list.toObject()), { users: list.users.length, items: list.items.length, deletedItems: list.deletedItems.length, boughtItems: list.boughtItems.length, owner: list.owner.toString() ===
             user._id.toString() })));
     res.status(200).json({
@@ -144,7 +146,7 @@ const addList = (0, express_async_handler_1.default)((req, res, next) => __await
         title,
         users: [user._id],
         owner: user._id,
-        token: generatedToken
+        token: generatedToken,
     });
     if (prevListItems) {
         const prevList = yield listModel_1.default.findById(prevListItems).populate('items');
@@ -688,7 +690,7 @@ const createShareToken = (0, express_async_handler_1.default)((req, res, next) =
         yield list.save();
     }
     res.status(200).json({
-        success: true
+        success: true,
     });
 }));
 exports.createShareToken = createShareToken;
@@ -708,12 +710,12 @@ const getSharedList = (0, express_async_handler_1.default)((req, res, next) => _
             _id: user._id,
             f_name: user.f_name,
             l_name: user.l_name,
-            avatar: user.avatar
-        }))
+            avatar: user.avatar,
+        })),
     };
     res.status(200).json({
         success: true,
-        list: listDisplay
+        list: listDisplay,
     });
 }));
 exports.getSharedList = getSharedList;
@@ -750,7 +752,7 @@ const shareList = (0, express_async_handler_1.default)((req, res, next) => __awa
     yield list.save();
     res.status(200).json({
         success: true,
-        id: list._id
+        id: list._id,
     });
 }));
 exports.shareList = shareList;
@@ -781,7 +783,7 @@ const resetListShareToken = (0, express_async_handler_1.default)((req, res, next
     yield list.save();
     res.status(200).json({
         success: true,
-        token: generatedToken
+        token: generatedToken,
     });
 }));
 exports.resetListShareToken = resetListShareToken;

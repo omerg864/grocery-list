@@ -24,6 +24,7 @@ const cloudinary_1 = require("cloudinary");
 const upload_1 = require("../config/upload");
 const google_1 = __importDefault(require("../config/google"));
 const axios_1 = __importDefault(require("axios"));
+const crypto_1 = __importDefault(require("crypto"));
 const generateToken = (id) => {
     return jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: '30d',
@@ -240,14 +241,12 @@ const resetPasswordEmail = (0, express_async_handler_1.default)((req, res, next)
         res.status(400);
         throw new Error('User not found');
     }
-    const token = jsonwebtoken_1.default.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '1d',
-    });
-    user.resetPasswordToken = token;
+    let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+    user.resetPasswordToken = generatedToken;
     yield user.save();
     let success;
     try {
-        success = yield (0, functions_1.sendEmail)(user.email, 'Reset your password', `Please reset your password by clicking on the link: ${process.env.HOST_ADDRESS}/reset-password/${token}`);
+        success = yield (0, functions_1.sendEmail)(user.email, 'Reset your password', `Please reset your password by clicking on the link: ${process.env.HOST_ADDRESS}/reset-password/${generatedToken}`);
     }
     catch (err) {
         console.log('email error: ' + err);
@@ -348,7 +347,8 @@ const googleAuth = (0, express_async_handler_1.default)((req, res, next) => __aw
     if (!user) {
         // Register user
         const salt = yield bcrypt_1.default.genSalt(10);
-        const hashedPassword = yield bcrypt_1.default.hash(userRes.data.email, salt);
+        let generatedPassword = crypto_1.default.randomBytes(12).toString('hex');
+        const hashedPassword = yield bcrypt_1.default.hash(generatedPassword, salt);
         const newUser = yield userModel_1.default.create({
             f_name: userRes.data.given_name,
             l_name: userRes.data.family_name || 'Doe',

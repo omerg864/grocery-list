@@ -13,6 +13,7 @@ import { UserDocument } from '../interface/userInterface';
 import { uploadToCloudinary } from '../config/upload';
 import googleAuthClient from '../config/google';
 import axios from 'axios';
+import crypto from 'crypto';
 
 const generateToken = (id: string) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET!, {
@@ -242,17 +243,15 @@ const resetPasswordEmail = asyncHandler(async (req, res, next) => {
 		res.status(400);
 		throw new Error('User not found');
 	}
-	const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
-		expiresIn: '1d',
-	});
-	user.resetPasswordToken = token;
+	let generatedToken = crypto.randomBytes(26).toString('hex');
+	user.resetPasswordToken = generatedToken;
 	await user.save();
 	let success;
 	try {
 		success = await sendEmail(
 			user.email,
 			'Reset your password',
-			`Please reset your password by clicking on the link: ${process.env.HOST_ADDRESS}/reset-password/${token}`
+			`Please reset your password by clicking on the link: ${process.env.HOST_ADDRESS}/reset-password/${generatedToken}`
 		);
 	} catch (err) {
 		console.log('email error: ' + err);
@@ -369,7 +368,8 @@ const googleAuth = asyncHandler(
 	if (!user) {
 		// Register user
 		const salt = await bcrypt.genSalt(10);
-		const hashedPassword = await bcrypt.hash(userRes.data.email, salt);
+		let generatedPassword = crypto.randomBytes(12).toString('hex');
+		const hashedPassword = await bcrypt.hash(generatedPassword, salt);
 		const newUser = await User.create({
 			f_name: userRes.data.given_name,
 			l_name: userRes.data.family_name || 'Doe',

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { IconButton, TextField, ThemeProvider, Tooltip, useTheme } from "@mui/material";
 import { FiUserPlus } from "react-icons/fi";
 import { CiLogin } from "react-icons/ci";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import formTheme from "../themes/formTheme";
 import GlassButton from "../components/GlassButton/GlassButton";
 import { MdLockReset } from "react-icons/md";
@@ -14,6 +14,7 @@ import Loading from "../components/Loading/Loading";
 import { post } from "../utils/apiRequest";
 import { toast } from "react-toastify";
 import GoogleLogin from "../components/GoogleLogin/GoogleLogin";
+import i18next from 'i18next';
 
 
 interface LoginProps {
@@ -27,17 +28,23 @@ function Login(props: LoginProps) {
   const navigate = useNavigate();
   const [form, setForm] = useState<{email: string, password: string}>({email: '', password: ''});
   const cookies = new Cookies();
+  const [searchParams] = useSearchParams();
 
   const outerTheme = useTheme();
+
+  const successfulLogin = (data: any) => {
+    let date30 = addDays(new Date(), 30);
+    cookies.set('userToken', data.token, { path: '/', secure: true, expires: date30 });
+    cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: date30 });
+    i18next.changeLanguage(data.user.language);
+    props.setIsAuthenticated(true);
+    navigate(searchParams.get('redirect') ? `/${searchParams.get('redirect')}` : '/');
+  }
 
   const login = async () => {
     setIsLoading(true);
     await post('/api/user/login', form, (data) => {
-      let date30 = addDays(new Date(), 30);
-      cookies.set('userToken', data.token, { path: '/', secure: true, expires: date30 });
-      cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: date30 });
-      props.setIsAuthenticated(true);
-      navigate('/');
+      successfulLogin(data);
     }, {}, (message) => {
       if (message === 'Please verify your email') {
         toast.error(t('verifyEmailResend'));
@@ -50,27 +57,19 @@ function Login(props: LoginProps) {
   }
 
   const responseGoogle = async (authResult: any) => {
-		try {
-			if (authResult["code"]) {
-				await post(`/api/user/google`, {
-					code: authResult.code,
-				} , (data) => {
-          if (data.reset) {
-            toast.info(t('resetPasswordToLogin'));
-          }
-          let date30 = addDays(new Date(), 30);
-          cookies.set('userToken', data.token, { path: '/', secure: true, expires: date30 });
-          cookies.set('user', JSON.stringify(data.user), { path: '/', secure: true, expires: date30 });
-          props.setIsAuthenticated(true);
-          navigate('/');
-				}, {});
-			} else {
-				console.log(authResult);
-				throw new Error(authResult);
-			}
-		} catch (e) {
-			console.log(e);
-		}
+    if (authResult["code"]) {
+      await post(`/api/user/google`, {
+        code: authResult.code,
+      } , (data) => {
+        if (data.reset) {
+          toast.info(t('resetPasswordToLogin'));
+        }
+        successfulLogin(data);
+      });
+    } else {
+      console.log(authResult);
+      throw new Error(authResult);
+    }
 	};
 
   const goToRegister = () => {

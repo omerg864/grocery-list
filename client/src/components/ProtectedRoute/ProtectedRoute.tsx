@@ -6,8 +6,11 @@ interface ProtectedRouteProps {
     children: React.ReactNode;
 }
 const ProtectedRoute = ({isAuthenticated, children}: ProtectedRouteProps) => {
+
+    const path = window.location.pathname.slice(1);
+
     if (!isAuthenticated) {
-      return <Navigate to="/login" replace />;
+      return <Navigate to={`/login?redirect=${path}`} replace />;
     }
   
     return children;
