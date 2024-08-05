@@ -1,6 +1,6 @@
 import Item, { ItemNew as ItemNewInterface } from "../interface/ItemInterface";
 import Header from "../components/Header/Header";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { FormEvent, SyntheticEvent, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Checkbox, FormControlLabel, SelectChangeEvent, TextField, ThemeProvider, useTheme } from "@mui/material";
 import ItemDetails from "../components/ItemDetails/ItemDetails";
@@ -86,7 +86,8 @@ function ItemNew() {
     setItemState(prev => ({...prev, amount: (prev as ListItemNew).amount! - 1}));
   }
 
-  const createItem = async () => {
+  const createItem = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!itemState.name) {
       toast.error(t('nameRequired'));
       return;

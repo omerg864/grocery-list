@@ -1,12 +1,12 @@
 import { Document, ObjectId } from 'mongoose';
-import { Item } from './itemInterface';
+import { ItemDocument } from './itemInterface';
 import { UserDocument } from './userInterface';
 
 
 export interface Bundle {
     title: string;
     description?: string;
-    items: Item[];
+    items: ItemDocument[] | ObjectId[];
     user: UserDocument | ObjectId;
 }
 

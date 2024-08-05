@@ -12,6 +12,13 @@ interface Item {
 	default: boolean | null;
 }
 
+export const itemDefault: Item = {
+	_id: '',
+	name: '',
+	unit: 'pc',
+	default: false
+};
+
 
 export interface ItemNew {
 	name: string;

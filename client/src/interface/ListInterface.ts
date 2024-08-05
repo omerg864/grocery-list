@@ -12,6 +12,23 @@ interface List {
     createdAt: string;
 	owner: boolean;
 	stateUpdated?: Date;
+	token: string;
 }
+
+const listDefault: List = {
+	_id: '',
+	title: '',
+	categories: [],
+	items: [],
+	deletedItems: [],
+	boughtItems: [],
+	users: [],
+	updatedAt: '',
+	createdAt: '',
+	owner: false,
+	token: '',
+};
+
+export { listDefault };
 
 export default List;

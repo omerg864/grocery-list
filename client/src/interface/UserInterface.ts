@@ -1,6 +1,6 @@
 
 interface User {
-	id: string;
+	_id: string;
 	f_name: string;
     l_name: string;
     avatar: string;

@@ -18,7 +18,7 @@ function Register() {
   const { t } = useTranslation('translation', { keyPrefix: 'Register' });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const [form, setForm] = useState<Omit<User & {password2: string, email: string, password: string}, 'id' | 'avatar'>>({email: '', password: '', password2: '', f_name: '', l_name: ''});
+  const [form, setForm] = useState<Omit<User & {password2: string, email: string, password: string}, '_id' | 'avatar'>>({email: '', password: '', password2: '', f_name: '', l_name: ''});
 
   const outerTheme = useTheme();
 

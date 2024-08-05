@@ -48,6 +48,10 @@ const ListScheme = new mongoose.Schema<ListDocument>(
 				ref: 'User',
 			},
 		],
+		token: {
+			type: String,
+			required: true,
+		}
 	},
 	{ timestamps: true }
 );

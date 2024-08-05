@@ -7,10 +7,14 @@
         "shareTitle": "List Sharing",
         "shareText": "Share this link with other users to give them access to this list.",
         "linkCopied": "Link copied to clipboard. Share it with other users to give them access to this list.",
-        "receipts": "Receipts"
+        "receipts": "Receipts",
+        "newTokenGenerated": "New token generated",
+        "resetShareToken": "Reset Share Token",
+        "resetShareTokenContent": "Are you sure you want to reset the share token? This will generate a new token and the old one will no longer work."
     },
     "UsersList": {
-        "sharedWith": "Shared with"
+        "sharedWith": "Shared with",
+        "usersInList": "Users in list"
     },
     "Lists": {
         "lists": "Lists",
@@ -193,13 +197,27 @@
         "save": "Save",
         "addItem": "Add Item",
         "titleRequired": "Title is required",
-        "itemsRequired": "At least one item is required"
+        "itemsRequired": "At least one item is required",
+        "description": "Description"
+    },
+    "BundleDisplay": {
+        "edit": "Edit",
+        "linkCopied": "Link copied to clipboard. Share it with other users for them to get this bundle.",
+        "shareTitle": "Bundle Sharing",
+        "shareText": "Share this link with other users for them to get this bundle.",
+        "shareBundle": "Share Bundle",
+        "description": "Description",
+        "items": "Items"
     },
     "ItemSelect": {
         "search": "Search",
         "noItems": "No items",
         "noResults": "No results",
         "selectItem": "Select Item"
+    },
+    "ShareItem": {
+        "itemAdded": "Item added to your items",
+        "addToItems": "Add to Items"
     },
     "BundleNew": {
         "newBundle": "New Bundle",
@@ -271,5 +289,17 @@
     "Page404": {
         "notFound": "Page not found",
         "pageNotFound": "The page you are looking for does not exist"
+    },
+    "JoinList": {
+        "joinList": "Join List",
+        "itemsInList": "Items in list",
+        "updatedAt": "Last Updated at",
+        "createdAt": "Created at"
+    },
+    "ShareBundle": {
+        "bundleAdded": "Bundle added to your bundles",
+        "addToBundles": "Add to Bundles and Items",
+        "description": "Description",
+        "items": "Items"
     }
 }

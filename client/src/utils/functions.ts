@@ -57,7 +57,7 @@ export const formatDate = (date: Date | string): string => {
   
   // Validate that the date is valid
   if (isNaN(d.getTime())) {
-    throw new Error("Invalid date");
+    return '';
   }
 
   // Get day, month, and year

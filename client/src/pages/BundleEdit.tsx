@@ -1,10 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header/Header';
 import { useEffect, useState } from 'react';
-import Bundle from '../interface/BundleInterface';
+import Bundle, { bundleDefault } from '../interface/BundleInterface';
 import ItemsList from '../components/ItemsList/ItemsList';
 import Loading from '../components/Loading/Loading';
-import { Button, TextField, ThemeProvider, useTheme } from '@mui/material';
+import { Button, TextareaAutosize, TextField, ThemeProvider, useTheme } from '@mui/material';
 import formTheme from '../themes/formTheme';
 import { useTranslation } from 'react-i18next';
 import GlassButton from '../components/GlassButton/GlassButton';
@@ -29,12 +29,12 @@ function BundleEdit() {
   const outerTheme = useTheme();
 
   const back = () => {
-    setBundle({_id: "", title: "", items: []});
+    setBundle(bundleDefault);
     navigate(`/bundles/${bundle._id}`);
   }
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBundle({...bundle, title: e.target.value});
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setBundle({...bundle, [e.target.name]: e.target.value});
   }
 
   const onSwipedRight = (id: string) => {
@@ -65,10 +65,11 @@ function BundleEdit() {
     setIsLoading(true);
     let formData = {
       title: bundle.title,
-      items: bundle.items.map(item => item._id)
+      items: bundle.items.map(item => item._id),
+      description: bundle.description,
     }
     await put(`/api/bundle/${id}`, formData, (_) => {
-      setBundle({_id: "", title: '', items: []});
+      setBundle(bundleDefault);
       navigate('/bundles');
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,
@@ -102,6 +103,7 @@ function BundleEdit() {
       <form className='list-form' onSubmit={onSubmit}>
         <ThemeProvider theme={formTheme(outerTheme)}>
         <TextField required name="title" color='success' className='white-color-input' fullWidth value={bundle.title} label={t('title')} onChange={onChange} variant="outlined" />
+        <TextareaAutosize minRows={2} placeholder={t('description')} name="description" value={bundle.description} onChange={onChange} />
           <ItemsList onItemClicked={onItemClicked} items={bundle.items} onSwipeRight={onSwipedRight} />
           <Button onClick={selectItem} variant='outlined' color='success'>{t('addItem')}</Button>
           <GlassButton endIcon={<HiOutlineSave size={"1.5rem"} color='white'/>} text={t('save')} style={{width: "100%", color: "white"}} type="submit"/>

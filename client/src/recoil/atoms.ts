@@ -1,45 +1,24 @@
 import { atom } from 'recoil';
-import List from '../interface/ListInterface';
+import List, { listDefault } from '../interface/ListInterface';
 import Bundle from '../interface/BundleInterface';
-import Item from '../interface/ItemInterface';
+import Item, { itemDefault } from '../interface/ItemInterface';
 import Lists from '../interface/ListsInterface';
 import ListItem from '../interface/ListItemInterface';
+import { bundleDefault } from '../interface/BundleInterface';
 
 const listAtom = atom<List>({
 	key: 'listState',
-	default: {
-		_id: '',
-		title: '',
-		categories: [],
-		items: [],
-		users: [],
-		updatedAt: '',
-		createdAt: '',
-		boughtItems: [],
-		deletedItems: [],
-		owner: false,
-	},
+	default: listDefault,
 });
 
 const itemAtom = atom<Item | ListItem>({
 	key: 'itemState',
-	default: {
-		_id: '',
-		name: '',
-		category: '',
-		amount: 0,
-		unit: 'pc',
-		description: '',
-	},
+	default: itemDefault,
 });
 
 const bundleAtom = atom<Bundle>({
 	key: 'bundleState',
-	default: {
-		_id: '',
-		title: '',
-		items: [],
-	},
+	default: bundleDefault,
 });
 
 

@@ -13,6 +13,7 @@ import { ItemDocument } from '../interface/itemInterface';
 import { ListItemDocument } from '../interface/listItemInterface';
 import { uploadToCloudinary } from '../config/upload';
 import { deleteImage } from '../utils/functions';
+import crypto from 'crypto';
 
 const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -85,7 +86,7 @@ const getList = asyncHandler(
 					((listUser as UserDocument)._id as ObjectId).toString() !==
 					(user._id as ObjectId).toString()
 			),
-			categories: Array.from(categories),
+			categories: Array.from(categories)
 		};
 		res.status(200).json({
 			success: true,
@@ -102,10 +103,15 @@ const addList = asyncHandler(
 			res.status(400);
 			throw new Error('Title is Required');
 		}
+		let generatedToken = crypto.randomBytes(26).toString('hex');
+		while (await List.findOne({ token: generatedToken })) {
+			generatedToken = crypto.randomBytes(26).toString('hex');
+		}
 		const list = await List.create({
 			title,
 			users: [user._id],
 			owner: user._id,
+			token: generatedToken
 		});
 		if (prevListItems) {
 			const prevList = await List.findById(prevListItems).populate(
@@ -343,7 +349,7 @@ const checkListAndItem = async (
 	res: Response,
 	userId: unknown
 ) => {
-	const list = await List.findById(listId);
+	const list: ListDocument | null = await List.findById(listId);
 	if (!list) {
 		res.status(404);
 		throw new Error('List Not Found');
@@ -361,7 +367,7 @@ const checkListAndItem = async (
 		res.status(403);
 		throw new Error('Not Authorized');
 	}
-	const listItem = await ListItem.findById(itemId);
+	const listItem: ListItemDocument | null = await ListItem.findById(itemId);
 	if (!listItem) {
 		res.status(404);
 		throw new Error('Item Not Found');
@@ -478,7 +484,7 @@ const addBundleItems = asyncHandler(
 		const user = (req as RequestWithUser).user;
 		const { id, bundle } = req.params;
 		const { amounts } = req.body;
-		const list = await List.findById(id);
+		const list: ListDocument | null = await List.findById(id);
 		if (!list) {
 			res.status(404);
 			throw new Error('List Not Found');
@@ -542,8 +548,13 @@ const deleteForAll = asyncHandler(
 			res.status(403);
 			throw new Error('Not Authorized');
 		}
+		let generatedToken = crypto.randomBytes(26).toString('hex');
+		while (await List.findOne({ token: generatedToken })) {
+			generatedToken = crypto.randomBytes(26).toString('hex');
+		}
 		list.users = [];
 		list.deletedUsers = [user._id as ObjectId];
+		list.token = generatedToken;
 		await list.save();
 		res.status(200).json({
 			success: true,
@@ -728,7 +739,7 @@ const deleteAllListsUserDeleted = asyncHandler(
 		const user = (req as RequestWithUser).user;
 		const lists = await List.find({ deletedUsers: user._id });
 		for (let i = 0; i < lists.length; i++) {
-			const list = lists[i];
+			const list: ListDocument = lists[i];
 			let owner = false;
 			if (list.owner.toString() === (user._id as ObjectId).toString()) {
 				owner = true;
@@ -777,6 +788,115 @@ const deleteAllListsUserDeleted = asyncHandler(
 	}
 );
 
+const createShareToken = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+	const lists = await List.find();
+	for (let i = 0; i < lists.length; i++) {
+		let generatedToken = crypto.randomBytes(26).toString('hex');
+		while (await List.findOne({ token: generatedToken })) {
+			generatedToken = crypto.randomBytes(26).toString('hex');
+		}
+		const list = lists[i];
+		list.token = generatedToken;
+		await list.save();
+	}
+	res.status(200).json({
+		success: true
+	});
+});
+
+const getSharedList = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+	const { token } = req.params;
+	const list = await List.findOne({ token }).populate('users');
+	if (!list) {
+		res.status(404);
+		throw new Error('List Not Found');
+	}
+	const listDisplay = {
+		title: list.title,
+		items: list.items.length,
+		createdAt: (list as any).createdAt,
+		updatedAt: (list as any).updatedAt,
+		users: (list.users as UserDocument[]).map((user: UserDocument) => ({
+			_id: user._id,
+			f_name: user.f_name,
+			l_name: user.l_name,
+			avatar: user.avatar
+		}))
+	};
+	res.status(200).json({
+		success: true,
+		list: listDisplay
+	});
+});
+
+const shareList = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const user = (req as RequestWithUser).user;
+    const { token } = req.params;
+    const list: ListDocument | null = await List.findOne({ token });
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+	let found = false;
+	for (let i = 0; i < list.users.length; i++) {
+		if (list.users[i].toString() === (user._id as ObjectId).toString()) {
+			found = true;
+			break;
+		}
+	}
+	if (found) {
+		res.status(400);
+		throw new Error('Already in List');
+	}
+	for (let i = 0; i < list.deletedUsers.length; i++) {
+		if (list.users[i].toString() === (user._id as ObjectId).toString()) {
+			found = true;
+			break;
+		}
+	}
+	if (found) {
+		res.status(400);
+		throw new Error('Already in List');
+	}
+    list.users = [...(list.users as ObjectId[]), user._id as ObjectId];
+    await list.save();
+    res.status(200).json({
+        success: true,
+        id: list._id
+    });
+});
+
+const resetListShareToken = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const user = (req as RequestWithUser).user;
+    const { id } = req.params;
+    const list = await List.findById(id);
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+    let found = false;
+    for (let i = 0; i < list.users.length; i++) {
+        if (list.users[i].toString() === (user._id as ObjectId).toString()) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        res.status(403);
+        throw new Error('Not Authorized');
+    }
+    let generatedToken = crypto.randomBytes(26).toString('hex');
+    while (await List.findOne({ token: generatedToken })) {
+        generatedToken = crypto.randomBytes(26).toString('hex');
+    }
+    list.token = generatedToken;
+	await list.save();
+    res.status(200).json({
+        success: true,
+        token: generatedToken
+    });
+});
+
 export {
 	getLists,
 	getList,
@@ -794,4 +914,8 @@ export {
 	restoreList,
 	deletePermanently,
 	deleteAllListsUserDeleted,
+	shareList,
+	resetListShareToken,
+	getSharedList,
+	createShareToken
 };

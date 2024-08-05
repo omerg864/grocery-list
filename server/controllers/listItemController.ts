@@ -7,6 +7,7 @@ import { List } from '../interface/listInterface';
 import { deleteImage } from '../utils/functions';
 import { ListItemDocument } from '../interface/listItemInterface';
 import { uploadToCloudinary } from '../config/upload';
+import Item from '../models/itemModel';
 
 const getItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -47,7 +48,7 @@ const updateItem = asyncHandler(
 			res.status(400);
 			throw new Error('Name is Required');
 		}
-		const item = await ListItem.findById(id).populate('list');
+		const item: ListItemDocument | null = await ListItem.findById(id).populate('list');
 		if (!item) {
 			res.status(404);
 			throw new Error('Item Not Found');
@@ -90,4 +91,52 @@ const updateItem = asyncHandler(
 	}
 );
 
-export { getItem, updateItem };
+
+const shareItem = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id } = req.params;
+		const item = await ListItem.findById(id);
+		if (!item) {
+			res.status(404);
+			throw new Error('Item Not Found');
+		}
+		const newItem = await Item.create({
+			name: item.name,
+			description: item.description,
+			unit: item.unit,
+			category: item.category,
+			img: item.img,
+			user: user._id,
+		});
+		res.status(200).json({
+			success: true,
+			item: newItem,
+		});
+	}
+);
+
+const getSharedItem = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id } = req.params;
+		const item: ListItemDocument | null = await ListItem.findById(id);
+		if (!item) {
+			res.status(404);
+			throw new Error('Item Not Found');
+		}
+		const itemDisplay = {
+			name: item.name,
+			description: item.description,
+			unit: item.unit,
+			category: item.category,
+			img: item.img,
+		}
+		res.status(200).json({
+			success: true,
+			item: itemDisplay,
+		});
+	}
+);
+
+export { getItem, updateItem, shareItem, getSharedItem };

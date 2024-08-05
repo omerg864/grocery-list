@@ -41,17 +41,20 @@ function ItemDisplay() {
 
   let path = window.location.pathname.split('/')[1];
   let url = `/api/item/${id}`;
+  let itemType = 'item';
   let list = false
 
   switch (path) {
     case 'lists':
       url = `/api/listitem/${item}`;
+      itemType = 'listitem';
       list = true;
       if (bundle) {
         back = {
           onBack: () => navigate(`/lists/${id}/add/bundle/${bundle}`)
         }
         url = `/api/item/${item}`;
+        itemType = 'item';
         list = false;
       } else {
         back = {
@@ -98,11 +101,11 @@ function ItemDisplay() {
           navigator.share({
             title: t('shareTitle'),
             text: t('shareText'),
-            url: `${import.meta.env.VITE_API_URL}/share/item/${itemState._id}`, // Replace with your link
+            url: `${import.meta.env.VITE_HOST_URL}/share/${itemType}/${itemState._id}`, // Replace with your link
           });
       } else {
         toast.info(t('linkCopied'));
-        navigator.clipboard.writeText(`${import.meta.env.VITE_API_URL}/share/item/${itemState._id}`); // Replace with your link
+        navigator.clipboard.writeText(`${import.meta.env.VITE_HOST_URL}/share/${itemType}/${itemState._id}`); // Replace with your link
       }
   }
   

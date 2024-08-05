@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header/Header';
 import { createRef, useEffect, useState } from 'react';
-import Bundle from '../interface/BundleInterface';
+import Bundle, { bundleDefault } from '../interface/BundleInterface';
 import ItemsList from '../components/ItemsList/ItemsList';
 import Loading from '../components/Loading/Loading';
 import { useRecoilState } from 'recoil';
@@ -33,11 +33,7 @@ function BundleAdd() {
   const outerTheme = useTheme();
 
   const back = () => {
-    setBundle({
-      _id: '',
-      title: '',
-      items: [],
-    });
+    setBundle(bundleDefault);
     navigate(`/lists/${id}/select`);
   }
 

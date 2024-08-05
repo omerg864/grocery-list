@@ -1,14 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import Header from '../components/Header/Header';
 import { useNavigate } from 'react-router-dom';
-import { Button, TextField, ThemeProvider, useTheme } from '@mui/material';
+import { Button, TextareaAutosize, TextField, ThemeProvider, useTheme } from '@mui/material';
 import ItemsList from '../components/ItemsList/ItemsList';
 import GlassButton from '../components/GlassButton/GlassButton';
 import { MdAdd } from 'react-icons/md';
 import formTheme from '../themes/formTheme';
 import { useRecoilState } from 'recoil';
-import { bundleAtom } from '../recoil/atoms';
-import Bundle from '../interface/BundleInterface';
+import { bundleAtom, bundlesAtom } from '../recoil/atoms';
+import Bundle, { bundleDefault } from '../interface/BundleInterface';
 import { useState } from 'react';
 import Loading from '../components/Loading/Loading';
 import Cookies from 'universal-cookie';
@@ -20,18 +20,19 @@ function BundleNew() {
   const { t } = useTranslation('translation', { keyPrefix: 'BundleNew' });
   const navigate = useNavigate();
   const [bundle, setBundle] = useRecoilState<Bundle>(bundleAtom);
+  const [_, setBundles] = useRecoilState<Bundle[]>(bundlesAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const cookies = new Cookies();
 
   const outerTheme = useTheme();
 
   const goToBundles = () => {
-    setBundle({_id: "", title: '', items: []});
+    setBundle(bundleDefault);
     navigate('/bundles');
   }
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBundle({...bundle, title: e.target.value});
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setBundle({...bundle, [e.target.name]: e.target.value});
   }
 
   const onItemClicked = (id: string) => {
@@ -62,10 +63,12 @@ function BundleNew() {
     setIsLoading(true);
     let formData = {
       title: bundle.title,
-      items: bundle.items.map(item => item._id)
+      items: bundle.items.map(item => item._id),
+      description: bundle.description
     }
     await post('/api/bundle', formData, (_) => {
-      setBundle({_id: "", title: '', items: []});
+      setBundle(bundleDefault);
+      setBundles([]);
       navigate('/bundles');
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,
@@ -83,6 +86,7 @@ function BundleNew() {
       <form className='list-form' onSubmit={onSubmit}>
         <ThemeProvider theme={formTheme(outerTheme)}>
         <TextField required name="title" color='success' className='white-color-input' fullWidth value={bundle.title} label={t('title')} onChange={onChange} variant="outlined" />
+        <TextareaAutosize minRows={2} placeholder={t('description')} name="description" value={bundle.description} onChange={onChange} />
           <ItemsList onItemClicked={onItemClicked} items={bundle.items} onSwipeRight={onSwipedRight} />
           <Button onClick={selectItem} variant='outlined' color='success'>{t('addItem')}</Button>
           <GlassButton endIcon={<MdAdd size={"1.5rem"} color='white'/>} text={t('create')} style={{width: "100%", color: "white"}} type="submit"/>

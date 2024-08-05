@@ -8,4 +8,12 @@ interface Bundle {
     stateUpdated?: Date;
 }
 
+const bundleDefault: Bundle = {
+    _id: '',
+    title: '',
+    items: [],
+};
+
+export { bundleDefault };
+
 export default Bundle;

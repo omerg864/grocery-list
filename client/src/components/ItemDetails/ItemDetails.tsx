@@ -23,13 +23,14 @@ interface ItemDetailsProps {
     addCounter?: () => void;
     removeCounter?: () => void;
     onSelectionChange?: (e: SelectChangeEvent) => void;
-    onImgIconClick: () => void;
+    onImgIconClick?: () => void;
     img?: string | null;
     enableAmount?: boolean;
     amountEdit?: boolean;
     categories?: string[];
     onAutoCompleteChange?: (e: SyntheticEvent<Element, Event>, newValue: string | null) => void;
     onDefaultIconClick?: (id: string) => void;
+    share?: boolean;
 }
 
 function ItemDetails(props: ItemDetailsProps) {
@@ -41,7 +42,7 @@ function ItemDetails(props: ItemDetailsProps) {
 
     const units = ['pc', 'kg', 'g', 'l', 'ml', ''];
 
-    const showDefaultIcon = props.disabled && !props.amountEdit ? true : false;
+    const showDefaultIcon = (props.disabled && !props.amountEdit && !props.share) ? true : false;
 
     const onImgClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
         e.preventDefault();
@@ -78,7 +79,7 @@ function ItemDetails(props: ItemDetailsProps) {
     <Fragment>
         <div className="item-display-img-container">
             <img onClick={onImgClick} className='item-display-img' src={props.img ? props.img : (props.item.img ? props.item.img : '/item.png')} alt={props.item.name} />
-            <IconButton onClick={props.onImgIconClick} style={{
+            {!props.share && <IconButton onClick={props.onImgIconClick} style={{
                 position: 'absolute',
                 bottom: 'calc(50% - 1rem)',
                 background: 'var(--color-primary)',
@@ -91,7 +92,7 @@ function ItemDetails(props: ItemDetailsProps) {
                 </Fragment> : <Fragment>
                     <MdEdit color="black" />
                 </Fragment>}
-            </IconButton>
+            </IconButton>}
             {showDefaultIcon && <IconButton onClick={() => props.onDefaultIconClick!((props.item as Item)._id)} style={{
                 position: 'absolute',
                 bottom: 'calc(50% - 1rem)',
@@ -104,7 +105,7 @@ function ItemDetails(props: ItemDetailsProps) {
             </IconButton>}
         </div>
             <div className="item-display-details">
-                <TextareaAutosize placeholder={t('description')} name="description" value={props.item.description} onChange={props.onChange} disabled={props.disabled} />
+                <TextareaAutosize minRows={2} placeholder={t('description')} name="description" value={props.item.description} onChange={props.onChange} disabled={props.disabled} />
                 <ThemeProvider theme={formTheme(outerTheme)}>
                 {props.categories ? <Autocomplete
                     freeSolo

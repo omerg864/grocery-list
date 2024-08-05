@@ -124,9 +124,10 @@ function App() {
         <Route path="/bundles/:id/edit/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         <Route path="/bundles/:id/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />
         {/* share routes */}
-        <Route path="/join/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><JoinList /></ProtectedRoute>} /> {/* TODO: join list */}
+        <Route path="/join/:token" element={<ProtectedRoute isAuthenticated={isAuthenticated}><JoinList /></ProtectedRoute>} /> {/* TODO: join list */}
         <Route path="/share/bundle/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareBundle /></ProtectedRoute>} /> {/* TODO: share Bundle */}
         <Route path="/share/item/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} /> {/* TODO: share Item */}
+        <Route path="/share/listitem/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ShareItem /></ProtectedRoute>} /> {/* TODO: share list Item change component */}
         {/* profile routes */}
         <Route path="/profile" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Profile setIsAuthenticated={setIsAuthenticated}  /></ProtectedRoute>} />
         {/* authentication routes */}

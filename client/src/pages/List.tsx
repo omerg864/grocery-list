@@ -15,7 +15,7 @@ import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDia
 import { TbShoppingCartPlus } from "react-icons/tb";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 import Loading from "../components/Loading/Loading.tsx";
-import { get } from "../utils/apiRequest.ts";
+import { get, put } from "../utils/apiRequest.ts";
 import Cookies from "universal-cookie";
 import { useRecoilState } from "recoil";
 import { listAtom } from "../recoil/atoms.ts";
@@ -32,6 +32,7 @@ function List() {
     const [filterList, setFilterList] = useState<number>(0);
     const [displayList, setDisplayList] = useState<ListItem[]>(items);
     const [dialog, setDialog] = useState<boolean>(false);
+    const [tokenDialog, setTokenDialog] = useState<boolean>(false);
     const [userId, setUserId] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const cookies = new Cookies();
@@ -139,7 +140,7 @@ function List() {
     }
 
     const deleteUser = () => {
-        setUsers((prev) => prev.filter((user) => user.id !== userId));
+        setUsers((prev) => prev.filter((user) => user._id !== userId));
         closeDialog();
     }
 
@@ -153,6 +154,14 @@ function List() {
         setUserId('');
     }
 
+    const openTokenDialog = () => {
+        setTokenDialog(true);
+    }
+
+    const closeTokenDialog = () => {
+        setTokenDialog(false);
+    }
+
     const onItemClicked = (id: string) => {
         navigate(`/lists/${list._id}/item/${id}`);
     }
@@ -161,16 +170,26 @@ function List() {
         navigate(`/lists/${list._id}/receipts`);
     }
 
+    const resetToken = async () => {
+        await put(`/api/list/${list._id}/share`, {}, (data) => {
+            toast.success(t('newTokenGenerated'));
+            setList((prev) => ({...prev, token: data.token}));
+            closeTokenDialog();
+        }, {
+            'Authorization': `Bearer ${cookies.get('userToken')}`,
+        })
+    }
+
     const addUser = () => {
         if (navigator.share) {
             navigator.share({
                 title: t('shareTitle'),
                 text: t('shareText'),
-                url: `${import.meta.env.VITE_HOST_URL}/join/${list._id}`, // Replace with your link
+                url: `${import.meta.env.VITE_HOST_URL}/join/${list.token}`,
             });
         } else {
             toast.info(t('linkCopied'));
-            navigator.clipboard.writeText(`${import.meta.env.VITE_HOST_URL}/join/${list._id}`); // Replace with your link
+            navigator.clipboard.writeText(`${import.meta.env.VITE_HOST_URL}/join/${list.token}`); 
         }
     }
 
@@ -241,7 +260,8 @@ function List() {
             <RiFileList3Line color='white'/>
         </IconButton></Tooltip>} />
         <ConfirmationDialog title={t('deleteUserTitle')} content={t('deleteUserContent')} open={dialog} handleClose={closeDialog} handleConfirm={deleteUser}  />
-        <UsersList onAdd={addUser} {...deleteAction} users={users} />
+        <ConfirmationDialog title={t('resetShareToken')} content={t('resetShareTokenContent')} open={tokenDialog} handleClose={closeTokenDialog} handleConfirm={resetToken}  />
+        <UsersList onReset={openTokenDialog} onAdd={addUser} {...deleteAction} users={users} />
         <SearchBar onSearch={filterItems} placeholder={t("search")} />
         <div style={{display: 'flex', width: '100%'}}>
             <IconButton onClick={getList}>

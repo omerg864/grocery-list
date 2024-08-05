@@ -7,6 +7,7 @@ import { RequestWithUser } from '../interface/requestInterface';
 import { itemExclude } from '../utils/modelsConst';
 import { deleteImage } from '../utils/functions';
 import { uploadToCloudinary } from '../config/upload';
+import Bundle from '../models/bundleModel';
 
 const getItems = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -105,10 +106,6 @@ const getItem = asyncHandler(
 			res.status(404);
 			throw new Error('Item Not Found');
 		}
-		if (item.user.toString() !== (user._id as ObjectId).toString()) {
-			res.status(401);
-			throw new Error('Not authorized');
-		}
 		res.status(200).json({
 			success: true,
 			item,
@@ -169,6 +166,18 @@ const deleteItem = asyncHandler(
 			res.status(401);
 			throw new Error('Not authorized');
 		}
+		const bundlesFound = await Bundle.find({ items: item._id });
+		for (let bundle of bundlesFound) {
+			if (bundle.items.length > 1) {
+				bundle.items = (bundle.items as ObjectId[]).filter(
+					(bundleItem) =>
+						(bundleItem as ObjectId).toString() !== (item._id as ObjectId).toString()
+				);
+				bundle.save();
+			} else {
+				Bundle.findByIdAndDelete(bundle._id);
+			}
+		}
 		if (item.img) {
 			await Promise.all([
 				deleteImage(item.img, true),
@@ -184,4 +193,28 @@ const deleteItem = asyncHandler(
 	}
 );
 
-export { getItems, deleteItem, addItem, updateItem, getItem, changeDefault };
+const shareItem = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const { id } = req.params;
+		const item: ItemDocument | null = await Item.findById(id);
+		if (!item) {
+			res.status(404);
+			throw new Error('Item not found');
+		}
+		const newItem = await Item.create({
+			name: item.name,
+			description: item.description,
+			unit: item.unit,
+			category: item.category,
+			img: item.img,
+			user: user._id,
+		});
+		res.status(200).json({
+			success: true,
+			item: newItem,
+		});
+	}
+);
+
+export { getItems, deleteItem, addItem, updateItem, getItem, changeDefault, shareItem };
