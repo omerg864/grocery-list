@@ -131,7 +131,6 @@ const shareItem = asyncHandler(
 
 const getSharedItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const user = (req as RequestWithUser).user;
 		const { id } = req.params;
 		const item: ListItemDocument | null = await ListItem.findById(id);
 		if (!item) {

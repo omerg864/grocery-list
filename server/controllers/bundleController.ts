@@ -96,6 +96,18 @@ const deleteBundle = asyncHandler(async (req: Request, res: Response, next: Next
     });
 });
 
+const createItemFromItemAndAddToList = async (item: ItemDocument, items: ObjectId[], userId: unknown) => {
+    const newItem = await Item.create({
+        name: item.name,
+        description: item.description,
+        unit: item.unit,
+        category: item.category,
+        img: item.img,
+        user: userId
+    });
+    items.push(newItem._id as ObjectId);
+}
+
 const shareBundle = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const user = (req as RequestWithUser).user;
     const { id } = req.params;
@@ -104,19 +116,13 @@ const shareBundle = asyncHandler(async (req: Request, res: Response, next: NextF
         res.status(404);
         throw new Error('Bundle Not Found');
     }
-    let items = [];
+    let items: ObjectId[] = [];
+    const promises = [];
     for (let i = 0; i < bundle.items.length; i++) {
         const itemContext = bundle.items[i] as ItemDocument;
-        const item = await Item.create({
-            name: itemContext.name,
-            description: itemContext.description,
-            unit: itemContext.unit,
-            category: itemContext.category,
-            img: itemContext.img,
-            user: user._id
-        });
-        items.push(item._id);
+        promises.push(createItemFromItemAndAddToList(itemContext, items, user._id));
     }
+    await Promise.all(promises);
     const newBundle = await Bundle.create({
         title: bundle.title,
         description: bundle.description,

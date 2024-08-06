@@ -118,7 +118,6 @@ const shareItem = (0, express_async_handler_1.default)((req, res, next) => __awa
 }));
 exports.shareItem = shareItem;
 const getSharedItem = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = req.user;
     const { id } = req.params;
     const item = yield listItemModel_1.default.findById(id);
     if (!item) {

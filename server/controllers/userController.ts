@@ -13,6 +13,7 @@ import { uploadToCloudinary } from '../config/cloud';
 import googleAuthClient from '../config/google';
 import axios from 'axios';
 import crypto from 'crypto';
+import { v4 as uuid4 } from 'uuid';
 
 const generateToken = (id: string) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET!, {
@@ -233,10 +234,7 @@ const resetPasswordEmail = asyncHandler(async (req, res, next) => {
 		res.status(400);
 		throw new Error('User not found');
 	}
-	let generatedToken = crypto.randomBytes(26).toString('hex');
-	if (await User.find({ resetPasswordToken: generatedToken})) {
-		generatedToken = crypto.randomBytes(26).toString('hex');
-	}
+	let generatedToken = uuid4();
 	user.resetPasswordToken = generatedToken;
 	await user.save();
 	let success;

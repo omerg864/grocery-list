@@ -15,7 +15,6 @@ import {
 	uploadToCloudinary,
 } from '../config/cloud';
 import { deleteImage } from '../utils/functions';
-import crypto from 'crypto';
 import Receipt from '../models/receiptModel';
 import { ReceiptDocument } from '../interface/receiptInterface';
 import { v4 as uuid4 } from 'uuid';
@@ -54,6 +53,10 @@ const getList = asyncHandler(
 		const user = (req as RequestWithUser).user;
 		const { id } = req.params;
 		const ObjectId = mongoose.Types.ObjectId;
+		if (!ObjectId.isValid(id)) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
 		const idObject = new ObjectId(id);
 		const userId = new ObjectId(user._id as string);
 		const listDisplay = await List.aggregate([
@@ -182,24 +185,39 @@ const changeListTitle = asyncHandler(
 		const user = (req as RequestWithUser).user;
 		const { title } = req.body;
 		const { id } = req.params;
-		const list = await List.findById(id);
-		if (!list) {
+		if (!title) {
+			res.status(400);
+			throw new Error('Title is Required');
+		}
+		const ObjectId = mongoose.Types.ObjectId;
+		if (!ObjectId.isValid(id)) {
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		let found = false;
-		list.users.forEach((listUser) => {
-			if (
-				(listUser as ObjectId).toString() ===
-				(user._id as ObjectId).toString()
-			) {
-				found = true;
+		const idObject = new ObjectId(id);
+		const lists: ListDocument[] = await List.aggregate([
+			{ $match: { _id: idObject } },
+			{
+				$addFields: {
+				found: {
+					$in: [user._id, '$users']
+				}
+				}
+			},
+			{
+				$match: { found: true }
+			},
+			{
+				$project: {
+					found: 0
+				}
 			}
-		});
-		if (!found) {
-			res.status(403);
-			throw new Error('Not Authorized');
+		]);
+		if (!lists || lists.length === 0) {
+			res.status(404);
+			throw new Error('List Not Found');
 		}
+		const list: ListDocument = lists[0];
 		list.title = title;
 		await list.save();
 		res.status(200).json({
@@ -269,6 +287,24 @@ const createListItemFromItemAndAddToList = async (
 	(list.items as ObjectId[]).push(listItem._id as ObjectId);
 };
 
+const createListItemFromItemAndDataAndAddToList = async (
+	itemContext: ItemDocument,
+	list: ListDocument,
+	unit: string,
+	amount: number
+) => {
+	const listItem = await ListItem.create({
+		name: itemContext.name,
+		description: itemContext.description,
+		unit,
+		amount,
+		category: itemContext.category,
+		list: list._id,
+		img: itemContext.img,
+	});
+	(list.items as ObjectId[]).push(listItem._id as ObjectId);
+};
+
 const addList = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
@@ -277,10 +313,7 @@ const addList = asyncHandler(
 			res.status(400);
 			throw new Error('Title is Required');
 		}
-		let generatedToken = crypto.randomBytes(26).toString('hex');
-		while (await List.findOne({ token: generatedToken })) {
-			generatedToken = crypto.randomBytes(26).toString('hex');
-		}
+		let generatedToken = uuid4();
 		const list: ListDocument = await List.create({
 			title,
 			users: [user._id],
@@ -396,24 +429,35 @@ const addNewItem = asyncHandler(
 			throw new Error('Name is Required');
 		}
 		const { id } = req.params;
-		const list = await List.findById(id);
-		if (!list) {
+		const ObjectId = mongoose.Types.ObjectId;
+		if (!ObjectId.isValid(id)) {
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		let found = false;
-		list.users.forEach((listUser) => {
-			if (
-				(listUser as ObjectId).toString() ===
-				(user._id as ObjectId).toString()
-			) {
-				found = true;
+		const idObject = new ObjectId(id);
+		const lists: ListDocument[] = await List.aggregate([
+			{ $match: { _id: idObject } },
+			{
+				$addFields: {
+				found: {
+					$in: [user._id, '$users']
+				}
+				}
+			},
+			{
+				$match: { found: true }
+			},
+			{
+				$project: {
+					found: 0
+				}
 			}
-		});
-		if (!found) {
-			res.status(403);
-			throw new Error('Not Authorized');
+		]);
+		if (!lists || lists.length === 0) {
+			res.status(404);
+			throw new Error('List Not Found');
 		}
+		const list: ListDocument = lists[0];
 		let listItem, item;
 		if (saveItem) {
 			item = await createItem(
@@ -458,24 +502,35 @@ const addExistingItem = asyncHandler(
 		const user = (req as RequestWithUser).user;
 		const { amount, unit } = req.body;
 		const { id, item } = req.params;
-		const list = await List.findById(id);
-		if (!list) {
+		const ObjectId = mongoose.Types.ObjectId;
+		if (!ObjectId.isValid(id)) {
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		let found = false;
-		list.users.forEach((listUser) => {
-			if (
-				(listUser as ObjectId).toString() ===
-				(user._id as ObjectId).toString()
-			) {
-				found = true;
+		const idObject = new ObjectId(id);
+		const lists: ListDocument[] = await List.aggregate([
+			{ $match: { _id: idObject } },
+			{
+				$addFields: {
+				found: {
+					$in: [user._id, '$users']
+				}
+				}
+			},
+			{
+				$match: { found: true }
+			},
+			{
+				$project: {
+					found: 0
+				}
 			}
-		});
-		if (!found) {
-			res.status(403);
-			throw new Error('Not Authorized');
+		]);
+		if (!lists || lists.length === 0) {
+			res.status(404);
+			throw new Error('List Not Found');
 		}
+		const list: ListDocument = lists[0];
 		const ItemContext = await Item.findById(item);
 		if (!ItemContext) {
 			res.status(404);
@@ -499,13 +554,12 @@ const addExistingItem = asyncHandler(
 	}
 );
 
-const checkListAndItem = async (
-	listId: string,
-	itemId: string,
+const checkList = async (
+	id: string,
 	res: Response,
 	userId: unknown
-) => {
-	const list: ListDocument | null = await List.findById(listId);
+): Promise<ListDocument> => {
+	const list: ListDocument | null = await List.findById(id);
 	if (!list) {
 		res.status(404);
 		throw new Error('List Not Found');
@@ -523,11 +577,31 @@ const checkListAndItem = async (
 		res.status(403);
 		throw new Error('Not Authorized');
 	}
-	const listItem: ListItemDocument | null = await ListItem.findById(itemId);
+	return list;
+}
+
+const checkListItem = async (
+	id: string,
+	res: Response
+): Promise<ListItemDocument> => {
+	const listItem: ListItemDocument | null = await ListItem.findById(id);
 	if (!listItem) {
 		res.status(404);
 		throw new Error('Item Not Found');
 	}
+	return listItem;
+}
+
+const checkListAndItem = async (
+	listId: string,
+	itemId: string,
+	res: Response,
+	userId: unknown
+): Promise<{list: ListDocument, listItem: ListItemDocument}> => {
+	const [list, listItem] = await Promise.all([
+		checkList(listId, res, userId),
+		checkListItem(itemId, res)
+	]);
 	return { list, listItem };
 };
 
@@ -544,10 +618,7 @@ const sendToDeleted = asyncHandler(
 		(list.items as ObjectId[]) = (list.items as ObjectId[]).filter(
 			(listItem) => (listItem as ObjectId).toString() !== item.toString()
 		);
-		(list.deletedItems as ObjectId[]) = [
-			...(list.deletedItems as ObjectId[]),
-			item as unknown as ObjectId,
-		];
+		(list.deletedItems as ObjectId[]).push(item as unknown as ObjectId);
 		await list.save();
 		res.status(200).json({
 			success: true,
@@ -569,10 +640,7 @@ const sendToBought = asyncHandler(
 		(list.items as ObjectId[]) = (list.items as ObjectId[]).filter(
 			(listItem) => (listItem as ObjectId).toString() !== item.toString()
 		);
-		(list.boughtItems as ObjectId[]) = [
-			...(list.boughtItems as ObjectId[]),
-			item as unknown as ObjectId,
-		];
+		(list.boughtItems as ObjectId[]).push(item as unknown as ObjectId);
 		await list.save();
 		res.status(200).json({
 			success: true,
@@ -596,10 +664,7 @@ const restoreFromDeleted = asyncHandler(
 		).filter(
 			(listItem) => (listItem as ObjectId).toString() !== item.toString()
 		);
-		(list.items as ObjectId[]) = [
-			...(list.items as ObjectId[]),
-			item as unknown as ObjectId,
-		];
+		(list.items as ObjectId[]).push(item as unknown as ObjectId);
 		await list.save();
 		res.status(200).json({
 			success: true,
@@ -623,10 +688,7 @@ const restoreFromBought = asyncHandler(
 		).filter(
 			(listItem) => (listItem as ObjectId).toString() !== item.toString()
 		);
-		(list.items as ObjectId[]) = [
-			...(list.items as ObjectId[]),
-			item as unknown as ObjectId,
-		];
+		(list.items as ObjectId[]).push(item as unknown as ObjectId);
 		await list.save();
 		res.status(200).json({
 			success: true,
@@ -663,26 +725,26 @@ const addBundleItems = asyncHandler(
 			res.status(404);
 			throw new Error('Bundle Not Found');
 		}
+		const promises = []
 		for (let i = 0; i < bundleContext.items.length; i++) {
 			const item = bundleContext.items[i] as ItemDocument;
 			const info = amounts.find(
 				(a: { id: string; amount: number | undefined; unit: string }) =>
 					a.id === (item._id as ObjectId).toString()
 			)!;
-			const listItem = await ListItem.create({
-				name: item.name,
-				description: item.description,
-				unit: info.unit,
-				amount: info.amount,
-				category: item.category,
-				list: list._id,
-				img: item.img,
-			});
-			list.items = [
-				...(list.items as ObjectId[]),
-				listItem._id as ObjectId,
-			];
+			if (!info) {
+				continue;
+			}
+			promises.push(
+				createListItemFromItemAndDataAndAddToList(
+					item,
+					list,
+					info.unit,
+					info.amount
+				)
+			);
 		}
+		await Promise.all(promises);
 		await list.save();
 		res.status(200).json({
 			success: true,
@@ -694,7 +756,7 @@ const deleteForAll = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id } = req.params;
-		const list = await List.findById(id).populate('users');
+		const list: ListDocument | null = await List.findById(id).populate('users');
 		if (!list) {
 			res.status(404);
 			throw new Error('List Not Found');
@@ -703,10 +765,7 @@ const deleteForAll = asyncHandler(
 			res.status(403);
 			throw new Error('Not Authorized');
 		}
-		let generatedToken = crypto.randomBytes(26).toString('hex');
-		while (await List.findOne({ token: generatedToken })) {
-			generatedToken = crypto.randomBytes(26).toString('hex');
-		}
+		let generatedToken = uuid4();
 		list.users = [];
 		list.deletedUsers = [user._id as ObjectId];
 		list.token = generatedToken;
@@ -756,10 +815,7 @@ const deleteForMe = asyncHandler(
 				(listUser as ObjectId).toString() !==
 				(user._id as ObjectId).toString()
 		);
-		list.deletedUsers = [
-			...(list.deletedUsers as ObjectId[]),
-			user._id as ObjectId,
-		];
+		(list.deletedUsers as ObjectId[]).push(user._id as ObjectId);
 		await list.save();
 		res.status(200).json({
 			success: true,
@@ -809,7 +865,7 @@ const restoreList = asyncHandler(
 					(userId as ObjectId).toString() !==
 					(user._id as ObjectId).toString()
 			);
-			list.users = [...(list.users as ObjectId[]), user._id as ObjectId];
+			(list.users as ObjectId[]).push(user._id as ObjectId);
 			await list.save();
 			res.status(200).json({
 				success: true,
@@ -833,6 +889,45 @@ const deleteListReceipts = async (listId: unknown) => {
 	promises.push(Receipt.deleteMany({ list: listId }));
 	await Promise.all(promises);
 };
+
+const deleteList = async (list: ListDocument, owner: boolean, userId: unknown) => {
+	const promises = [];
+	if (owner) {
+		// full delete
+		for (let i = 0; i < list.items.length; i++) {
+			const item = list.items[i] as ListItemDocument;
+			if (item.img) {
+				promises.push(deleteImage(item.img));
+			}
+			promises.push(ListItem.deleteOne({ _id: item._id }));
+		}
+		for (let i = 0; i < list.deletedItems.length; i++) {
+			const item = list.deletedItems[i] as ListItemDocument;
+			if (item.img) {
+				promises.push(deleteImage(item.img));
+			}
+			promises.push(ListItem.deleteOne({ _id: item._id }));
+		}
+		for (let i = 0; i < list.boughtItems.length; i++) {
+			const item = list.boughtItems[i] as ListItemDocument;
+			if (item.img) {
+				promises.push(deleteImage(item.img));
+			}
+			promises.push(ListItem.deleteOne({ _id: item._id }));
+		}
+		promises.push(deleteListReceipts(list._id));
+		promises.push(List.deleteOne({ _id: list._id }));
+		await Promise.all(promises);
+	} else {
+		// delete user
+		list.deletedUsers = (list.deletedUsers as ObjectId[]).filter(
+			(listUser) =>
+				(listUser as ObjectId).toString() !==
+				(userId as ObjectId).toString()
+		);
+		await list.save();
+	}
+}
 
 const deletePermanently = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -859,40 +954,7 @@ const deletePermanently = asyncHandler(
 		if (list.owner.toString() === (user._id as ObjectId).toString()) {
 			owner = true;
 		}
-		if (owner) {
-			// full delete
-			for (let i = 0; i < list.items.length; i++) {
-				const item = list.items[i] as ListItemDocument;
-				if (item.img) {
-					deleteImage(item.img);
-				}
-				ListItem.deleteOne({ _id: item._id });
-			}
-			for (let i = 0; i < list.deletedItems.length; i++) {
-				const item = list.deletedItems[i] as ListItemDocument;
-				if (item.img) {
-					deleteImage(item.img);
-				}
-				ListItem.deleteOne({ _id: item._id });
-			}
-			for (let i = 0; i < list.boughtItems.length; i++) {
-				const item = list.boughtItems[i] as ListItemDocument;
-				if (item.img) {
-					deleteImage(item.img);
-				}
-				ListItem.deleteOne({ _id: item._id });
-			}
-			deleteListReceipts(list._id);
-			await List.deleteOne({ _id: list._id });
-		} else {
-			// remove user
-			list.deletedUsers = (list.deletedUsers as ObjectId[]).filter(
-				(listUser) =>
-					(listUser as ObjectId).toString() !==
-					(user._id as ObjectId).toString()
-			);
-			await list.save();
-		}
+		await deleteList(list, owner, user._id);
 		res.status(200).json({
 			success: true,
 		});
@@ -905,51 +967,16 @@ const deleteAllListsUserDeleted = asyncHandler(
 		const lists = await List.find({ deletedUsers: user._id }).populate(
 			'items deletedItems boughtItems'
 		);
+		const promises = [];
 		for (let i = 0; i < lists.length; i++) {
 			const list: ListDocument = lists[i];
 			let owner = false;
 			if (list.owner.toString() === (user._id as ObjectId).toString()) {
 				owner = true;
 			}
-			if (owner) {
-				// full delete
-				for (let i = 0; i < list.items.length; i++) {
-					const item = list.items[i] as ListItemDocument;
-					if (item.img) {
-						deleteImage(item.img);
-					}
-					ListItem.deleteOne({ _id: item._id });
-				}
-				for (let i = 0; i < list.deletedItems.length; i++) {
-					const item = list.deletedItems[i] as ListItemDocument;
-					if (item.img) {
-						deleteImage(item.img);
-					}
-					ListItem.deleteOne({ _id: item._id });
-				}
-				for (let i = 0; i < list.boughtItems.length; i++) {
-					const item = list.boughtItems[i] as ListItemDocument;
-					if (item.img) {
-						deleteImage(item.img);
-					}
-					ListItem.deleteOne({ _id: item._id });
-				}
-				deleteListReceipts(list._id);
-				await List.deleteOne({ _id: list._id });
-			} else {
-				// remove user
-				list.users = (list.users as ObjectId[]).filter(
-					(listUser) =>
-						(listUser as ObjectId).toString() !==
-						(user._id as ObjectId).toString()
-				);
-				list.deletedUsers = [
-					...(list.deletedUsers as ObjectId[]),
-					user._id as ObjectId,
-				];
-				await list.save();
-			}
+			promises.push(deleteList(list, owner, user._id));
 		}
+		await Promise.all(promises);
 		res.status(200).json({
 			success: true,
 		});
@@ -960,10 +987,7 @@ const createShareToken = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const lists = await List.find();
 		for (let i = 0; i < lists.length; i++) {
-			let generatedToken = crypto.randomBytes(26).toString('hex');
-			while (await List.findOne({ token: generatedToken })) {
-				generatedToken = crypto.randomBytes(26).toString('hex');
-			}
+			let generatedToken = uuid4();
 			const list = lists[i];
 			list.token = generatedToken;
 			await list.save();
@@ -1035,7 +1059,7 @@ const shareList = asyncHandler(
 			res.status(400);
 			throw new Error('Already in List');
 		}
-		list.users = [...(list.users as ObjectId[]), user._id as ObjectId];
+		(list.users as ObjectId[]).push(user._id as ObjectId);
 		await list.save();
 		res.status(200).json({
 			success: true,
@@ -1066,10 +1090,7 @@ const resetListShareToken = asyncHandler(
 			res.status(403);
 			throw new Error('Not Authorized');
 		}
-		let generatedToken = crypto.randomBytes(26).toString('hex');
-		while (await List.findOne({ token: generatedToken })) {
-			generatedToken = crypto.randomBytes(26).toString('hex');
-		}
+		let generatedToken = uuid4();
 		list.token = generatedToken;
 		await list.save();
 		res.status(200).json({

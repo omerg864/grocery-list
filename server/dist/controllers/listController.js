@@ -21,7 +21,6 @@ const listItemModel_1 = __importDefault(require("../models/listItemModel"));
 const bundleModel_1 = __importDefault(require("../models/bundleModel"));
 const cloud_1 = require("../config/cloud");
 const functions_1 = require("../utils/functions");
-const crypto_1 = __importDefault(require("crypto"));
 const receiptModel_1 = __importDefault(require("../models/receiptModel"));
 const uuid_1 = require("uuid");
 const getLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -55,6 +54,10 @@ const getList = (0, express_async_handler_1.default)((req, res, next) => __await
     const user = req.user;
     const { id } = req.params;
     const ObjectId = mongoose_1.default.Types.ObjectId;
+    if (!ObjectId.isValid(id)) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
     const idObject = new ObjectId(id);
     const userId = new ObjectId(user._id);
     const listDisplay = yield listModel_1.default.aggregate([
@@ -181,22 +184,39 @@ const changeListTitle = (0, express_async_handler_1.default)((req, res, next) =>
     const user = req.user;
     const { title } = req.body;
     const { id } = req.params;
-    const list = yield listModel_1.default.findById(id);
-    if (!list) {
+    if (!title) {
+        res.status(400);
+        throw new Error('Title is Required');
+    }
+    const ObjectId = mongoose_1.default.Types.ObjectId;
+    if (!ObjectId.isValid(id)) {
         res.status(404);
         throw new Error('List Not Found');
     }
-    let found = false;
-    list.users.forEach((listUser) => {
-        if (listUser.toString() ===
-            user._id.toString()) {
-            found = true;
+    const idObject = new ObjectId(id);
+    const lists = yield listModel_1.default.aggregate([
+        { $match: { _id: idObject } },
+        {
+            $addFields: {
+                found: {
+                    $in: [user._id, '$users']
+                }
+            }
+        },
+        {
+            $match: { found: true }
+        },
+        {
+            $project: {
+                found: 0
+            }
         }
-    });
-    if (!found) {
-        res.status(403);
-        throw new Error('Not Authorized');
+    ]);
+    if (!lists || lists.length === 0) {
+        res.status(404);
+        throw new Error('List Not Found');
     }
+    const list = lists[0];
     list.title = title;
     yield list.save();
     res.status(200).json({
@@ -252,6 +272,18 @@ const createListItemFromItemAndAddToList = (itemContext, list) => __awaiter(void
     });
     list.items.push(listItem._id);
 });
+const createListItemFromItemAndDataAndAddToList = (itemContext, list, unit, amount) => __awaiter(void 0, void 0, void 0, function* () {
+    const listItem = yield listItemModel_1.default.create({
+        name: itemContext.name,
+        description: itemContext.description,
+        unit,
+        amount,
+        category: itemContext.category,
+        list: list._id,
+        img: itemContext.img,
+    });
+    list.items.push(listItem._id);
+});
 const addList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { title, defaultItems, prevListItems } = req.body;
@@ -259,10 +291,7 @@ const addList = (0, express_async_handler_1.default)((req, res, next) => __await
         res.status(400);
         throw new Error('Title is Required');
     }
-    let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
-    while (yield listModel_1.default.findOne({ token: generatedToken })) {
-        generatedToken = crypto_1.default.randomBytes(26).toString('hex');
-    }
+    let generatedToken = (0, uuid_1.v4)();
     const list = yield listModel_1.default.create({
         title,
         users: [user._id],
@@ -350,22 +379,35 @@ const addNewItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('Name is Required');
     }
     const { id } = req.params;
-    const list = yield listModel_1.default.findById(id);
-    if (!list) {
+    const ObjectId = mongoose_1.default.Types.ObjectId;
+    if (!ObjectId.isValid(id)) {
         res.status(404);
         throw new Error('List Not Found');
     }
-    let found = false;
-    list.users.forEach((listUser) => {
-        if (listUser.toString() ===
-            user._id.toString()) {
-            found = true;
+    const idObject = new ObjectId(id);
+    const lists = yield listModel_1.default.aggregate([
+        { $match: { _id: idObject } },
+        {
+            $addFields: {
+                found: {
+                    $in: [user._id, '$users']
+                }
+            }
+        },
+        {
+            $match: { found: true }
+        },
+        {
+            $project: {
+                found: 0
+            }
         }
-    });
-    if (!found) {
-        res.status(403);
-        throw new Error('Not Authorized');
+    ]);
+    if (!lists || lists.length === 0) {
+        res.status(404);
+        throw new Error('List Not Found');
     }
+    const list = lists[0];
     let listItem, item;
     if (saveItem) {
         item = yield createItem(name, description, unit, category, user._id, req.file);
@@ -386,22 +428,35 @@ const addExistingItem = (0, express_async_handler_1.default)((req, res, next) =>
     const user = req.user;
     const { amount, unit } = req.body;
     const { id, item } = req.params;
-    const list = yield listModel_1.default.findById(id);
-    if (!list) {
+    const ObjectId = mongoose_1.default.Types.ObjectId;
+    if (!ObjectId.isValid(id)) {
         res.status(404);
         throw new Error('List Not Found');
     }
-    let found = false;
-    list.users.forEach((listUser) => {
-        if (listUser.toString() ===
-            user._id.toString()) {
-            found = true;
+    const idObject = new ObjectId(id);
+    const lists = yield listModel_1.default.aggregate([
+        { $match: { _id: idObject } },
+        {
+            $addFields: {
+                found: {
+                    $in: [user._id, '$users']
+                }
+            }
+        },
+        {
+            $match: { found: true }
+        },
+        {
+            $project: {
+                found: 0
+            }
         }
-    });
-    if (!found) {
-        res.status(403);
-        throw new Error('Not Authorized');
+    ]);
+    if (!lists || lists.length === 0) {
+        res.status(404);
+        throw new Error('List Not Found');
     }
+    const list = lists[0];
     const ItemContext = yield itemModel_1.default.findById(item);
     if (!ItemContext) {
         res.status(404);
@@ -424,8 +479,8 @@ const addExistingItem = (0, express_async_handler_1.default)((req, res, next) =>
     });
 }));
 exports.addExistingItem = addExistingItem;
-const checkListAndItem = (listId, itemId, res, userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const list = yield listModel_1.default.findById(listId);
+const checkList = (id, res, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const list = yield listModel_1.default.findById(id);
     if (!list) {
         res.status(404);
         throw new Error('List Not Found');
@@ -441,11 +496,21 @@ const checkListAndItem = (listId, itemId, res, userId) => __awaiter(void 0, void
         res.status(403);
         throw new Error('Not Authorized');
     }
-    const listItem = yield listItemModel_1.default.findById(itemId);
+    return list;
+});
+const checkListItem = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const listItem = yield listItemModel_1.default.findById(id);
     if (!listItem) {
         res.status(404);
         throw new Error('Item Not Found');
     }
+    return listItem;
+});
+const checkListAndItem = (listId, itemId, res, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const [list, listItem] = yield Promise.all([
+        checkList(listId, res, userId),
+        checkListItem(itemId, res)
+    ]);
     return { list, listItem };
 });
 const sendToDeleted = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -453,10 +518,7 @@ const sendToDeleted = (0, express_async_handler_1.default)((req, res, next) => _
     const { id, item } = req.params;
     const { list, listItem } = yield checkListAndItem(id, item, res, user._id);
     list.items = list.items.filter((listItem) => listItem.toString() !== item.toString());
-    list.deletedItems = [
-        ...list.deletedItems,
-        item,
-    ];
+    list.deletedItems.push(item);
     yield list.save();
     res.status(200).json({
         success: true,
@@ -469,10 +531,7 @@ const sendToBought = (0, express_async_handler_1.default)((req, res, next) => __
     const { id, item } = req.params;
     const { list, listItem } = yield checkListAndItem(id, item, res, user._id);
     list.items = list.items.filter((listItem) => listItem.toString() !== item.toString());
-    list.boughtItems = [
-        ...list.boughtItems,
-        item,
-    ];
+    list.boughtItems.push(item);
     yield list.save();
     res.status(200).json({
         success: true,
@@ -485,10 +544,7 @@ const restoreFromDeleted = (0, express_async_handler_1.default)((req, res, next)
     const { id, item } = req.params;
     const { list, listItem } = yield checkListAndItem(id, item, res, user._id);
     list.deletedItems = list.deletedItems.filter((listItem) => listItem.toString() !== item.toString());
-    list.items = [
-        ...list.items,
-        item,
-    ];
+    list.items.push(item);
     yield list.save();
     res.status(200).json({
         success: true,
@@ -501,10 +557,7 @@ const restoreFromBought = (0, express_async_handler_1.default)((req, res, next) 
     const { id, item } = req.params;
     const { list, listItem } = yield checkListAndItem(id, item, res, user._id);
     list.boughtItems = list.boughtItems.filter((listItem) => listItem.toString() !== item.toString());
-    list.items = [
-        ...list.items,
-        item,
-    ];
+    list.items.push(item);
     yield list.save();
     res.status(200).json({
         success: true,
@@ -537,23 +590,16 @@ const addBundleItems = (0, express_async_handler_1.default)((req, res, next) => 
         res.status(404);
         throw new Error('Bundle Not Found');
     }
+    const promises = [];
     for (let i = 0; i < bundleContext.items.length; i++) {
         const item = bundleContext.items[i];
         const info = amounts.find((a) => a.id === item._id.toString());
-        const listItem = yield listItemModel_1.default.create({
-            name: item.name,
-            description: item.description,
-            unit: info.unit,
-            amount: info.amount,
-            category: item.category,
-            list: list._id,
-            img: item.img,
-        });
-        list.items = [
-            ...list.items,
-            listItem._id,
-        ];
+        if (!info) {
+            continue;
+        }
+        promises.push(createListItemFromItemAndDataAndAddToList(item, list, info.unit, info.amount));
     }
+    yield Promise.all(promises);
     yield list.save();
     res.status(200).json({
         success: true,
@@ -572,10 +618,7 @@ const deleteForAll = (0, express_async_handler_1.default)((req, res, next) => __
         res.status(403);
         throw new Error('Not Authorized');
     }
-    let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
-    while (yield listModel_1.default.findOne({ token: generatedToken })) {
-        generatedToken = crypto_1.default.randomBytes(26).toString('hex');
-    }
+    let generatedToken = (0, uuid_1.v4)();
     list.users = [];
     list.deletedUsers = [user._id];
     list.token = generatedToken;
@@ -615,10 +658,7 @@ const deleteForMe = (0, express_async_handler_1.default)((req, res, next) => __a
     }
     list.users = list.users.filter((listUser) => listUser.toString() !==
         user._id.toString());
-    list.deletedUsers = [
-        ...list.deletedUsers,
-        user._id,
-    ];
+    list.deletedUsers.push(user._id);
     yield list.save();
     res.status(200).json({
         success: true,
@@ -648,7 +688,7 @@ const restoreList = (0, express_async_handler_1.default)((req, res, next) => __a
         user._id.toString())) {
         list.deletedUsers = list.deletedUsers.filter((userId) => userId.toString() !==
             user._id.toString());
-        list.users = [...list.users, user._id];
+        list.users.push(user._id);
         yield list.save();
         res.status(200).json({
             success: true,
@@ -672,6 +712,42 @@ const deleteListReceipts = (listId) => __awaiter(void 0, void 0, void 0, functio
     promises.push(receiptModel_1.default.deleteMany({ list: listId }));
     yield Promise.all(promises);
 });
+const deleteList = (list, owner, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const promises = [];
+    if (owner) {
+        // full delete
+        for (let i = 0; i < list.items.length; i++) {
+            const item = list.items[i];
+            if (item.img) {
+                promises.push((0, functions_1.deleteImage)(item.img));
+            }
+            promises.push(listItemModel_1.default.deleteOne({ _id: item._id }));
+        }
+        for (let i = 0; i < list.deletedItems.length; i++) {
+            const item = list.deletedItems[i];
+            if (item.img) {
+                promises.push((0, functions_1.deleteImage)(item.img));
+            }
+            promises.push(listItemModel_1.default.deleteOne({ _id: item._id }));
+        }
+        for (let i = 0; i < list.boughtItems.length; i++) {
+            const item = list.boughtItems[i];
+            if (item.img) {
+                promises.push((0, functions_1.deleteImage)(item.img));
+            }
+            promises.push(listItemModel_1.default.deleteOne({ _id: item._id }));
+        }
+        promises.push(deleteListReceipts(list._id));
+        promises.push(listModel_1.default.deleteOne({ _id: list._id }));
+        yield Promise.all(promises);
+    }
+    else {
+        // delete user
+        list.deletedUsers = list.deletedUsers.filter((listUser) => listUser.toString() !==
+            userId.toString());
+        yield list.save();
+    }
+});
 const deletePermanently = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { id } = req.params;
@@ -689,38 +765,7 @@ const deletePermanently = (0, express_async_handler_1.default)((req, res, next) 
     if (list.owner.toString() === user._id.toString()) {
         owner = true;
     }
-    if (owner) {
-        // full delete
-        for (let i = 0; i < list.items.length; i++) {
-            const item = list.items[i];
-            if (item.img) {
-                (0, functions_1.deleteImage)(item.img);
-            }
-            listItemModel_1.default.deleteOne({ _id: item._id });
-        }
-        for (let i = 0; i < list.deletedItems.length; i++) {
-            const item = list.deletedItems[i];
-            if (item.img) {
-                (0, functions_1.deleteImage)(item.img);
-            }
-            listItemModel_1.default.deleteOne({ _id: item._id });
-        }
-        for (let i = 0; i < list.boughtItems.length; i++) {
-            const item = list.boughtItems[i];
-            if (item.img) {
-                (0, functions_1.deleteImage)(item.img);
-            }
-            listItemModel_1.default.deleteOne({ _id: item._id });
-        }
-        deleteListReceipts(list._id);
-        yield listModel_1.default.deleteOne({ _id: list._id });
-    }
-    else {
-        // remove user
-        list.deletedUsers = list.deletedUsers.filter((listUser) => listUser.toString() !==
-            user._id.toString());
-        yield list.save();
-    }
+    yield deleteList(list, owner, user._id);
     res.status(200).json({
         success: true,
     });
@@ -729,49 +774,16 @@ exports.deletePermanently = deletePermanently;
 const deleteAllListsUserDeleted = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const lists = yield listModel_1.default.find({ deletedUsers: user._id }).populate('items deletedItems boughtItems');
+    const promises = [];
     for (let i = 0; i < lists.length; i++) {
         const list = lists[i];
         let owner = false;
         if (list.owner.toString() === user._id.toString()) {
             owner = true;
         }
-        if (owner) {
-            // full delete
-            for (let i = 0; i < list.items.length; i++) {
-                const item = list.items[i];
-                if (item.img) {
-                    (0, functions_1.deleteImage)(item.img);
-                }
-                listItemModel_1.default.deleteOne({ _id: item._id });
-            }
-            for (let i = 0; i < list.deletedItems.length; i++) {
-                const item = list.deletedItems[i];
-                if (item.img) {
-                    (0, functions_1.deleteImage)(item.img);
-                }
-                listItemModel_1.default.deleteOne({ _id: item._id });
-            }
-            for (let i = 0; i < list.boughtItems.length; i++) {
-                const item = list.boughtItems[i];
-                if (item.img) {
-                    (0, functions_1.deleteImage)(item.img);
-                }
-                listItemModel_1.default.deleteOne({ _id: item._id });
-            }
-            deleteListReceipts(list._id);
-            yield listModel_1.default.deleteOne({ _id: list._id });
-        }
-        else {
-            // remove user
-            list.users = list.users.filter((listUser) => listUser.toString() !==
-                user._id.toString());
-            list.deletedUsers = [
-                ...list.deletedUsers,
-                user._id,
-            ];
-            yield list.save();
-        }
+        promises.push(deleteList(list, owner, user._id));
     }
+    yield Promise.all(promises);
     res.status(200).json({
         success: true,
     });
@@ -780,10 +792,7 @@ exports.deleteAllListsUserDeleted = deleteAllListsUserDeleted;
 const createShareToken = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const lists = yield listModel_1.default.find();
     for (let i = 0; i < lists.length; i++) {
-        let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
-        while (yield listModel_1.default.findOne({ token: generatedToken })) {
-            generatedToken = crypto_1.default.randomBytes(26).toString('hex');
-        }
+        let generatedToken = (0, uuid_1.v4)();
         const list = lists[i];
         list.token = generatedToken;
         yield list.save();
@@ -847,7 +856,7 @@ const shareList = (0, express_async_handler_1.default)((req, res, next) => __awa
         res.status(400);
         throw new Error('Already in List');
     }
-    list.users = [...list.users, user._id];
+    list.users.push(user._id);
     yield list.save();
     res.status(200).json({
         success: true,
@@ -874,10 +883,7 @@ const resetListShareToken = (0, express_async_handler_1.default)((req, res, next
         res.status(403);
         throw new Error('Not Authorized');
     }
-    let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
-    while (yield listModel_1.default.findOne({ token: generatedToken })) {
-        generatedToken = crypto_1.default.randomBytes(26).toString('hex');
-    }
+    let generatedToken = (0, uuid_1.v4)();
     list.token = generatedToken;
     yield list.save();
     res.status(200).json({

@@ -24,6 +24,7 @@ const cloud_1 = require("../config/cloud");
 const google_1 = __importDefault(require("../config/google"));
 const axios_1 = __importDefault(require("axios"));
 const crypto_1 = __importDefault(require("crypto"));
+const uuid_1 = require("uuid");
 const generateToken = (id) => {
     return jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: '30d',
@@ -227,10 +228,7 @@ const resetPasswordEmail = (0, express_async_handler_1.default)((req, res, next)
         res.status(400);
         throw new Error('User not found');
     }
-    let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
-    if (yield userModel_1.default.find({ resetPasswordToken: generatedToken })) {
-        generatedToken = crypto_1.default.randomBytes(26).toString('hex');
-    }
+    let generatedToken = (0, uuid_1.v4)();
     user.resetPasswordToken = generatedToken;
     yield user.save();
     let success;

@@ -101,6 +101,17 @@ const deleteBundle = (0, express_async_handler_1.default)((req, res, next) => __
     });
 }));
 exports.deleteBundle = deleteBundle;
+const createItemFromItemAndAddToList = (item, items, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const newItem = yield itemModel_1.default.create({
+        name: item.name,
+        description: item.description,
+        unit: item.unit,
+        category: item.category,
+        img: item.img,
+        user: userId
+    });
+    items.push(newItem._id);
+});
 const shareBundle = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { id } = req.params;
@@ -110,18 +121,12 @@ const shareBundle = (0, express_async_handler_1.default)((req, res, next) => __a
         throw new Error('Bundle Not Found');
     }
     let items = [];
+    const promises = [];
     for (let i = 0; i < bundle.items.length; i++) {
         const itemContext = bundle.items[i];
-        const item = yield itemModel_1.default.create({
-            name: itemContext.name,
-            description: itemContext.description,
-            unit: itemContext.unit,
-            category: itemContext.category,
-            img: itemContext.img,
-            user: user._id
-        });
-        items.push(item._id);
+        promises.push(createItemFromItemAndAddToList(itemContext, items, user._id));
     }
+    yield Promise.all(promises);
     const newBundle = yield bundleModel_1.default.create({
         title: bundle.title,
         description: bundle.description,
