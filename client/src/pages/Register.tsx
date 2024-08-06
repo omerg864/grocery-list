@@ -13,6 +13,7 @@ import Loading from '../components/Loading/Loading';
 import { email_regex, password_regex } from '../utils/regex';
 import { toast } from 'react-toastify';
 import { post } from '../utils/apiRequest';
+import { motion } from 'framer-motion';
 
 function Register() {
   const { t } = useTranslation('translation', { keyPrefix: 'Register' });
@@ -62,7 +63,7 @@ function Register() {
   return (
     <main>
     <Header title={t('register')} buttonClick={goToLogin} buttonTitle={t('haveAccount')} endIcon={<CiLogin size={"1.5rem"} color='black'/>}  />
-    <form className='list-form' onSubmit={register}>
+    <motion.form animate={{scale: [0, 1]}} transition={{ duration: 0.4}}  className='list-form' onSubmit={register}>
       <ThemeProvider theme={formTheme(outerTheme)}>
         <TextField name="f_name" required  color='success' className='white-color-input' fullWidth onChange={onChange} value={form.f_name} label={t('firstName')} variant="outlined" />
         <TextField name="l_name" required color='success' className='white-color-input' fullWidth onChange={onChange} value={form.l_name} label={t('lastName')} variant="outlined" />
@@ -72,7 +73,7 @@ function Register() {
         <TextField name="password2" required type="password" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.password2} label={t('confirmPassword')} variant="outlined" />
         <GlassButton endIcon={<FiUserPlus size={"1.5rem"} color='white'/>} text={t('register')} style={{width: "100%", color: "white"}} type='submit'/>
       </ThemeProvider>
-    </form>
+    </motion.form>
   </main>
   )
 }

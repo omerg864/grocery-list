@@ -8,6 +8,7 @@ import { ThemeProvider, useTheme } from '@mui/material/styles';
 import FormTheme from '../../themes/formTheme';
 import Lists from '../../interface/ListsInterface';
 import { formatDate } from '../../utils/functions';
+import { motion } from 'framer-motion';
 
 interface ListFormProps {
     form: ListFormInterface;
@@ -27,7 +28,8 @@ function ListForm(props: ListFormProps) {
     const outerTheme = useTheme();
 
   return (
-    <form className='list-form' onSubmit={props.submit} ref={props.formRef} >
+    <motion.form initial={{ opacity: 0}} animate={{ opacity: 1 }}
+    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} className='list-form' onSubmit={props.submit} ref={props.formRef} >
         <ThemeProvider theme={FormTheme(outerTheme)}>
             <TextField required name="title" color='success' className='white-color-input' fullWidth onChange={props.onChange} value={props.form.title} label={t('title')} variant="outlined" />
             <FormControl fullWidth>
@@ -54,7 +56,7 @@ function ListForm(props: ListFormProps) {
             <small>{t('prevListItemExplanation')}</small>
             <FormControlLabel control={<Checkbox name="defaultItems" onChange={props.onChecked} checked={props.form.defaultItems} {...labelDefault} color="success" icon={<CiCircleMinus size={'1.5rem'} color='white' />} checkedIcon={<IoAddCircleSharp size={'1.5rem'} />} />} label={t("defaultItems")} /> 
         </ThemeProvider>
-    </form>
+    </motion.form>
   )
 }
 

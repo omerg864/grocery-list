@@ -14,6 +14,8 @@ import { getMinutesBetweenDates } from "../utils/functions";
 import { get, post } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
 import { SelectChangeEvent } from "@mui/material";
+import { motion } from "framer-motion";
+import useWindowDimensions from "../hooks/useWindowDimensions";
 
 
 
@@ -25,6 +27,7 @@ function ItemAdd() {
   const [itemState, setItemState] = useRecoilState<ListItem>(itemAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const cookies = new Cookies();
+  const dimensions = useWindowDimensions();
 
   const back = () => {
     setItemState({
@@ -148,10 +151,12 @@ function ItemAdd() {
   return (
     <main>
         <Header title={itemState.name} onBack={back}/>
-        <form className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}} onSubmit={addItem}>
+        <motion.form initial={{ y: dimensions.height + 500}} animate={{ y: 0 }}
+    exit={{ y: 0 }}
+    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}} onSubmit={addItem}>
           <ItemDetails onSelectionChange={onSelectionChange} amountEdit={true} enableAmount={true} onImgIconClick={onImgIconClick} addCounter={addCounter} removeCounter={removeCounter} onChange={onChangeAmount}  disabled={true} item={itemState} />
           <GlassButton endIcon={<MdAdd size={"1.5rem"} color='white'/>} text={t('add')} style={{width: "100%", color: "white"}} type="submit"/>
-        </form>
+        </motion.form>
     </main>
   )
 }

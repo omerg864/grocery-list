@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import Item from "../../interface/ItemInterface.ts";
 import ItemView from "../ItemView/ItemView.tsx";
 import './ItemsList.css';
@@ -6,6 +6,8 @@ import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField
 import Counter from "../Counter/Counter.tsx";
 import { useTranslation } from "react-i18next";
 import ListItem from "../../interface/ListItemInterface.ts";
+import { motion } from "framer-motion";
+import useWindowDimensions from "../../hooks/useWindowDimensions.ts";
 
 
 interface ItemsListProps {
@@ -28,6 +30,7 @@ function ItemsList(props: ItemsListProps) {
 
     const { t } = useTranslation('translation', { keyPrefix: 'ItemsList' });
     const genericT = useTranslation('translation', { keyPrefix: 'Generic' }).t;
+    const dimensions = useWindowDimensions();
 
     const units = ['pc', 'kg', 'g', 'l', 'ml', ''];
 
@@ -37,8 +40,9 @@ function ItemsList(props: ItemsListProps) {
         {props.items.length === 0 ? <div style={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}> 
         <img alt="No bundles" style={{width: '60%'}} src="/shopping-cart-icon.png" />
         <Typography variant="h5">{genericT('noItems')}</Typography>
-        </div> : props.items.map((item: Item | ListItem) => (
-          <Fragment key={item._id} >
+        </div> : props.items.map((item: Item | ListItem, index) => (
+          <motion.div initial={{ x: dimensions.width + 200 + index * 80}} animate={{ x: 0 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} key={item._id} >
           <ItemView rightIcon={props.rightIcon} leftIcon={props.leftIcon} onItemClicked={props.onItemClicked} open={open} setOpen={setOpen} item={item} onSwipeRight={props.onSwipeRight} onSwipeLeft={props.onSwipeLeft}/>
           {props.amounts && <div style={{display: 'flex', gap: '10px', alignItems: 'center', padding: '0.5rem 0'}}>
             {item.unit && (item.unit === 'pc' ? <Counter handleChange={(e) => props.onAmountChanged!(item._id, e.target.value)} addCounter={() => props.addCounter!(item._id)} removeCounter={() => props.removeCounter!(item._id)} count={props.amounts?.find(obj => obj.id === item._id)!.amount!} />: 
@@ -59,7 +63,7 @@ function ItemsList(props: ItemsListProps) {
                 </Select>
             </FormControl>
             </div>}
-          </Fragment>
+          </motion.div>
         ))}
     </div>
   )

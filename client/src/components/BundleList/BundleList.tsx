@@ -23,8 +23,8 @@ function BundleList(props: BundleListProps) {
       {props.bundles.length === 0 ? <div style={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}> 
         <img alt="No bundles" style={{width: '60%'}} src="/shopping-cart-icon.png" />
         <Typography variant="h5">{t('noBundles')}</Typography>
-        </div> : props.bundles.map(bundle => (
-        <BundleViewList onItemClick={props.onItemClick} onSwipeRight={props.onSwipeRight} open={open} setOpen={setOpen} key={bundle._id} bundle={bundle} />
+        </div> : props.bundles.map((bundle, index) => (
+        <BundleViewList index={index} onItemClick={props.onItemClick} onSwipeRight={props.onSwipeRight} open={open} setOpen={setOpen} key={bundle._id} bundle={bundle} />
       ))}
     </div>
   )

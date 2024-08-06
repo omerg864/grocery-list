@@ -25,6 +25,9 @@ main {
   display: flex;
   flex-direction: column;
   padding-bottom: 56px;
+  overflow-x: hidden;
+  min-height: calc(100dvh - 56px);
+  overflow-y: hidden;
 }
 
 #root {

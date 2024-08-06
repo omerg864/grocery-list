@@ -13,6 +13,8 @@ import { itemAtom } from "../recoil/atoms";
 import { get, put } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
 import ListItem from "../interface/ListItemInterface";
+import { motion } from "framer-motion";
+import useWindowDimensions from "../hooks/useWindowDimensions";
 
 
 
@@ -33,6 +35,7 @@ function ItemDisplay() {
   const [_, setItem] = useRecoilState<Item | ListItem>(itemAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const cookies = new Cookies();
+  const dimensions = useWindowDimensions();
 
 
   let back = {}
@@ -143,9 +146,11 @@ function ItemDisplay() {
   return (
     <main>
         <Header title={itemState.name} {...back} {...side}/>
-        <div className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}}>
+        <motion.div initial={{ y: dimensions.height + 500}} animate={{ y: 0 }}
+    exit={{ y: 0 }}
+    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}}>
           <ItemDetails onDefaultIconClick={onDefaultIconClick} amountEdit={list} onImgIconClick={onImgIconClick} disabled={true} item={itemState} />
-        </div>
+        </motion.div>
     </main>
   )
 }

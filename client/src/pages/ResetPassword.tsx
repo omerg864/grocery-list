@@ -11,6 +11,7 @@ import { MdLockReset } from "react-icons/md";
 import { post } from '../utils/apiRequest';
 import { toast } from 'react-toastify';
 import { password_regex } from '../utils/regex';
+import { motion } from 'framer-motion';
 
 function ResetPassword() {
   const { t } = useTranslation('translation', { keyPrefix: 'ResetPassword' });
@@ -49,14 +50,14 @@ function ResetPassword() {
   return (
     <main>
       <Header title={t('resetPassword')} />
-      <form className='list-form' onSubmit={resetPassword}>
+      <motion.form animate={{scale: [0, 1]}} transition={{ duration: 0.4}}  className='list-form' onSubmit={resetPassword}>
         <ThemeProvider theme={formTheme(outerTheme)}>
           <TextField name="password" required type="password" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.password} label={t('password')} variant="outlined" />
           <PasswordRules color='white'/>
           <TextField name="password2" required type="password" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.password2} label={t('confirmPassword')} variant="outlined" />
           <GlassButton endIcon={<MdLockReset size={"1.5rem"} color='white'/>} text={t('resetPassword')} style={{width: "100%", color: "white"}} type='submit'/>
         </ThemeProvider>
-      </form>
+      </motion.form>
     </main>
   )
 }

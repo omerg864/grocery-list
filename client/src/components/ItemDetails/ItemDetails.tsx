@@ -12,6 +12,7 @@ import ListItem, { ListItemNew} from "../../interface/ListItemInterface";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import { MdOutlineStarBorder } from "react-icons/md";
 import { MdOutlineStar } from "react-icons/md";
+import { motion } from "framer-motion";
 
 
 
@@ -78,7 +79,7 @@ function ItemDetails(props: ItemDetailsProps) {
   return (
     <Fragment>
         <div className="item-display-img-container">
-            <img onClick={onImgClick} className='item-display-img' src={props.img ? props.img : (props.item.img ? props.item.img : '/item.png')} alt={props.item.name} />
+            <motion.img animate={{scale: [0, 1]}} transition={{ delay: 0.8}}  onClick={onImgClick} className='item-display-img' src={props.img ? props.img : (props.item.img ? props.item.img : '/item.png')} alt={props.item.name} />
             {!props.share && <IconButton onClick={props.onImgIconClick} style={{
                 position: 'absolute',
                 bottom: 'calc(50% - 1rem)',

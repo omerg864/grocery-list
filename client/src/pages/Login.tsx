@@ -15,6 +15,7 @@ import { post } from "../utils/apiRequest";
 import { toast } from "react-toastify";
 import GoogleLogin from "../components/GoogleLogin/GoogleLogin";
 import i18next from 'i18next';
+import { motion } from "framer-motion";
 
 
 interface LoginProps {
@@ -93,14 +94,14 @@ function Login(props: LoginProps) {
   return (
     <main>
       <Header title={t('login')} buttonClick={goToRegister} buttonTitle={t('noAccount')} endIcon={<FiUserPlus size={"1.5rem"} color='black'/>} sideButton={<Tooltip title={t('forgotPassword')}><IconButton onClick={goToForgotPassword}><MdLockReset color="white"/></IconButton></Tooltip>} />
-      <form className='list-form' onSubmit={login} >
+      <motion.form animate={{scale: [0, 1]}} transition={{ duration: 0.4}} className='list-form' onSubmit={login} >
       <ThemeProvider theme={formTheme(outerTheme)}>
           <TextField name="email" required type="email" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.email} label={t('email')} variant="outlined" />
           <TextField name="password" required type="password" color='success' className='white-color-input' fullWidth onChange={onChange} value={form.password} label={t('password')} variant="outlined" />
           <GlassButton endIcon={<CiLogin size={"1.5rem"} color='white'/>} text={t('login')} style={{width: "100%", color: "white"}} type="submit"/>
           <GoogleLogin authResponse={responseGoogle}/>
       </ThemeProvider>
-    </form>
+    </motion.form>
     </main>
   )
 }

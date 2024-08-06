@@ -4,6 +4,7 @@ import './ReceiptsList.css';
 import { FaTrash } from "react-icons/fa";
 import { formatDate } from "../../utils/functions";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
+import { motion } from "framer-motion";
 
 interface ReceiptsListProps {
     receipts: Receipt[];
@@ -45,7 +46,9 @@ function ReceiptsList(props: ReceiptsListProps) {
     }
 
   return (
-    <div className="receipts-list">
+    <motion.div initial={{ y: dimensions.height + 500}} animate={{ y: 0 }}
+    exit={{ y: 0 }}
+    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} className="receipts-list">
         {props.receipts.map((receipt) => (
             <>{receipt.img ? <div key={receipt._id} className="receipt">
                 <img className="receipt-img" onClick={onImgClick} src={receipt.img} alt="receipt" />
@@ -73,7 +76,7 @@ function ReceiptsList(props: ReceiptsListProps) {
                 </div>
                 </div>}</>
         ))}
-    </div>
+    </motion.div>
   )
 }
 

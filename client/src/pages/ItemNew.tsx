@@ -20,6 +20,8 @@ import Lists from "../interface/ListsInterface";
 import { itemsDataAtom, listsState } from "../recoil/atoms";
 import { getMinutesBetweenDates } from "../utils/functions";
 import MemoizedImage from "../components/MemoizedImage/MemoizedImage";
+import { motion } from "framer-motion";
+import useWindowDimensions from "../hooks/useWindowDimensions";
 
 
 
@@ -41,6 +43,7 @@ function ItemNew() {
   const [categories, setCategories] = useState<string[]>(items.categories);
   const [img, setImg] = useState<File | null>(null);
   const cookies = new Cookies();
+  const dimensions = useWindowDimensions();
 
   const outerTheme = useTheme();
 
@@ -199,14 +202,16 @@ const getItems = async () => {
   return (
     <main>
         <Header title={t('newItem')} {...back} />
-        <form className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}} onSubmit={createItem}>
+        <motion.form initial={{ y: dimensions.height + 500}} animate={{ y: 0 }}
+    exit={{ y: 0 }}
+    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} className="list-form" style={{position: 'relative', paddingTop: '5.5rem'}} onSubmit={createItem}>
           <ThemeProvider theme={formTheme(outerTheme)}>
             <TextField required name="name" color='success' className='white-color-input' fullWidth value={itemState.name} label={t('name')} onChange={onChange} variant="outlined" />
           </ThemeProvider>
           <ItemDetails categories={categories} onAutoCompleteChange={onAutoCompleteChange} amountEdit={id !== undefined} onImgIconClick={onImgIconClick} img={itemState.img} onSelectionChange={onSelectionChange} onChange={onChange} addCounter={addCounter} removeCounter={removeCounter} item={itemState} />
           {id && <FormControlLabel control={<Checkbox name="saveItem" onChange={onChecked} checked={itemState.saveItem} {...label} color="success" icon={<CiCircleMinus size={'1.5rem'} color='white' />} checkedIcon={<IoAddCircleSharp size={'1.5rem'} />} />} label={t("saveItem")} />}
           <GlassButton endIcon={<IoMdAdd size={"1.5rem"} color='white'/>} text={t('create')} style={{width: "100%", color: "white"}} type="submit"/>
-        </form>
+        </motion.form>
     </main>
   )
 }

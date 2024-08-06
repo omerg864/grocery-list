@@ -15,6 +15,7 @@ import Cookies from 'universal-cookie';
 import { useNavigate } from 'react-router-dom';
 import { get } from '../utils/apiRequest';
 import PreferencesInterface from '../interface/PreferencesInterface';
+import { motion } from 'framer-motion';
 
 
 
@@ -86,7 +87,8 @@ function Profile(props: ProfileProps) {
   return (
     <main>
     <Header title={title()} {...back} buttonTitle={t('logout')} endIcon={<CiLogout size={"1.5rem"} color='black'/>} buttonClick={logout}   />
-    <div className='list-form' >
+    <motion.div initial={{ opacity: 0}} animate={{ opacity: 1 }}
+    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} className='list-form' >
       <ThemeProvider theme={listTheme(outerTheme)}>
       {tab === 0 && <List>
             {tabs.map((tab, index) => (
@@ -104,7 +106,7 @@ function Profile(props: ProfileProps) {
         {tab === 2 && <PasswordChange setTab={setTab} setIsLoading={setIsLoading} />}
         {tab === 3 && <Preferences preferences={preferences} setPreferences={setPreferences} setTab={setTab} setIsLoading={setIsLoading} />}
       </ThemeProvider>
-  </div>
+  </motion.div>
   </main>
   )
 }

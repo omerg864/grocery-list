@@ -11,6 +11,7 @@ import Loading from '../components/Loading/Loading';
 import { post } from '../utils/apiRequest';
 import { toast } from 'react-toastify';
 import { email_regex } from '../utils/regex';
+import { motion } from 'framer-motion';
 
 function ForgotPassword() {
     const { t } = useTranslation('translation', { keyPrefix: 'ForgotPassword' });
@@ -52,12 +53,12 @@ function ForgotPassword() {
   return (
     <main>
         <Header title={t('resetPasswordRequest')} buttonTitle={t('rememberPassword')} endIcon={<CiLogin size={"1.5rem"} color='black'/>} buttonClick={goToLogin} />
-        <form className='list-form' onSubmit={resetRequest}>
+        <motion.form animate={{scale: [0, 1]}} transition={{ duration: 0.4}} className='list-form' onSubmit={resetRequest}>
         <ThemeProvider theme={formTheme(outerTheme)}>
             <TextField name="email" required type="email" color='success' className='white-color-input' fullWidth onChange={onChange} value={email} label={t('email')} variant="outlined" />
             <GlassButton type='submit' endIcon={<MdLockReset size={"1.5rem"} color='white'/>} text={t('sendEmail')} style={{width: "100%", color: "white"}} />
         </ThemeProvider>
-        </form>
+        </motion.form>
     </main>
   )
 }
