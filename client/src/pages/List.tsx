@@ -205,8 +205,8 @@ function List() {
 
     const changeListTitle = async () => {
         setIsLoading(true);
-        await put(`/api/list/${list._id}`, { title: list.title }, (data) => {
-            setLists((prev) => prev.map((l) => l._id === list._id ? data.list : l));
+        await put(`/api/list/${list._id}`, { title: list.title }, (_) => {
+            setLists((prev) => prev.map((l) => l._id === list._id ? {...l, title: list.title} : l));
             setListName(list.title);
             closeTitleDialog();
         }, {
