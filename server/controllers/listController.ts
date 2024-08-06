@@ -189,35 +189,24 @@ const changeListTitle = asyncHandler(
 			res.status(400);
 			throw new Error('Title is Required');
 		}
-		const ObjectId = mongoose.Types.ObjectId;
-		if (!ObjectId.isValid(id)) {
+		const list = await List.findById(id);
+		if (!list) {
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		const idObject = new ObjectId(id);
-		const lists: ListDocument[] = await List.aggregate([
-			{ $match: { _id: idObject } },
-			{
-				$addFields: {
-				found: {
-					$in: [user._id, '$users']
-				}
-				}
-			},
-			{
-				$match: { found: true }
-			},
-			{
-				$project: {
-					found: 0
-				}
+		let found = false;
+		list.users.forEach((listUser) => {
+			if (
+				(listUser as ObjectId).toString() ===
+				(user._id as ObjectId).toString()
+			) {
+				found = true;
 			}
-		]);
-		if (!lists || lists.length === 0) {
-			res.status(404);
-			throw new Error('List Not Found');
+		});
+		if (!found) {
+			res.status(403);
+			throw new Error('Not Authorized');
 		}
-		const list: ListDocument = lists[0];
 		list.title = title;
 		await list.save();
 		res.status(200).json({
@@ -429,35 +418,24 @@ const addNewItem = asyncHandler(
 			throw new Error('Name is Required');
 		}
 		const { id } = req.params;
-		const ObjectId = mongoose.Types.ObjectId;
-		if (!ObjectId.isValid(id)) {
+		const list = await List.findById(id);
+		if (!list) {
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		const idObject = new ObjectId(id);
-		const lists: ListDocument[] = await List.aggregate([
-			{ $match: { _id: idObject } },
-			{
-				$addFields: {
-				found: {
-					$in: [user._id, '$users']
-				}
-				}
-			},
-			{
-				$match: { found: true }
-			},
-			{
-				$project: {
-					found: 0
-				}
+		let found = false;
+		list.users.forEach((listUser) => {
+			if (
+				(listUser as ObjectId).toString() ===
+				(user._id as ObjectId).toString()
+			) {
+				found = true;
 			}
-		]);
-		if (!lists || lists.length === 0) {
-			res.status(404);
-			throw new Error('List Not Found');
+		});
+		if (!found) {
+			res.status(403);
+			throw new Error('Not Authorized');
 		}
-		const list: ListDocument = lists[0];
 		let listItem, item;
 		if (saveItem) {
 			item = await createItem(
@@ -502,35 +480,24 @@ const addExistingItem = asyncHandler(
 		const user = (req as RequestWithUser).user;
 		const { amount, unit } = req.body;
 		const { id, item } = req.params;
-		const ObjectId = mongoose.Types.ObjectId;
-		if (!ObjectId.isValid(id)) {
+		const list = await List.findById(id);
+		if (!list) {
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		const idObject = new ObjectId(id);
-		const lists: ListDocument[] = await List.aggregate([
-			{ $match: { _id: idObject } },
-			{
-				$addFields: {
-				found: {
-					$in: [user._id, '$users']
-				}
-				}
-			},
-			{
-				$match: { found: true }
-			},
-			{
-				$project: {
-					found: 0
-				}
+		let found = false;
+		list.users.forEach((listUser) => {
+			if (
+				(listUser as ObjectId).toString() ===
+				(user._id as ObjectId).toString()
+			) {
+				found = true;
 			}
-		]);
-		if (!lists || lists.length === 0) {
-			res.status(404);
-			throw new Error('List Not Found');
+		});
+		if (!found) {
+			res.status(403);
+			throw new Error('Not Authorized');
 		}
-		const list: ListDocument = lists[0];
 		const ItemContext = await Item.findById(item);
 		if (!ItemContext) {
 			res.status(404);

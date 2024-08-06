@@ -188,35 +188,22 @@ const changeListTitle = (0, express_async_handler_1.default)((req, res, next) =>
         res.status(400);
         throw new Error('Title is Required');
     }
-    const ObjectId = mongoose_1.default.Types.ObjectId;
-    if (!ObjectId.isValid(id)) {
+    const list = yield listModel_1.default.findById(id);
+    if (!list) {
         res.status(404);
         throw new Error('List Not Found');
     }
-    const idObject = new ObjectId(id);
-    const lists = yield listModel_1.default.aggregate([
-        { $match: { _id: idObject } },
-        {
-            $addFields: {
-                found: {
-                    $in: [user._id, '$users']
-                }
-            }
-        },
-        {
-            $match: { found: true }
-        },
-        {
-            $project: {
-                found: 0
-            }
+    let found = false;
+    list.users.forEach((listUser) => {
+        if (listUser.toString() ===
+            user._id.toString()) {
+            found = true;
         }
-    ]);
-    if (!lists || lists.length === 0) {
-        res.status(404);
-        throw new Error('List Not Found');
+    });
+    if (!found) {
+        res.status(403);
+        throw new Error('Not Authorized');
     }
-    const list = lists[0];
     list.title = title;
     yield list.save();
     res.status(200).json({
@@ -379,35 +366,22 @@ const addNewItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('Name is Required');
     }
     const { id } = req.params;
-    const ObjectId = mongoose_1.default.Types.ObjectId;
-    if (!ObjectId.isValid(id)) {
+    const list = yield listModel_1.default.findById(id);
+    if (!list) {
         res.status(404);
         throw new Error('List Not Found');
     }
-    const idObject = new ObjectId(id);
-    const lists = yield listModel_1.default.aggregate([
-        { $match: { _id: idObject } },
-        {
-            $addFields: {
-                found: {
-                    $in: [user._id, '$users']
-                }
-            }
-        },
-        {
-            $match: { found: true }
-        },
-        {
-            $project: {
-                found: 0
-            }
+    let found = false;
+    list.users.forEach((listUser) => {
+        if (listUser.toString() ===
+            user._id.toString()) {
+            found = true;
         }
-    ]);
-    if (!lists || lists.length === 0) {
-        res.status(404);
-        throw new Error('List Not Found');
+    });
+    if (!found) {
+        res.status(403);
+        throw new Error('Not Authorized');
     }
-    const list = lists[0];
     let listItem, item;
     if (saveItem) {
         item = yield createItem(name, description, unit, category, user._id, req.file);
@@ -428,35 +402,22 @@ const addExistingItem = (0, express_async_handler_1.default)((req, res, next) =>
     const user = req.user;
     const { amount, unit } = req.body;
     const { id, item } = req.params;
-    const ObjectId = mongoose_1.default.Types.ObjectId;
-    if (!ObjectId.isValid(id)) {
+    const list = yield listModel_1.default.findById(id);
+    if (!list) {
         res.status(404);
         throw new Error('List Not Found');
     }
-    const idObject = new ObjectId(id);
-    const lists = yield listModel_1.default.aggregate([
-        { $match: { _id: idObject } },
-        {
-            $addFields: {
-                found: {
-                    $in: [user._id, '$users']
-                }
-            }
-        },
-        {
-            $match: { found: true }
-        },
-        {
-            $project: {
-                found: 0
-            }
+    let found = false;
+    list.users.forEach((listUser) => {
+        if (listUser.toString() ===
+            user._id.toString()) {
+            found = true;
         }
-    ]);
-    if (!lists || lists.length === 0) {
-        res.status(404);
-        throw new Error('List Not Found');
+    });
+    if (!found) {
+        res.status(403);
+        throw new Error('Not Authorized');
     }
-    const list = lists[0];
     const ItemContext = yield itemModel_1.default.findById(item);
     if (!ItemContext) {
         res.status(404);
