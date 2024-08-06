@@ -33,13 +33,13 @@ Super Cart is a full stack application developed with React and Express, both wr
 ### Mobile Views
 
 1. **Items Screen**
-   ![Items Screen](./screenshots/items.png)
+   ![Items Screen](./screenshots/items.PNG)
 
 2. **Bundles Screen**
-   ![Bundles Screen](./screenshots/bundles.png)
+   ![Bundles Screen](./screenshots/bundles.PNG)
 
 3. **List Screen**
-   ![List Screen](./screenshots/list.png)
+   ![List Screen](./screenshots/list.PNG)
 
 ## Installation
 
