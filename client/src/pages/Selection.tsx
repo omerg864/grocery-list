@@ -13,7 +13,6 @@ import { get } from '../utils/apiRequest';
 import Item from '../interface/ItemInterface';
 import MemoizedImage from '../components/MemoizedImage/MemoizedImage';
 import Bundle from '../interface/BundleInterface';
-import { BUNDLE_SELECTION_LIMIT, ITEM_SELECTION_LIMIT } from '../utils/requestsConst';
 import ListItem from '../interface/ListItemInterface';
 import { getMinutesBetweenDates } from '../utils/functions';
 
@@ -51,19 +50,19 @@ function Selection() {
     }
 
     const getItems = async () => {
-        await get(`/api/item/?limit=${ITEM_SELECTION_LIMIT}&category=false`, (data) => {
+        await get(`/api/item/`, (data) => {
             let itemsTemp: Item[] = data.items.map((item: Item) => ({
                 ...item,
                 imageMemo: <MemoizedImage className='item-img' src={item.img ? item.img : '/item.png'} alt={item.name} />
             }))
-            setItemsData({items: itemsTemp, categories: [], updated: new Date()});
+            setItemsData({items: itemsTemp, categories: data.categories, updated: new Date()});
         }, {
             'Authorization': `Bearer ${cookies.get('userToken')}`,
         })
     }
 
     const getBundles = async () => {
-        await get(`/api/bundle?limit=${BUNDLE_SELECTION_LIMIT}`, (data) => {
+        await get(`/api/bundle`, (data) => {
             setBundles(data.bundles);
             setUpdatedBundles(new Date());
         }, {
