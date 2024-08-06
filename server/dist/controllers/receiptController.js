@@ -17,6 +17,7 @@ const express_async_handler_1 = __importDefault(require("express-async-handler")
 const receiptModel_1 = __importDefault(require("../models/receiptModel"));
 const listModel_1 = __importDefault(require("../models/listModel"));
 const cloud_1 = require("../config/cloud");
+const uuid_1 = require("uuid");
 const getReceipts = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { id } = req.params;
@@ -73,7 +74,8 @@ const addReceipt = (0, express_async_handler_1.default)((req, res, next) => __aw
     }
     let receipt;
     if (req.file) {
-        const img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/lists/${id}`, new Date().toISOString());
+        const imageID = (0, uuid_1.v4)();
+        const img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/lists/${id}`, imageID);
         receipt = yield receiptModel_1.default.create({
             img,
             list: id,

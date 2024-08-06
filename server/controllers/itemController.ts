@@ -8,6 +8,7 @@ import { itemExclude } from '../utils/modelsConst';
 import { deleteImage } from '../utils/functions';
 import { uploadToCloudinary } from '../config/cloud';
 import Bundle from '../models/bundleModel';
+import { v4 as uuidv4 } from 'uuid';
 
 const getItems = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -55,6 +56,7 @@ const addItem = asyncHandler(
 			res.status(400);
 			throw new Error('Name is Required');
 		}
+		const imageID = uuidv4();
 		const item = await Item.create({
 			name,
 			description,
@@ -66,7 +68,7 @@ const addItem = asyncHandler(
 			item.img = await uploadToCloudinary(
 				req.file.buffer,
 				`${process.env.CLOUDINARY_BASE_FOLDER}/items`,
-				`${user._id}/${item._id}`
+				`${imageID}`
 			);
 			await item.save();
 		}
@@ -96,7 +98,6 @@ const changeDefault = asyncHandler(
 
 const getItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const user = (req as RequestWithUser).user;
 		const { id } = req.params;
 		const item: ItemDocument | null = await Item.findById(id).select(
 			itemExclude
@@ -134,10 +135,11 @@ const updateItem = asyncHandler(
 			if (item.img) {
 				await deleteImage(item.img, true);
 			}
+			const imageID = uuidv4();
 			item.img = await uploadToCloudinary(
 				req.file.buffer,
 				`${process.env.CLOUDINARY_BASE_FOLDER}/items`,
-				`${user._id}/${item._id}`
+				`${imageID}`
 			);
 		}
 		item.name = name;
@@ -166,6 +168,7 @@ const deleteItem = asyncHandler(
 			throw new Error('Not authorized');
 		}
 		const bundlesFound = await Bundle.find({ items: item._id });
+		const promises = [];
 		for (let bundle of bundlesFound) {
 			if (bundle.items.length > 1) {
 				bundle.items = (bundle.items as ObjectId[]).filter(
@@ -173,19 +176,16 @@ const deleteItem = asyncHandler(
 						(bundleItem as ObjectId).toString() !==
 						(item._id as ObjectId).toString()
 				);
-				bundle.save();
+				promises.push(bundle.save());
 			} else {
-				Bundle.findByIdAndDelete(bundle._id);
+				promises.push(Bundle.findByIdAndDelete(bundle._id));
 			}
 		}
 		if (item.img) {
-			await Promise.all([
-				deleteImage(item.img, true),
-				Item.deleteOne({ _id: id }),
-			]);
-		} else {
-			await Item.deleteOne({ _id: id });
+			promises.push(deleteImage(item.img, true));
 		}
+		promises.push(Item.deleteOne({ _id: id }));
+		await Promise.all(promises);
 		res.status(200).json({
 			success: true,
 			id,

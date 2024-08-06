@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeUserFromList = exports.createShareToken = exports.getSharedList = exports.resetListShareToken = exports.shareList = exports.deleteAllListsUserDeleted = exports.deletePermanently = exports.restoreList = exports.getDeletedLists = exports.deleteForMe = exports.deleteForAll = exports.addBundleItems = exports.restoreFromBought = exports.restoreFromDeleted = exports.sendToBought = exports.sendToDeleted = exports.addExistingItem = exports.addNewItem = exports.changeListTitle = exports.addList = exports.getList = exports.getLists = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const listModel_1 = __importDefault(require("../models/listModel"));
-const modelsConst_1 = require("../utils/modelsConst");
 const itemModel_1 = __importDefault(require("../models/itemModel"));
 const listItemModel_1 = __importDefault(require("../models/listItemModel"));
 const bundleModel_1 = __importDefault(require("../models/bundleModel"));
@@ -23,60 +23,157 @@ const cloud_1 = require("../config/cloud");
 const functions_1 = require("../utils/functions");
 const crypto_1 = __importDefault(require("crypto"));
 const receiptModel_1 = __importDefault(require("../models/receiptModel"));
+const uuid_1 = require("uuid");
 const getLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
-    const lists = yield listModel_1.default.find({ users: user._id }).sort({
-        updatedAt: -1,
-    });
-    const listsDisplay = lists.map((list) => (Object.assign(Object.assign({}, list.toObject()), { users: list.users.length, items: list.items.length, deletedItems: list.deletedItems.length, boughtItems: list.boughtItems.length, owner: list.owner.toString() ===
-            user._id.toString() })));
+    const lists = yield listModel_1.default.aggregate([
+        { $match: { users: user._id } },
+        { $sort: { updatedAt: -1 } },
+        {
+            $project: {
+                _id: 1,
+                title: 1,
+                updatedAt: 1,
+                createdAt: 1,
+                users: { $size: '$users' },
+                items: { $size: '$items' },
+                deletedItems: { $size: '$deletedItems' },
+                boughtItems: { $size: '$boughtItems' },
+                owner: {
+                    $eq: [{ $toString: '$owner' }, { $toString: user._id }],
+                },
+            },
+        },
+    ]);
     res.status(200).json({
         success: true,
-        lists: listsDisplay,
+        lists,
     });
 }));
 exports.getLists = getLists;
 const getList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { id } = req.params;
-    const list = yield listModel_1.default.findById(id).populate(modelsConst_1.populateList);
-    if (!list) {
+    const ObjectId = mongoose_1.default.Types.ObjectId;
+    const idObject = new ObjectId(id);
+    const userId = new ObjectId(user._id);
+    const listDisplay = yield listModel_1.default.aggregate([
+        { $match: { _id: idObject } },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'users',
+                foreignField: '_id',
+                as: 'users',
+            },
+        },
+        {
+            $lookup: {
+                from: 'listitems',
+                localField: 'items',
+                foreignField: '_id',
+                as: 'items',
+            },
+        },
+        {
+            $lookup: {
+                from: 'listitems',
+                localField: 'deletedItems',
+                foreignField: '_id',
+                as: 'deletedItems',
+            },
+        },
+        {
+            $lookup: {
+                from: 'listitems',
+                localField: 'boughtItems',
+                foreignField: '_id',
+                as: 'boughtItems',
+            },
+        },
+        {
+            $addFields: {
+                found: {
+                    $in: [userId, '$users._id'],
+                },
+                owner: {
+                    $eq: ['$owner', userId],
+                },
+                categories: {
+                    $reduce: {
+                        input: {
+                            $concatArrays: [
+                                '$items',
+                                '$deletedItems',
+                                '$boughtItems',
+                            ],
+                        },
+                        initialValue: [],
+                        in: {
+                            $setUnion: [
+                                '$$value',
+                                {
+                                    $cond: {
+                                        if: {
+                                            $and: [
+                                                {
+                                                    $ne: [
+                                                        '$$this.category',
+                                                        null,
+                                                    ],
+                                                },
+                                                {
+                                                    $ne: [
+                                                        {
+                                                            $trim: {
+                                                                input: '$$this.category',
+                                                            },
+                                                        },
+                                                        '',
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                        then: ['$$this.category'],
+                                        else: [],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+            },
+        },
+        {
+            $match: { found: true },
+        },
+        {
+            $project: {
+                _id: 1,
+                title: 1,
+                updatedAt: 1,
+                owner: 1,
+                users: {
+                    $filter: {
+                        input: '$users',
+                        as: 'listUser',
+                        cond: { $ne: ['$$listUser._id', userId] },
+                    },
+                },
+                items: 1,
+                deletedItems: 1,
+                boughtItems: 1,
+                categories: 1,
+            },
+        },
+    ]);
+    if (!listDisplay || listDisplay.length === 0) {
         res.status(404);
         throw new Error('List Not Found');
     }
-    let found = false;
-    list.users.forEach((listUser) => {
-        if (listUser._id.toString() ===
-            user._id.toString()) {
-            found = true;
-        }
-    });
-    if (!found) {
-        res.status(403);
-        throw new Error('Not Authorized');
-    }
-    const categories = new Set();
-    list.items.forEach((item) => {
-        if (item.category) {
-            categories.add(item.category);
-        }
-    });
-    list.deletedItems.forEach((item) => {
-        if (item.category) {
-            categories.add(item.category);
-        }
-    });
-    list.boughtItems.forEach((item) => {
-        if (item.category) {
-            categories.add(item.category);
-        }
-    });
-    const listDisplay = Object.assign(Object.assign({}, list.toObject()), { owner: list.owner.toString() ===
-            user._id.toString(), users: list.users.filter((listUser) => listUser._id.toString() !==
-            user._id.toString()), categories: Array.from(categories) });
     res.status(200).json({
         success: true,
-        list: listDisplay,
+        list: listDisplay[0],
     });
 }));
 exports.getList = getList;
@@ -130,6 +227,31 @@ const removeUserFromList = (0, express_async_handler_1.default)((req, res, next)
     });
 }));
 exports.removeUserFromList = removeUserFromList;
+const createListItemAndAddToList = (itemContext, list) => __awaiter(void 0, void 0, void 0, function* () {
+    const listItem = yield listItemModel_1.default.create({
+        name: itemContext.name,
+        description: itemContext.description,
+        unit: itemContext.unit,
+        amount: itemContext.amount,
+        category: itemContext.category,
+        list: list._id,
+        img: itemContext.img,
+    });
+    list.items.push(listItem._id);
+});
+const createListItemFromItemAndAddToList = (itemContext, list) => __awaiter(void 0, void 0, void 0, function* () {
+    const amount = itemContext.unit ? 1 : 0;
+    const listItem = yield listItemModel_1.default.create({
+        name: itemContext.name,
+        description: itemContext.description,
+        unit: itemContext.unit,
+        amount,
+        category: itemContext.category,
+        list: list._id,
+        img: itemContext.img,
+    });
+    list.items.push(listItem._id);
+});
 const addList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { title, defaultItems, prevListItems } = req.body;
@@ -147,48 +269,26 @@ const addList = (0, express_async_handler_1.default)((req, res, next) => __await
         owner: user._id,
         token: generatedToken,
     });
+    const promises = [];
     if (prevListItems) {
         const prevList = yield listModel_1.default.findById(prevListItems).populate('items');
         if (prevList) {
             for (let i = 0; i < prevList.items.length; i++) {
                 const item = prevList.items[i];
-                const listItem = yield listItemModel_1.default.create({
-                    name: item.name,
-                    description: item.description,
-                    unit: item.unit,
-                    amount: item.amount,
-                    category: item.category,
-                    list: list._id,
-                    img: item.img,
-                });
-                list.items = [
-                    ...list.items,
-                    listItem._id,
-                ];
+                promises.push(createListItemAndAddToList(item, list));
             }
-            list.save();
         }
     }
     if (defaultItems) {
         const items = yield itemModel_1.default.find({ user: user._id, default: true });
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
-            const amount = item.unit ? 1 : 0;
-            const listItem = yield listItemModel_1.default.create({
-                name: item.name,
-                description: item.description,
-                unit: item.unit,
-                category: item.category,
-                amount,
-                list: list._id,
-                img: item.img,
-            });
-            list.items = [
-                ...list.items,
-                listItem._id,
-            ];
+            promises.push(createListItemFromItemAndAddToList(item, list));
         }
-        list.save();
+    }
+    if (promises.length > 0) {
+        promises.push(list.save());
+        yield Promise.all(promises);
     }
     res.status(200).json({
         success: true,
@@ -198,16 +298,20 @@ const addList = (0, express_async_handler_1.default)((req, res, next) => __await
 exports.addList = addList;
 const createListItem = (name, description, unit, amount, category, list, img) => __awaiter(void 0, void 0, void 0, function* () {
     let newItem;
+    let imageUrl;
     if (img && typeof img !== 'string') {
-        newItem = yield listItemModel_1.default.create({
-            name,
-            description,
-            unit,
-            amount,
-            category,
-            list,
-        });
-        newItem.img = yield (0, cloud_1.uploadToCloudinary)(img.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/listItems`, `${newItem._id}`);
+        const imageID = (0, uuid_1.v4)();
+        [newItem, imageUrl] = yield Promise.all([
+            listItemModel_1.default.create({
+                name,
+                description,
+                unit,
+                amount,
+                category,
+                list,
+            }), (0, cloud_1.uploadToCloudinary)(img.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${imageID}`)
+        ]);
+        newItem.img = imageUrl;
         yield newItem.save();
     }
     else {
@@ -232,7 +336,8 @@ const createItem = (name, description, unit, category, user, img) => __awaiter(v
         user: user,
     });
     if (img) {
-        item.img = yield (0, cloud_1.uploadToCloudinary)(img.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${user}/${item._id}`);
+        const imageID = (0, uuid_1.v4)();
+        item.img = yield (0, cloud_1.uploadToCloudinary)(img.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${imageID}`);
         yield item.save();
     }
     return item;

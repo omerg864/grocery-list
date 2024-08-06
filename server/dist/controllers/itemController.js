@@ -19,6 +19,7 @@ const modelsConst_1 = require("../utils/modelsConst");
 const functions_1 = require("../utils/functions");
 const cloud_1 = require("../config/cloud");
 const bundleModel_1 = __importDefault(require("../models/bundleModel"));
+const uuid_1 = require("uuid");
 const getItems = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     let { category, limit } = req.query;
@@ -60,6 +61,7 @@ const addItem = (0, express_async_handler_1.default)((req, res, next) => __await
         res.status(400);
         throw new Error('Name is Required');
     }
+    const imageID = (0, uuid_1.v4)();
     const item = yield itemModel_1.default.create({
         name,
         description,
@@ -68,7 +70,7 @@ const addItem = (0, express_async_handler_1.default)((req, res, next) => __await
         user: user._id,
     });
     if (req.file) {
-        item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${user._id}/${item._id}`);
+        item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${imageID}`);
         yield item.save();
     }
     res.status(200).json({
@@ -93,7 +95,6 @@ const changeDefault = (0, express_async_handler_1.default)((req, res, next) => _
 }));
 exports.changeDefault = changeDefault;
 const getItem = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = req.user;
     const { id } = req.params;
     const item = yield itemModel_1.default.findById(id).select(modelsConst_1.itemExclude);
     if (!item) {
@@ -127,7 +128,8 @@ const updateItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         if (item.img) {
             yield (0, functions_1.deleteImage)(item.img, true);
         }
-        item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${user._id}/${item._id}`);
+        const imageID = (0, uuid_1.v4)();
+        item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${imageID}`);
     }
     item.name = name;
     item.description = description;
@@ -153,25 +155,22 @@ const deleteItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('Not authorized');
     }
     const bundlesFound = yield bundleModel_1.default.find({ items: item._id });
+    const promises = [];
     for (let bundle of bundlesFound) {
         if (bundle.items.length > 1) {
             bundle.items = bundle.items.filter((bundleItem) => bundleItem.toString() !==
                 item._id.toString());
-            bundle.save();
+            promises.push(bundle.save());
         }
         else {
-            bundleModel_1.default.findByIdAndDelete(bundle._id);
+            promises.push(bundleModel_1.default.findByIdAndDelete(bundle._id));
         }
     }
     if (item.img) {
-        yield Promise.all([
-            (0, functions_1.deleteImage)(item.img, true),
-            itemModel_1.default.deleteOne({ _id: id }),
-        ]);
+        promises.push((0, functions_1.deleteImage)(item.img, true));
     }
-    else {
-        yield itemModel_1.default.deleteOne({ _id: id });
-    }
+    promises.push(itemModel_1.default.deleteOne({ _id: id }));
+    yield Promise.all(promises);
     res.status(200).json({
         success: true,
         id,

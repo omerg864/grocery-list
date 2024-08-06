@@ -7,6 +7,7 @@ import { RequestWithUser } from '../interface/requestInterface';
 import List from '../models/listModel';
 import { ListDocument } from '../interface/listInterface';
 import { deleteFromCloudinary, uploadToCloudinary } from '../config/cloud';
+import { v4 as uuid4 } from 'uuid';
 
 const getReceipts = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -71,10 +72,11 @@ const addReceipt = asyncHandler(
 		}
 		let receipt: ReceiptDocument;
 		if (req.file) {
+			const imageID = uuid4();
 			const img = await uploadToCloudinary(
 				req.file.buffer,
 				`${process.env.CLOUDINARY_BASE_FOLDER}/lists/${id}`,
-				new Date().toISOString()
+				imageID
 			);
 			receipt = await Receipt.create({
 				img,

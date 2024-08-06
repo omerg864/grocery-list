@@ -149,9 +149,6 @@ const updateUser = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('User with that email already exists');
     }
     if (req.file) {
-        if (userReq.avatar) {
-            yield (0, cloud_1.deleteFromCloudinary)(userReq.avatar);
-        }
         userReq.avatar = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/users`, `${userReq._id}/avatar`);
     }
     userReq.f_name = f_name;
@@ -231,6 +228,9 @@ const resetPasswordEmail = (0, express_async_handler_1.default)((req, res, next)
         throw new Error('User not found');
     }
     let generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+    if (yield userModel_1.default.find({ resetPasswordToken: generatedToken })) {
+        generatedToken = crypto_1.default.randomBytes(26).toString('hex');
+    }
     user.resetPasswordToken = generatedToken;
     yield user.save();
     let success;

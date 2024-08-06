@@ -8,6 +8,7 @@ import { deleteImage } from '../utils/functions';
 import { ListItemDocument } from '../interface/listItemInterface';
 import { uploadToCloudinary } from '../config/cloud';
 import Item from '../models/itemModel';
+import { v4 as uuid4 } from 'uuid';
 
 const getItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -72,21 +73,22 @@ const updateItem = asyncHandler(
 			throw new Error('Not Authorized');
 		}
 		if (req.file) {
+			const imageID = uuid4();
 			if (item.img) {
 				const [_, image_url] = await Promise.all([
 					deleteImage(item.img),
 					uploadToCloudinary(
 						req.file.buffer,
-						`${process.env.CLOUDINARY_BASE_FOLDER}/listItems`,
-						id
+						`${process.env.CLOUDINARY_BASE_FOLDER}/items`,
+						imageID
 					),
 				]);
 				item.img = image_url;
 			} else {
 				item.img = await uploadToCloudinary(
 					req.file.buffer,
-					`${process.env.CLOUDINARY_BASE_FOLDER}/listItems`,
-					id
+					`${process.env.CLOUDINARY_BASE_FOLDER}/items`,
+					imageID
 				);
 			}
 		}

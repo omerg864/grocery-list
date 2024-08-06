@@ -18,6 +18,7 @@ const listItemModel_1 = __importDefault(require("../models/listItemModel"));
 const functions_1 = require("../utils/functions");
 const cloud_1 = require("../config/cloud");
 const itemModel_1 = __importDefault(require("../models/itemModel"));
+const uuid_1 = require("uuid");
 const getItem = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const { id } = req.params;
@@ -70,15 +71,16 @@ const updateItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         throw new Error('Not Authorized');
     }
     if (req.file) {
+        const imageID = (0, uuid_1.v4)();
         if (item.img) {
             const [_, image_url] = yield Promise.all([
                 (0, functions_1.deleteImage)(item.img),
-                (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/listItems`, id),
+                (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, imageID),
             ]);
             item.img = image_url;
         }
         else {
-            item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/listItems`, id);
+            item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, imageID);
         }
     }
     item.name = name;

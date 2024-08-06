@@ -9,7 +9,7 @@ import { sendEmail } from '../utils/functions';
 import { RequestWithUser } from '../interface/requestInterface';
 import { ObjectId } from 'mongoose';
 import { UserDocument } from '../interface/userInterface';
-import { deleteFromCloudinary, uploadToCloudinary } from '../config/cloud';
+import { uploadToCloudinary } from '../config/cloud';
 import googleAuthClient from '../config/google';
 import axios from 'axios';
 import crypto from 'crypto';
@@ -150,9 +150,6 @@ const updateUser = asyncHandler(
 			throw new Error('User with that email already exists');
 		}
 		if (req.file) {
-			if (userReq.avatar) {
-				await deleteFromCloudinary(userReq.avatar);
-			}
 			userReq!.avatar = await uploadToCloudinary(
 				req.file.buffer,
 				`${process.env.CLOUDINARY_BASE_FOLDER}/users`,
@@ -237,6 +234,9 @@ const resetPasswordEmail = asyncHandler(async (req, res, next) => {
 		throw new Error('User not found');
 	}
 	let generatedToken = crypto.randomBytes(26).toString('hex');
+	if (await User.find({ resetPasswordToken: generatedToken})) {
+		generatedToken = crypto.randomBytes(26).toString('hex');
+	}
 	user.resetPasswordToken = generatedToken;
 	await user.save();
 	let success;

@@ -17,29 +17,29 @@ const upload = multer({ storage });
 
 const uploadToCloudinary = (imgBuffer: Buffer, folder: string, publicId: string): Promise<string> => {
 	return new Promise((resolve, reject) => {
-	  const stream = cloudinary.uploader.upload_stream(
+		const stream = cloudinary.uploader.upload_stream(
 		{
-		  folder: folder,
-		  public_id: publicId,
+			folder: folder,
+			public_id: publicId,
 		},
 		(error, result) => {
-		  if (error) {
+			if (error) {
 			return reject(error);
-		  }
-		  if (!result) {
+			}
+			if (!result) {
 			return reject(new Error('No result from Cloudinary'));
-		  }
-		  resolve(result.secure_url);
+			}
+			resolve(result.secure_url);
 		}
-	  );
-	  streamifier.createReadStream(imgBuffer).pipe(stream);
+		);
+		streamifier.createReadStream(imgBuffer).pipe(stream);
 	});
 }
 
 const deleteFromCloudinary = async (url: string) => {
 	const public_id = extractPublicId(url);
 	if (!public_id) {
-	  throw new Error('Invalid URL');
+		throw new Error('Invalid URL');
 	}
 	const result = await cloudinary.uploader.destroy(public_id);
 	return result;

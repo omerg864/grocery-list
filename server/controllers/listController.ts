@@ -1,41 +1,50 @@
 import asyncHandler from 'express-async-handler';
 import { Request, Response, NextFunction } from 'express';
-import { ObjectId } from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 import { RequestWithUser } from '../interface/requestInterface';
 import List from '../models/listModel';
 import { UserDocument } from '../interface/userInterface';
-import { populateList } from '../utils/modelsConst';
 import { ListDocument } from '../interface/listInterface';
 import Item from '../models/itemModel';
 import ListItem from '../models/listItemModel';
 import Bundle from '../models/bundleModel';
 import { ItemDocument } from '../interface/itemInterface';
 import { ListItemDocument } from '../interface/listItemInterface';
-import { deleteFromCloudinary, uploadToCloudinary } from '../config/cloud';
+import {
+	deleteFromCloudinary,
+	uploadToCloudinary,
+} from '../config/cloud';
 import { deleteImage } from '../utils/functions';
 import crypto from 'crypto';
 import Receipt from '../models/receiptModel';
 import { ReceiptDocument } from '../interface/receiptInterface';
+import { v4 as uuid4 } from 'uuid';
 
 const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
-		const lists = await List.find({ users: user._id }).sort({
-			updatedAt: -1,
-		});
-		const listsDisplay = lists.map((list) => ({
-			...list.toObject(),
-			users: list.users.length,
-			items: list.items.length,
-			deletedItems: list.deletedItems.length,
-			boughtItems: list.boughtItems.length,
-			owner:
-				(list.owner as ObjectId).toString() ===
-				(user._id as ObjectId).toString(),
-		}));
+		const lists = await List.aggregate([
+			{ $match: { users: user._id } },
+			{ $sort: { updatedAt: -1 } },
+			{
+				$project: {
+					_id: 1,
+					title: 1,
+					updatedAt: 1,
+					createdAt: 1,
+					users: { $size: '$users' },
+					items: { $size: '$items' },
+					deletedItems: { $size: '$deletedItems' },
+					boughtItems: { $size: '$boughtItems' },
+					owner: {
+						$eq: [{ $toString: '$owner' }, { $toString: user._id }],
+					},
+				},
+			},
+		]);
 		res.status(200).json({
 			success: true,
-			lists: listsDisplay,
+			lists,
 		});
 	}
 );
@@ -44,57 +53,126 @@ const getList = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id } = req.params;
-		const list: ListDocument | null = await List.findById(id).populate(
-			populateList
-		);
-		if (!list) {
+		const ObjectId = mongoose.Types.ObjectId;
+		const idObject = new ObjectId(id);
+		const userId = new ObjectId(user._id as string);
+		const listDisplay = await List.aggregate([
+			{ $match: { _id: idObject } },
+			{
+				$lookup: {
+					from: 'users',
+					localField: 'users',
+					foreignField: '_id',
+					as: 'users',
+				},
+			},
+			{
+				$lookup: {
+					from: 'listitems',
+					localField: 'items',
+					foreignField: '_id',
+					as: 'items',
+				},
+			},
+			{
+				$lookup: {
+					from: 'listitems',
+					localField: 'deletedItems',
+					foreignField: '_id',
+					as: 'deletedItems',
+				},
+			},
+			{
+				$lookup: {
+					from: 'listitems',
+					localField: 'boughtItems',
+					foreignField: '_id',
+					as: 'boughtItems',
+				},
+			},
+			{
+				$addFields: {
+					found: {
+						$in: [userId, '$users._id'],
+					},
+					owner: {
+						$eq: ['$owner', userId],
+					},
+					categories: {
+						$reduce: {
+							input: {
+								$concatArrays: [
+									'$items',
+									'$deletedItems',
+									'$boughtItems',
+								],
+							},
+							initialValue: [],
+							in: {
+								$setUnion: [
+									'$$value',
+									{
+										$cond: {
+											if: {
+												$and: [
+													{
+														$ne: [
+															'$$this.category',
+															null,
+														],
+													},
+													{
+														$ne: [
+															{
+																$trim: {
+																	input: '$$this.category',
+																},
+															},
+															'',
+														],
+													},
+												],
+											},
+											then: ['$$this.category'],
+											else: [],
+										},
+									},
+								],
+							},
+						},
+					},
+				},
+			},
+			{
+				$match: { found: true },
+			},
+			{
+				$project: {
+					_id: 1,
+					title: 1,
+					updatedAt: 1,
+					owner: 1,
+					users: {
+						$filter: {
+							input: '$users',
+							as: 'listUser',
+							cond: { $ne: ['$$listUser._id', userId] },
+						},
+					},
+					items: 1,
+					deletedItems: 1,
+					boughtItems: 1,
+					categories: 1,
+				},
+			},
+		]);
+		if (!listDisplay || listDisplay.length === 0) {
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		let found = false;
-		list.users.forEach((listUser) => {
-			if (
-				((listUser as UserDocument)._id as ObjectId).toString() ===
-				(user._id as ObjectId).toString()
-			) {
-				found = true;
-			}
-		});
-		if (!found) {
-			res.status(403);
-			throw new Error('Not Authorized');
-		}
-		const categories = new Set<string>();
-		(list.items as ListItemDocument[]).forEach((item) => {
-			if (item.category) {
-				categories.add(item.category);
-			}
-		});
-		(list.deletedItems as ListItemDocument[]).forEach((item) => {
-			if (item.category) {
-				categories.add(item.category);
-			}
-		});
-		(list.boughtItems as ListItemDocument[]).forEach((item) => {
-			if (item.category) {
-				categories.add(item.category);
-			}
-		});
-		const listDisplay = {
-			...list.toObject(),
-			owner:
-				(list.owner as ObjectId).toString() ===
-				(user._id as ObjectId).toString(),
-			users: list.users.filter(
-				(listUser) =>
-					((listUser as UserDocument)._id as ObjectId).toString() !==
-					(user._id as ObjectId).toString()
-			),
-			categories: Array.from(categories),
-		};
 		res.status(200).json({
 			success: true,
-			list: listDisplay,
+			list: listDisplay[0],
 		});
 	}
 );
@@ -134,7 +212,7 @@ const removeUserFromList = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id, userId } = req.params;
-		const list = await List.findById(id);
+		const list: ListDocument | null = await List.findById(id);
 		if (!list) {
 			res.status(404);
 			throw new Error('List Not Found');
@@ -158,6 +236,39 @@ const removeUserFromList = asyncHandler(
 	}
 );
 
+const createListItemAndAddToList = async (
+	itemContext: ListItemDocument,
+	list: ListDocument
+) => {
+	const listItem = await ListItem.create({
+		name: itemContext.name,
+		description: itemContext.description,
+		unit: itemContext.unit,
+		amount: itemContext.amount,
+		category: itemContext.category,
+		list: list._id,
+		img: itemContext.img,
+	});
+	(list.items as ObjectId[]).push(listItem._id as ObjectId);
+};
+
+const createListItemFromItemAndAddToList = async (
+	itemContext: ItemDocument,
+	list: ListDocument
+) => {
+	const amount = itemContext.unit ? 1 : 0;
+	const listItem = await ListItem.create({
+		name: itemContext.name,
+		description: itemContext.description,
+		unit: itemContext.unit,
+		amount,
+		category: itemContext.category,
+		list: list._id,
+		img: itemContext.img,
+	});
+	(list.items as ObjectId[]).push(listItem._id as ObjectId);
+};
+
 const addList = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
@@ -170,12 +281,13 @@ const addList = asyncHandler(
 		while (await List.findOne({ token: generatedToken })) {
 			generatedToken = crypto.randomBytes(26).toString('hex');
 		}
-		const list = await List.create({
+		const list: ListDocument = await List.create({
 			title,
 			users: [user._id],
 			owner: user._id,
 			token: generatedToken,
 		});
+		const promises = [];
 		if (prevListItems) {
 			const prevList = await List.findById(prevListItems).populate(
 				'items'
@@ -183,43 +295,20 @@ const addList = asyncHandler(
 			if (prevList) {
 				for (let i = 0; i < prevList.items.length; i++) {
 					const item = prevList.items[i] as ListItemDocument;
-					const listItem = await ListItem.create({
-						name: item.name,
-						description: item.description,
-						unit: item.unit,
-						amount: item.amount,
-						category: item.category,
-						list: list._id,
-						img: item.img,
-					});
-					list.items = [
-						...(list.items as ObjectId[]),
-						listItem._id as ObjectId,
-					];
+					promises.push(createListItemAndAddToList(item, list));
 				}
-				list.save();
 			}
 		}
 		if (defaultItems) {
 			const items = await Item.find({ user: user._id, default: true });
 			for (let i = 0; i < items.length; i++) {
 				const item = items[i] as ItemDocument;
-				const amount = item.unit ? 1 : 0;
-				const listItem = await ListItem.create({
-					name: item.name,
-					description: item.description,
-					unit: item.unit,
-					category: item.category,
-					amount,
-					list: list._id,
-					img: item.img,
-				});
-				list.items = [
-					...(list.items as ObjectId[]),
-					listItem._id as ObjectId,
-				];
+				promises.push(createListItemFromItemAndAddToList(item, list));
 			}
-			list.save();
+		}
+		if (promises.length > 0) {
+			promises.push(list.save());
+			await Promise.all(promises);
 		}
 		res.status(200).json({
 			success: true,
@@ -237,21 +326,24 @@ const createListItem = async (
 	list: ObjectId,
 	img: string | Express.Multer.File | undefined
 ) => {
-	let newItem;
+	let newItem: ListItemDocument;
+	let imageUrl: string;
 	if (img && typeof img !== 'string') {
-		newItem = await ListItem.create({
-			name,
-			description,
-			unit,
-			amount,
-			category,
-			list,
-		});
-		newItem.img = await uploadToCloudinary(
-			img.buffer,
-			`${process.env.CLOUDINARY_BASE_FOLDER}/listItems`,
-			`${newItem._id}`
-		);
+		const imageID = uuid4();
+		[newItem, imageUrl] = await Promise.all([
+			ListItem.create({
+				name,
+				description,
+				unit,
+				amount,
+				category,
+				list,
+			}), uploadToCloudinary(
+				img.buffer,
+				`${process.env.CLOUDINARY_BASE_FOLDER}/items`,
+				`${imageID}`
+			)]);
+		newItem.img = imageUrl;
 		await newItem.save();
 	} else {
 		newItem = await ListItem.create({
@@ -275,7 +367,7 @@ const createItem = async (
 	user: unknown,
 	img: Express.Multer.File | undefined
 ) => {
-	const item = await Item.create({
+	const item: ItemDocument = await Item.create({
 		name,
 		description,
 		unit,
@@ -283,10 +375,11 @@ const createItem = async (
 		user: user,
 	});
 	if (img) {
+		const imageID = uuid4();
 		item.img = await uploadToCloudinary(
 			img.buffer,
 			`${process.env.CLOUDINARY_BASE_FOLDER}/items`,
-			`${user}/${item._id}`
+			`${imageID}`
 		);
 		await item.save();
 	}

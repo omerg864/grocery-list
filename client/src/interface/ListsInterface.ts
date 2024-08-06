@@ -3,7 +3,6 @@
 interface Lists {
 	_id: string;
 	title: string;
-	categories: string[];
 	items: number;
 	users: number;
 	deletedItems: number;
