@@ -11,9 +11,9 @@ import {
 	updateUser,
 	resendVerificationEmail,
 	updatePreferences,
-	googleAuth
+	googleAuth,
 } from '../controllers/userController';
-import { upload } from '../config/upload';
+import { upload } from '../config/cloud';
 
 const router = express.Router();
 

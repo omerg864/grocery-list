@@ -1,11 +1,30 @@
 import express from 'express';
 import { protectUser } from '../middleware/authMiddleware';
-import { getLists, getList, addList, addNewItem, addExistingItem, sendToDeleted, sendToBought, 
-    restoreFromBought, restoreFromDeleted, addBundleItems, deleteForAll, deleteForMe, getDeletedLists, 
-    restoreList, deletePermanently, deleteAllListsUserDeleted, shareList, resetListShareToken, getSharedList, 
-    createShareToken, changeListTitle, removeUserFromList } from '../controllers/listController';
-import { upload } from '../config/upload';
-
+import {
+	getLists,
+	getList,
+	addList,
+	addNewItem,
+	addExistingItem,
+	sendToDeleted,
+	sendToBought,
+	restoreFromBought,
+	restoreFromDeleted,
+	addBundleItems,
+	deleteForAll,
+	deleteForMe,
+	getDeletedLists,
+	restoreList,
+	deletePermanently,
+	deleteAllListsUserDeleted,
+	shareList,
+	resetListShareToken,
+	getSharedList,
+	createShareToken,
+	changeListTitle,
+	removeUserFromList,
+} from '../controllers/listController';
+import { upload } from '../config/cloud';
 
 const router = express.Router();
 
@@ -31,8 +50,5 @@ router.delete('/:id/permanently', protectUser, deletePermanently);
 router.get('/:token/shared', protectUser, getSharedList);
 router.post('/:token/share', protectUser, shareList);
 router.put('/:id/share', protectUser, resetListShareToken);
-
-
-
 
 export default router;

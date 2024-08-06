@@ -1,5 +1,5 @@
 import express from 'express';
-import { upload } from '../config/upload';
+import { upload } from '../config/cloud';
 import { protectUser } from '../middleware/authMiddleware';
 import {
 	getItems,
@@ -8,7 +8,7 @@ import {
 	deleteItem,
 	getItem,
 	changeDefault,
-	shareItem
+	shareItem,
 } from '../controllers/itemController';
 
 const router = express.Router();

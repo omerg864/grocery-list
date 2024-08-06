@@ -1,21 +1,20 @@
 import asyncHandler from 'express-async-handler';
 import { Request, Response, NextFunction } from 'express';
-import mongoose, { ObjectId } from 'mongoose';
+import { ObjectId } from 'mongoose';
 import { RequestWithUser } from '../interface/requestInterface';
 import List from '../models/listModel';
 import { UserDocument } from '../interface/userInterface';
-import { itemExclude, populateList } from '../utils/modelsConst';
+import { populateList } from '../utils/modelsConst';
 import { ListDocument } from '../interface/listInterface';
 import Item from '../models/itemModel';
 import ListItem from '../models/listItemModel';
 import Bundle from '../models/bundleModel';
 import { ItemDocument } from '../interface/itemInterface';
 import { ListItemDocument } from '../interface/listItemInterface';
-import { uploadToCloudinary } from '../config/upload';
-import { deleteImage, extractPublicId } from '../utils/functions';
+import { deleteFromCloudinary, uploadToCloudinary } from '../config/cloud';
+import { deleteImage } from '../utils/functions';
 import crypto from 'crypto';
 import Receipt from '../models/receiptModel';
-import { v2 as cloudinary } from 'cloudinary';
 import { ReceiptDocument } from '../interface/receiptInterface';
 
 const getLists = asyncHandler(
@@ -731,20 +730,12 @@ const restoreList = asyncHandler(
 
 const deleteListReceipts = async (listId: unknown) => {
 	const receipts: ReceiptDocument[] = await Receipt.find({ list: listId });
-	cloudinary.config({
-		cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-		api_key: process.env.CLOUDINARY_API_KEY,
-		api_secret: process.env.CLOUDINARY_API_SECRET,
-	});
+	const promises = [];
 	for (let i = 0; i < receipts.length; i++) {
-		const public_id = extractPublicId(receipts[i].img);
-		await cloudinary.uploader.destroy(public_id, (error, result) => {
-			if (error) {
-				console.log(error);
-			}
-		});
+		promises.push(deleteFromCloudinary(receipts[i].img));
 	}
-	await Receipt.deleteMany({ list: listId });
+	promises.push(Receipt.deleteMany({ list: listId }));
+	await Promise.all(promises);
 };
 
 const deletePermanently = asyncHandler(

@@ -1,9 +1,9 @@
 import { createTransport } from 'nodemailer';
 import Item from '../models/itemModel';
 import ListItem from '../models/listItemModel';
-import { v2 as cloudinary } from 'cloudinary';
 import { ListItemDocument } from '../interface/listItemInterface';
 import { ItemDocument } from '../interface/itemInterface';
+import { deleteFromCloudinary } from '../config/cloud';
 
 export const sendEmail = async (receiver: string, subject: string, text: string): Promise<boolean> => {
     var transporter = createTransport({
@@ -69,27 +69,9 @@ const checkItem = (listItemsWithSameImg: ListItemDocument[], ItemWithTheSameImg:
 }
 
 export const deleteImage = async (img: string, item?: boolean) => {
-    cloudinary.config({
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-        api_key: process.env.CLOUDINARY_API_KEY,
-        api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
-    const public_id = extractPublicId(img);
     const [listItemsWithSameImg, ItemWithTheSameImg] = await Promise.all([ListItem.find({ img: img }), Item.find({ img: img })]);
     let deleteImage = item ? checkItem(listItemsWithSameImg, ItemWithTheSameImg) : checkListItem(listItemsWithSameImg, ItemWithTheSameImg);
     if (deleteImage) {
-        await cloudinary.uploader.destroy(public_id, (error, result) => {
-            if (error) {
-                console.log(error);
-            }
-        });
+        await deleteFromCloudinary(img);
     }
-}
-
-export const uploadImageListItem = async (file: Express.Multer.File, id: string) => {
-    const result = await cloudinary.uploader.upload(file.path, {
-        folder: 'SuperCart/listItems',
-        public_id: `${id}`,
-    });
-    return result.secure_url;
 }

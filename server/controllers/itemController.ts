@@ -6,7 +6,7 @@ import Item from '../models/itemModel';
 import { RequestWithUser } from '../interface/requestInterface';
 import { itemExclude } from '../utils/modelsConst';
 import { deleteImage } from '../utils/functions';
-import { uploadToCloudinary } from '../config/upload';
+import { uploadToCloudinary } from '../config/cloud';
 import Bundle from '../models/bundleModel';
 
 const getItems = asyncHandler(
@@ -76,7 +76,6 @@ const addItem = asyncHandler(
 		});
 	}
 );
-
 
 const changeDefault = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -171,7 +170,8 @@ const deleteItem = asyncHandler(
 			if (bundle.items.length > 1) {
 				bundle.items = (bundle.items as ObjectId[]).filter(
 					(bundleItem) =>
-						(bundleItem as ObjectId).toString() !== (item._id as ObjectId).toString()
+						(bundleItem as ObjectId).toString() !==
+						(item._id as ObjectId).toString()
 				);
 				bundle.save();
 			} else {
@@ -217,4 +217,12 @@ const shareItem = asyncHandler(
 	}
 );
 
-export { getItems, deleteItem, addItem, updateItem, getItem, changeDefault, shareItem };
+export {
+	getItems,
+	deleteItem,
+	addItem,
+	updateItem,
+	getItem,
+	changeDefault,
+	shareItem,
+};

@@ -6,14 +6,16 @@ import ListItem from '../models/listItemModel';
 import { List } from '../interface/listInterface';
 import { deleteImage } from '../utils/functions';
 import { ListItemDocument } from '../interface/listItemInterface';
-import { uploadToCloudinary } from '../config/upload';
+import { uploadToCloudinary } from '../config/cloud';
 import Item from '../models/itemModel';
 
 const getItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id } = req.params;
-		const item: ListItemDocument | null = await ListItem.findById(id).populate('list');
+		const item: ListItemDocument | null = await ListItem.findById(
+			id
+		).populate('list');
 		if (!item) {
 			res.status(404);
 			throw new Error('Item Not Found');
@@ -48,7 +50,9 @@ const updateItem = asyncHandler(
 			res.status(400);
 			throw new Error('Name is Required');
 		}
-		const item: ListItemDocument | null = await ListItem.findById(id).populate('list');
+		const item: ListItemDocument | null = await ListItem.findById(
+			id
+		).populate('list');
 		if (!item) {
 			res.status(404);
 			throw new Error('Item Not Found');
@@ -71,11 +75,19 @@ const updateItem = asyncHandler(
 			if (item.img) {
 				const [_, image_url] = await Promise.all([
 					deleteImage(item.img),
-					uploadToCloudinary(req.file.buffer, 'SuperCart/listItems', id),
+					uploadToCloudinary(
+						req.file.buffer,
+						'SuperCart/listItems',
+						id
+					),
 				]);
 				item.img = image_url;
 			} else {
-				item.img = await uploadToCloudinary(req.file.buffer, 'SuperCart/listItems', id);
+				item.img = await uploadToCloudinary(
+					req.file.buffer,
+					'SuperCart/listItems',
+					id
+				);
 			}
 		}
 		item.name = name;
@@ -90,7 +102,6 @@ const updateItem = asyncHandler(
 		});
 	}
 );
-
 
 const shareItem = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -131,7 +142,7 @@ const getSharedItem = asyncHandler(
 			unit: item.unit,
 			category: item.category,
 			img: item.img,
-		}
+		};
 		res.status(200).json({
 			success: true,
 			item: itemDisplay,
