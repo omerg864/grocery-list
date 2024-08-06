@@ -11,6 +11,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.ts"
   },
+  "pre-commit": [
+      "ts.check",
+      "build",
+      "add-build"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
