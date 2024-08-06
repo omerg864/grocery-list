@@ -75,15 +75,31 @@ function ItemNew() {
 
   const onSelectionChange = (e: SelectChangeEvent) => {
     const value = e.target.value as string;
-    setItemState(prev => ({...prev, unit: value}));
+    if (id) {
+      setItemState(prev => ({...prev, unit: value, amount: 1}));
+    } else {
+      setItemState(prev => ({...prev, unit: value}));
+    }
   }
 
   const addCounter = () => {
-    setItemState(prev => ({...prev, amount: (prev as ListItemNew).amount! + 1}));
+    let amount = (itemState as ListItemNew).amount;
+    if (typeof amount === 'number' && Number.isInteger(amount)) {
+      amount = amount + 1;
+    } else {
+      amount = 1;
+    }
+    setItemState(prev => ({...prev, amount}));
   }
 
   const removeCounter = () => {
-    setItemState(prev => ({...prev, amount: (prev as ListItemNew).amount! - 1}));
+    let amount = (itemState as ListItemNew).amount;
+    if (typeof amount === 'number' && Number.isInteger(amount) && amount > 1) {
+      amount = amount - 1;
+    } else {
+      amount = 1;
+    }
+    setItemState(prev => ({...prev, amount}));
   }
 
   const createItem = async (e: FormEvent<HTMLFormElement>) => {

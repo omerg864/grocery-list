@@ -78,19 +78,23 @@ function ItemEdit() {
   }
 
   const addCounter = () => {
-    if (typeof (itemState as ListItem).amount === 'number') {
-      setItemState(prev => ({...prev, amount: ((prev as ListItem).amount! as number) + 1}));
+    let amount = (itemState as ListItem).amount;
+    if (typeof amount === 'number' && Number.isInteger(amount)) {
+      amount = amount + 1;
     } else {
-      setItemState(prev => ({...prev, amount: 1}));
+      amount = 1;
     }
+    setItemState(prev => ({...prev, amount}));
   }
 
   const removeCounter = () => {
-    if (typeof (itemState as ListItem).amount === 'number' && ((itemState as ListItem).amount! as number) > 1) {
-      setItemState(prev => ({...prev, amount: ((prev as ListItem).amount! as number) - 1}));
+    let amount = (itemState as ListItem).amount;
+    if (typeof amount !== 'number' || amount as number <= 1 || !Number.isInteger(amount)) {
+      amount = 1;
     } else {
-      setItemState(prev => ({...prev, amount: 1}));
+      amount = amount as number - 1;
     }
+    setItemState(prev => ({...prev, amount}));
   }
 
   const updateItem = async (e: FormEvent<HTMLFormElement>) => {

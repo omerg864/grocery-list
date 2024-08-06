@@ -22,7 +22,7 @@ function BundleAdd() {
   const { t } = useTranslation('translation', { keyPrefix: 'BundleAdd' });
   const navigate = useNavigate();
   const [bundle, setBundle] = useRecoilState<Bundle>(bundleAtom);
-  const [amounts, setAmounts] = useState<{id: string, amount: number | "", unit: string}[]>(bundle.items.map(item => ({id: item._id, amount: 1, unit: item.unit})));
+  const [amounts, setAmounts] = useState<{id: string, amount: number | string, unit: string}[]>(bundle.items.map(item => ({id: item._id, amount: 1, unit: item.unit})));
   const [_, setItem] = useRecoilState<Item | ListItem>(itemAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const cookies = new Cookies();
@@ -58,31 +58,25 @@ function BundleAdd() {
   }
 
   const onChangeAmount = (id: string, amount: string) => {
-    let amountTemp: number | "";
-    if (amount === "") {
-      amountTemp = "";
-    } else {
-      amountTemp = parseInt(amount);
-    }
-    setAmounts(amounts.map(a => a.id === id ? {...a, amount: amountTemp} : a));
+    setAmounts(amounts.map(a => a.id === id ? {...a, amount} : a));
   }
 
   const addCounter = (id: string) => {
     let amount = amounts.find(a => a.id === id)!.amount;
-    if (amount === "") {
-      amount = 1;
-    } else {
+    if (typeof amount === 'number' && Number.isInteger(amount)) {
       amount = amount + 1;
+    } else {
+      amount = 1;
     }
     setAmounts(amounts.map(a => a.id === id ? {...a, amount} : a));
   }
 
   const removeCounter = (id: string) => {
     let amount = amounts.find(a => a.id === id)!.amount;
-    if (amount === "" || amount <= 1) {
+    if (typeof amount !== 'number' || amount as number <= 1 || !Number.isInteger(amount)) {
       amount = 1;
     } else {
-      amount = amount - 1;
+      amount = amount as number - 1;
     }
     setAmounts(amounts.map(a => a.id === id ? {...a, amount} : a));
   }

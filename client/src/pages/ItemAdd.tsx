@@ -53,9 +53,6 @@ function ItemAdd() {
 
   const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     let amountTemp: number | string = e.target.value;
-    if (amountTemp !== "") {
-        amountTemp = parseInt(amountTemp);
-    }
     setItemState({...itemState, amount: amountTemp});
   }
 
@@ -78,7 +75,7 @@ function ItemAdd() {
 
   const addCounter = () => {
     let amount = itemState.amount;
-    if (typeof amount === 'number') {
+    if (typeof amount === 'number' && Number.isInteger(amount)) {
       amount = amount + 1;
     } else {
       amount = 1;
@@ -88,7 +85,7 @@ function ItemAdd() {
 
   const removeCounter = () => {
     let amount = itemState.amount;
-    if (typeof amount !== 'number' || amount as number <= 1) {
+    if (typeof amount !== 'number' || amount as number <= 1 || !Number.isInteger(amount)) {
       amount = 1;
     } else {
       amount = amount as number - 1;

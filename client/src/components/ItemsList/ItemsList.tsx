@@ -15,7 +15,7 @@ interface ItemsListProps {
     onItemClicked?: (id: string) => void;
     onAmountChanged?: (id: string, amount: string) => void;
     onSelectionChange?: (e: SelectChangeEvent, id: string) => void;
-    amounts?: {id: string, amount: number | ""}[];
+    amounts?: {id: string, amount: number | string}[];
     addCounter?: (id: string) => void;
     removeCounter?: (id: string) => void;
     rightIcon?: React.ReactNode;
