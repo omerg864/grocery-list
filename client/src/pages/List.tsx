@@ -290,7 +290,7 @@ function List() {
         <ConfirmationDialog title={t('deleteUserTitle')} content={t('deleteUserContent')} open={dialog} handleClose={closeDialog} handleConfirm={deleteUser}  />
         <ConfirmationDialog title={t('resetShareToken')} content={t('resetShareTokenContent')} open={tokenDialog} handleClose={closeTokenDialog} handleConfirm={resetToken}  />
         <ConfirmationDialog title={t('titleDialog')} content={t('titleDialogContent')} open={titleDialog} handleClose={closeTitleDialog}buttons={<div className="dialog-buttons">
-            <Button onClick={closeDialog} variant='outlined' color="error">{t('cancel')}</Button>
+            <Button onClick={closeTitleDialog} variant='outlined' color="error">{t('cancel')}</Button>
             <Button onClick={changeListTitle} variant='outlined' color="primary" autoFocus>{t('change')}</Button>
         </div>} >
             <div style={{padding: '1rem 0'}}>
