@@ -71,7 +71,7 @@ function BundleEdit() {
     }
     await put(`/api/bundle/${id}`, formData, (_) => {
       setBundle(bundleDefault);
-      setBundles([]);
+      setBundles((prevBundles) => [...prevBundles.filter(b => b._id !== id, bundle)]);
       navigate('/bundles');
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,

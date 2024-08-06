@@ -8,21 +8,23 @@ import BundleList from '../components/BundleList/BundleList';
 import ItemsList from '../components/ItemsList/ItemsList';
 import Cookies from 'universal-cookie';
 import { useRecoilState } from 'recoil';
-import { bundleAtom, itemAtom } from '../recoil/atoms';
+import { bundleAtom, bundlesAtom, itemAtom, itemsDataAtom, updatedBundlesAtom } from '../recoil/atoms';
 import { get } from '../utils/apiRequest';
 import Item from '../interface/ItemInterface';
 import MemoizedImage from '../components/MemoizedImage/MemoizedImage';
 import Bundle from '../interface/BundleInterface';
 import { BUNDLE_SELECTION_LIMIT, ITEM_SELECTION_LIMIT } from '../utils/requestsConst';
 import ListItem from '../interface/ListItemInterface';
+import { getMinutesBetweenDates } from '../utils/functions';
 
 function Selection() {
 
     const { t } = useTranslation('translation', { keyPrefix: 'Selection' });
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [bundles, setBundles] = useState<Bundle[]>([]);
-    const [items, setItems] = useState<Item[]>([]);
+    const [bundles, setBundles] = useRecoilState<Bundle[]>(bundlesAtom);
+    const [updatedBundles, setUpdatedBundles] = useRecoilState<Date>(updatedBundlesAtom);
+    const [itemsData, setItemsData] = useRecoilState(itemsDataAtom);
     const [_, setItem] = useRecoilState<ListItem>(itemAtom);
     const [__, setBundle] = useRecoilState<Bundle>(bundleAtom);
     const { id } = useParams();
@@ -37,7 +39,7 @@ function Selection() {
     }
 
     const onItemClicked = (itemId: string) => {
-        const item = items.find((item) => item._id === itemId)!;
+        const item = itemsData.items.find((item) => item._id === itemId)!;
         setItem({...item, amount: 1, stateUpdated: new Date()});
         navigate(`/lists/${id}/add/item/${itemId}`);
     }
@@ -54,7 +56,7 @@ function Selection() {
                 ...item,
                 imageMemo: <MemoizedImage className='item-img' src={item.img ? item.img : '/item.png'} alt={item.name} />
             }))
-            setItems(itemsTemp);
+            setItemsData({items: itemsTemp, categories: [], updated: new Date()});
         }, {
             'Authorization': `Bearer ${cookies.get('userToken')}`,
         })
@@ -63,6 +65,7 @@ function Selection() {
     const getBundles = async () => {
         await get(`/api/bundle?limit=${BUNDLE_SELECTION_LIMIT}`, (data) => {
             setBundles(data.bundles);
+            setUpdatedBundles(new Date());
         }, {
             'Authorization': `Bearer ${cookies.get('userToken')}`,
         })
@@ -70,7 +73,14 @@ function Selection() {
 
     const getAll = async () => {
         setIsLoading(true);
-        await Promise.all([getItems(), getBundles()])
+        const promises = [];
+        if (itemsData.items.length === 0 || getMinutesBetweenDates(itemsData.updated, new Date()) > 10) {
+            promises.push(getItems());
+        }
+        if (bundles.length === 0 || getMinutesBetweenDates(updatedBundles, new Date()) > 10) {
+            promises.push(getBundles());
+        }
+        await Promise.all(promises);
         setIsLoading(false);
     }
 
@@ -92,14 +102,14 @@ function Selection() {
             </div>
             <BundleList bundles={bundles} onItemClick={onBundleClicked}/>
         </Fragment>}
-        {items.length > 0 && <Fragment>
+        {itemsData.items.length > 0 && <Fragment>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '10px 0 '}}>
             <Typography variant="h6">{t('items')}</Typography>
             <Link to={`/lists/${id}/select/item`}>{t('allItems')}</Link>
             </div>
-            <ItemsList items={items} onItemClicked={onItemClicked} />
+            <ItemsList items={itemsData.items} onItemClicked={onItemClicked} />
         </Fragment>}
-        {items.length === 0 && bundles.length === 0 && <Typography variant="h6">{t('noItems')}</Typography>}
+        {itemsData.items.length === 0 && bundles.length === 0 && <Typography variant="h6">{t('noItems')}</Typography>}
     </main>
   )
 }

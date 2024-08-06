@@ -12,7 +12,7 @@ import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDia
 import Loading from "../components/Loading/Loading.tsx";
 import { del, get } from "../utils/apiRequest.ts";
 import Cookies from "universal-cookie";
-import ListsInterface from "../interface/ListsInterface.ts";
+import ListsInterface, { listsDefault } from "../interface/ListsInterface.ts";
 import { getMinutesBetweenDates } from "../utils/functions.ts";
 import { LuRefreshCw } from "react-icons/lu";
 
@@ -24,17 +24,7 @@ function Lists() {
     const [updatedLists, setUpdatedLists] = useRecoilState<Date>(updatedListsAtom);
     const [listsDisplayed, setListsDisplayed] = useState<ListsInterface[]>(lists);
     const [dialog, setDialog] = useState<{open: boolean, id: string | null}>({open: false, id: null});
-    const [list, setList] = useState<ListsInterface>({
-      _id: '',
-      title: '',
-      items: 0,
-      deletedItems: 0,
-      boughtItems: 0,
-      updatedAt: '',
-      createdAt: '',
-      users: 1,
-      owner: false,
-    });
+    const [list, setList] = useState<ListsInterface>(listsDefault);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const cookies = new Cookies();
 
@@ -48,17 +38,7 @@ function Lists() {
     }
 
     const handleClose = () => {
-      setList({
-        _id: '',
-        title: '',
-        items: 0,
-        deletedItems: 0,
-        boughtItems: 0,
-        updatedAt: '',
-        createdAt: '',
-        users: 1,
-        owner: false,
-      })
+      setList(listsDefault)
       setDialog({open: false, id: null});
     }
 
@@ -69,7 +49,6 @@ function Lists() {
     }
 
     const onSearch = (search: string) => {
-      // TODO: filter lists by search to:[user]
       const filteredLists = lists.filter((list: ListsInterface) => list.title.toLowerCase().includes(search));
       setListsDisplayed(filteredLists);
     }

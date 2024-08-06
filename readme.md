@@ -22,6 +22,7 @@ Super Cart is a full stack application developed with React and Express, both wr
 ## Technologies Used
 
 - **Frontend**: React, TypeScript, Vite
+- **State Management**: Recoil
 - **Backend**: Express, TypeScript
 - **Database**: MongoDB
 - **Authentication**: JWT, Google OAuth
@@ -32,14 +33,11 @@ Super Cart is a full stack application developed with React and Express, both wr
 
 ### Mobile Views
 
-1. **Items Screen**
-   ![Items Screen](./screenshots/items.PNG)
-
-2. **Bundles Screen**
-   ![Bundles Screen](./screenshots/bundles.PNG)
-
-3. **List Screen**
-   ![List Screen](./screenshots/list.PNG)
+<p align="center">
+  <img src="./screenshots/items.PNG" alt="Items Screen" width="200"/>
+  <img src="./screenshots/bundles.PNG" alt="Bundles Screen" width="200"/>
+  <img src="./screenshots/list.PNG" alt="List Screen" width="200"/>
+</p>
 
 ## Installation
 

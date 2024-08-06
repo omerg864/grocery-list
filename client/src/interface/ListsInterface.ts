@@ -13,4 +13,16 @@ interface Lists {
 	stateUpdated?: Date;
 }
 
+export const listsDefault: Lists = {
+	_id: '',
+	title: '',
+	items: 0,
+	deletedItems: 0,
+	boughtItems: 0,
+	updatedAt: '',
+	createdAt: '',
+	users: 1,
+	owner: false,
+}
+
 export default Lists;
