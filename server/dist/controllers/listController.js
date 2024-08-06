@@ -207,7 +207,7 @@ const createListItem = (name, description, unit, amount, category, list, img) =>
             category,
             list,
         });
-        newItem.img = yield (0, cloud_1.uploadToCloudinary)(img.buffer, 'SuperCart/listItems', `${newItem._id}`);
+        newItem.img = yield (0, cloud_1.uploadToCloudinary)(img.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/listItems`, `${newItem._id}`);
         yield newItem.save();
     }
     else {
@@ -232,7 +232,7 @@ const createItem = (name, description, unit, category, user, img) => __awaiter(v
         user: user,
     });
     if (img) {
-        item.img = yield (0, cloud_1.uploadToCloudinary)(img.buffer, 'SuperCart/items', `${user}/${item._id}`);
+        item.img = yield (0, cloud_1.uploadToCloudinary)(img.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${user}/${item._id}`);
         yield item.save();
     }
     return item;
@@ -559,7 +559,10 @@ const deleteListReceipts = (listId) => __awaiter(void 0, void 0, void 0, functio
     const receipts = yield receiptModel_1.default.find({ list: listId });
     const promises = [];
     for (let i = 0; i < receipts.length; i++) {
-        promises.push((0, cloud_1.deleteFromCloudinary)(receipts[i].img));
+        const img = receipts[i].img;
+        if (img) {
+            promises.push((0, cloud_1.deleteFromCloudinary)(img));
+        }
     }
     promises.push(receiptModel_1.default.deleteMany({ list: listId }));
     yield Promise.all(promises);

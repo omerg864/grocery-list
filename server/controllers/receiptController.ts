@@ -41,6 +41,7 @@ const getReceipts = asyncHandler(
 const addReceipt = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
+		const { url } = req.body;
 		const { id } = req.params;
 		const list: ListDocument | null = await List.findById(id);
 		if (!list) {
@@ -60,19 +61,31 @@ const addReceipt = asyncHandler(
 			res.status(403);
 			throw new Error('Not Authorized');
 		}
-		if (!req.file) {
+		if (!req.file && !url) {
 			res.status(400);
 			throw new Error('No file uploaded');
 		}
-		const img = await uploadToCloudinary(
-			req.file.buffer,
-			`SuperCart/lists/${id}`,
-			new Date().toISOString()
-		);
-		const receipt: ReceiptDocument = await Receipt.create({
-			img,
-			list: id,
-		});
+		if (req.file && url) {
+			res.status(400);
+			throw new Error('Please upload only one file');
+		}
+		let receipt: ReceiptDocument;
+		if (req.file) {
+			const img = await uploadToCloudinary(
+				req.file.buffer,
+				`${process.env.CLOUDINARY_BASE_FOLDER}/lists/${id}`,
+				new Date().toISOString()
+			);
+			receipt = await Receipt.create({
+				img,
+				list: id,
+			});
+		} else {
+			receipt = await Receipt.create({
+				url,
+				list: id,
+			});
+		}
 		res.status(201).json({
 			success: true,
 			receipt,
@@ -113,10 +126,12 @@ const deleteReceipt = asyncHandler(
 			res.status(403);
 			throw new Error('Not Authorized');
 		}
-        const promises = [];
-        promises.push(deleteFromCloudinary(receipt.img));
+		const promises = [];
+		if (receipt.img) {
+			promises.push(deleteFromCloudinary(receipt.img));
+		}
 		promises.push(Receipt.deleteOne({ _id: receiptId }));
-        await Promise.all(promises);
+		await Promise.all(promises);
 		res.status(200).json({
 			success: true,
 		});

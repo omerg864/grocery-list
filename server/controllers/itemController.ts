@@ -65,7 +65,7 @@ const addItem = asyncHandler(
 		if (req.file) {
 			item.img = await uploadToCloudinary(
 				req.file.buffer,
-				'SuperCart/items',
+				`${process.env.CLOUDINARY_BASE_FOLDER}/items`,
 				`${user._id}/${item._id}`
 			);
 			await item.save();
@@ -136,7 +136,7 @@ const updateItem = asyncHandler(
 			}
 			item.img = await uploadToCloudinary(
 				req.file.buffer,
-				'SuperCart/items',
+				`${process.env.CLOUDINARY_BASE_FOLDER}/items`,
 				`${user._id}/${item._id}`
 			);
 		}

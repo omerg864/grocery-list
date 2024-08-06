@@ -47,8 +47,22 @@ function ReceiptsList(props: ReceiptsListProps) {
   return (
     <div className="receipts-list">
         {props.receipts.map((receipt) => (
-            <div key={receipt._id} className="receipt">
+            <>{receipt.img ? <div key={receipt._id} className="receipt">
                 <img className="receipt-img" onClick={onImgClick} src={receipt.img} alt="receipt" />
+                <div className="receipt-details" style={{position: 'absolute'}}>
+                    <Typography variant="h6">
+                        {formatDate(receipt.createdAt)}
+                    </Typography>
+                    <IconButton onClick={() => props.onDelete(receipt._id)}>
+                        <FaTrash size={"1.5rem"} color='red' />
+                    </IconButton>
+                </div>
+            </div> : <div key={receipt._id} className="receipt" style={{textAlign: 'center', background: 'darkgreen'}}>
+                <div style={{ padding: '1rem 0', width: '100%'}}>
+                    <a href={receipt.url} target="_blank" rel="noreferrer">
+                        {receipt.url}
+                    </a>
+                </div>
                 <div className="receipt-details">
                     <Typography variant="h6">
                         {formatDate(receipt.createdAt)}
@@ -57,7 +71,7 @@ function ReceiptsList(props: ReceiptsListProps) {
                         <FaTrash size={"1.5rem"} color='red' />
                     </IconButton>
                 </div>
-            </div>
+                </div>}</>
         ))}
     </div>
   )

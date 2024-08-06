@@ -5,7 +5,9 @@ const ReceiptScheme = new mongoose.Schema<ReceiptDocument>(
 	{
 		img: {
 			type: String,
-			required: true,
+		},
+		url: {
+			type: String,
 		},
 		list: {
 			type: mongoose.Schema.Types.ObjectId,

@@ -249,7 +249,7 @@ const createListItem = async (
 		});
 		newItem.img = await uploadToCloudinary(
 			img.buffer,
-			'SuperCart/listItems',
+			`${process.env.CLOUDINARY_BASE_FOLDER}/listItems`,
 			`${newItem._id}`
 		);
 		await newItem.save();
@@ -285,7 +285,7 @@ const createItem = async (
 	if (img) {
 		item.img = await uploadToCloudinary(
 			img.buffer,
-			'SuperCart/items',
+			`${process.env.CLOUDINARY_BASE_FOLDER}/items`,
 			`${user}/${item._id}`
 		);
 		await item.save();
@@ -732,7 +732,10 @@ const deleteListReceipts = async (listId: unknown) => {
 	const receipts: ReceiptDocument[] = await Receipt.find({ list: listId });
 	const promises = [];
 	for (let i = 0; i < receipts.length; i++) {
-		promises.push(deleteFromCloudinary(receipts[i].img));
+		const img: string | undefined = receipts[i].img;
+		if (img) {
+			promises.push(deleteFromCloudinary(img));
+		}
 	}
 	promises.push(Receipt.deleteMany({ list: listId }));
 	await Promise.all(promises);

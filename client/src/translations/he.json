@@ -274,7 +274,10 @@
         "cancel": "ביטול",
         "delete": "מחק",
         "deleteReceipt": "מחק קבלה",
-        "deleteReceiptContent": "האם אתה בטוח שברצונך למחוק קבלה זו? פעולה זו לא ניתנת לביטול."
+        "deleteReceiptContent": "האם אתה בטוח שברצונך למחוק קבלה זו? פעולה זו לא ניתנת לביטול.",
+        "receiptType": "סוג קבלה",
+        "image": "תמונה",
+        "url": "קישור"
     },
     "VerifyEmail": {
         "verifyEmail": "אימות אימייל",

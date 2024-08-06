@@ -27,7 +27,9 @@ const mongoose = __importStar(require("mongoose"));
 const ReceiptScheme = new mongoose.Schema({
     img: {
         type: String,
-        required: true,
+    },
+    url: {
+        type: String,
     },
     list: {
         type: mongoose.Schema.Types.ObjectId,

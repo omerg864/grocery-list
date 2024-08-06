@@ -68,7 +68,7 @@ const addItem = (0, express_async_handler_1.default)((req, res, next) => __await
         user: user._id,
     });
     if (req.file) {
-        item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, 'SuperCart/items', `${user._id}/${item._id}`);
+        item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${user._id}/${item._id}`);
         yield item.save();
     }
     res.status(200).json({
@@ -127,7 +127,7 @@ const updateItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         if (item.img) {
             yield (0, functions_1.deleteImage)(item.img, true);
         }
-        item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, 'SuperCart/items', `${user._id}/${item._id}`);
+        item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${user._id}/${item._id}`);
     }
     item.name = name;
     item.description = description;

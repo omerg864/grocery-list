@@ -73,12 +73,12 @@ const updateItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         if (item.img) {
             const [_, image_url] = yield Promise.all([
                 (0, functions_1.deleteImage)(item.img),
-                (0, cloud_1.uploadToCloudinary)(req.file.buffer, 'SuperCart/listItems', id),
+                (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/listItems`, id),
             ]);
             item.img = image_url;
         }
         else {
-            item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, 'SuperCart/listItems', id);
+            item.img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/listItems`, id);
         }
     }
     item.name = name;

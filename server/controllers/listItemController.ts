@@ -77,7 +77,7 @@ const updateItem = asyncHandler(
 					deleteImage(item.img),
 					uploadToCloudinary(
 						req.file.buffer,
-						'SuperCart/listItems',
+						`${process.env.CLOUDINARY_BASE_FOLDER}/listItems`,
 						id
 					),
 				]);
@@ -85,7 +85,7 @@ const updateItem = asyncHandler(
 			} else {
 				item.img = await uploadToCloudinary(
 					req.file.buffer,
-					'SuperCart/listItems',
+					`${process.env.CLOUDINARY_BASE_FOLDER}/listItems`,
 					id
 				);
 			}

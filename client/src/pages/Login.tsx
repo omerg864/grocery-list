@@ -58,6 +58,7 @@ function Login(props: LoginProps) {
 
   const responseGoogle = async (authResult: any) => {
     if (authResult["code"]) {
+      setIsLoading(true);
       await post(`/api/user/google`, {
         code: authResult.code,
       } , (data) => {
@@ -66,6 +67,7 @@ function Login(props: LoginProps) {
         }
         successfulLogin(data);
       });
+      setIsLoading(false);
     } else {
       console.log(authResult);
       throw new Error(authResult);

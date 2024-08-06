@@ -155,7 +155,7 @@ const updateUser = asyncHandler(
 			}
 			userReq!.avatar = await uploadToCloudinary(
 				req.file.buffer,
-				'SuperCart/users',
+				`${process.env.CLOUDINARY_BASE_FOLDER}/users`,
 				`${userReq._id}/avatar`
 			);
 		}

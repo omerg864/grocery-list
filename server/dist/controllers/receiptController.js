@@ -45,6 +45,7 @@ const getReceipts = (0, express_async_handler_1.default)((req, res, next) => __a
 exports.getReceipts = getReceipts;
 const addReceipt = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
+    const { url } = req.body;
     const { id } = req.params;
     const list = yield listModel_1.default.findById(id);
     if (!list) {
@@ -62,15 +63,28 @@ const addReceipt = (0, express_async_handler_1.default)((req, res, next) => __aw
         res.status(403);
         throw new Error('Not Authorized');
     }
-    if (!req.file) {
+    if (!req.file && !url) {
         res.status(400);
         throw new Error('No file uploaded');
     }
-    const img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `SuperCart/lists/${id}`, new Date().toISOString());
-    const receipt = yield receiptModel_1.default.create({
-        img,
-        list: id,
-    });
+    if (req.file && url) {
+        res.status(400);
+        throw new Error('Please upload only one file');
+    }
+    let receipt;
+    if (req.file) {
+        const img = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/lists/${id}`, new Date().toISOString());
+        receipt = yield receiptModel_1.default.create({
+            img,
+            list: id,
+        });
+    }
+    else {
+        receipt = yield receiptModel_1.default.create({
+            url,
+            list: id,
+        });
+    }
     res.status(201).json({
         success: true,
         receipt,
@@ -106,7 +120,9 @@ const deleteReceipt = (0, express_async_handler_1.default)((req, res, next) => _
         throw new Error('Not Authorized');
     }
     const promises = [];
-    promises.push((0, cloud_1.deleteFromCloudinary)(receipt.img));
+    if (receipt.img) {
+        promises.push((0, cloud_1.deleteFromCloudinary)(receipt.img));
+    }
     promises.push(receiptModel_1.default.deleteOne({ _id: receiptId }));
     yield Promise.all(promises);
     res.status(200).json({

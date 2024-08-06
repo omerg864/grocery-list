@@ -1,7 +1,8 @@
 
 interface Receipt {
     _id: string;
-    img: string;
+    img?: string;
+    url?: string;
     createdAt: string;
 }
 

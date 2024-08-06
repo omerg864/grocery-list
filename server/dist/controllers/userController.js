@@ -152,7 +152,7 @@ const updateUser = (0, express_async_handler_1.default)((req, res, next) => __aw
         if (userReq.avatar) {
             yield (0, cloud_1.deleteFromCloudinary)(userReq.avatar);
         }
-        userReq.avatar = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, 'SuperCart/users', `${userReq._id}/avatar`);
+        userReq.avatar = yield (0, cloud_1.uploadToCloudinary)(req.file.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/users`, `${userReq._id}/avatar`);
     }
     userReq.f_name = f_name;
     userReq.l_name = l_name;
