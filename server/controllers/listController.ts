@@ -163,6 +163,7 @@ const getList = asyncHandler(
 						},
 					},
 					items: 1,
+					token: 1,
 					deletedItems: 1,
 					boughtItems: 1,
 					categories: 1,

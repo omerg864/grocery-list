@@ -178,7 +178,6 @@ function List() {
 
     const closeTitleDialog = () => {
         setTitleDialog(false);
-        setList((prev) => ({...prev, title: listName}));
     }
 
     const onItemClicked = (id: string) => {

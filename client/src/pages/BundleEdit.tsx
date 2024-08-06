@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import GlassButton from '../components/GlassButton/GlassButton';
 import { HiOutlineSave } from 'react-icons/hi';
 import { useRecoilState } from 'recoil';
-import { bundleAtom } from '../recoil/atoms';
+import { bundleAtom, bundlesAtom } from '../recoil/atoms';
 import { get, put } from '../utils/apiRequest';
 import Cookies from 'universal-cookie';
 import { toast } from 'react-toastify';
@@ -22,6 +22,7 @@ function BundleEdit() {
   const { t } = useTranslation('translation', { keyPrefix: 'BundleEdit' });
   const navigate = useNavigate();
   const [bundle, setBundle] = useRecoilState<Bundle>(bundleAtom);
+  const [_, setBundles] = useRecoilState<Bundle[]>(bundlesAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { id } = useParams();
   const cookies = new Cookies();
@@ -70,6 +71,7 @@ function BundleEdit() {
     }
     await put(`/api/bundle/${id}`, formData, (_) => {
       setBundle(bundleDefault);
+      setBundles([]);
       navigate('/bundles');
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,

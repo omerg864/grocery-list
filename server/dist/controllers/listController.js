@@ -164,6 +164,7 @@ const getList = (0, express_async_handler_1.default)((req, res, next) => __await
                     },
                 },
                 items: 1,
+                token: 1,
                 deletedItems: 1,
                 boughtItems: 1,
                 categories: 1,
