@@ -27,7 +27,6 @@ function Lists() {
     const [list, setList] = useState<ListsInterface>({
       _id: '',
       title: '',
-      categories: [],
       items: 0,
       deletedItems: 0,
       boughtItems: 0,
@@ -52,7 +51,6 @@ function Lists() {
       setList({
         _id: '',
         title: '',
-        categories: [],
         items: 0,
         deletedItems: 0,
         boughtItems: 0,
