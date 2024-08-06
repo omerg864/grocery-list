@@ -210,6 +210,9 @@ function List() {
             closeTitleDialog();
         }, {
             'Authorization': `Bearer ${cookies.get('userToken')}`,
+        }, (message) => {
+            toast.error(message);
+            setList((prev) => ({...prev, title: listName}));
         });
         setIsLoading(false);
     }
