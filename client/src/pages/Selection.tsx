@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Header from '../components/Header/Header';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -95,21 +95,16 @@ function Selection() {
   return (
     <main>
         <Header title={t('selectItem')} onBack={backClick} buttonClick={buttonClick} buttonTitle={t('newItem')} />
-        {bundles.length > 0 && <Fragment>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'}}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'}}>
             <Typography variant="h6">{t('bundles')}</Typography>
             <Link to={`/lists/${id}/select/bundle`}>{t('allBundles')}</Link>
-            </div>
-            <BundleList bundles={bundles.slice(0, BUNDLE_SELECTION_LIMIT)} onItemClick={onBundleClicked}/>
-        </Fragment>}
-        {itemsData.items.length > 0 && <Fragment>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '10px 0 '}}>
+        </div>
+        <BundleList bundles={bundles.slice(0, BUNDLE_SELECTION_LIMIT)} onItemClick={onBundleClicked}/>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '10px 0 '}}>
             <Typography variant="h6">{t('items')}</Typography>
             <Link to={`/lists/${id}/select/item`}>{t('allItems')}</Link>
-            </div>
-            <ItemsList items={itemsData.items.slice(0, ITEM_SELECTION_LIMIT)} onItemClicked={onItemClicked} />
-        </Fragment>}
-        {itemsData.items.length === 0 && bundles.length === 0 && <Typography variant="h6">{t('noItems')}</Typography>}
+        </div>
+        <ItemsList items={itemsData.items.slice(0, ITEM_SELECTION_LIMIT)} onItemClicked={onItemClicked} />
     </main>
   )
 }
