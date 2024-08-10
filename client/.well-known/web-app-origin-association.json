@@ -1,0 +1,11 @@
+{
+    "web_apps": [
+        {
+            "manifest": "https://super-cart-sage.vercel.app/manifest.json",
+            "details": {
+                "paths": ["*"],
+                "exclude_paths": ["/api/*"]
+            }
+        }
+    ]
+}
