@@ -41,11 +41,3 @@ body {
   font-family: var(--font-family);
   background-color: var(--color-background);
 }
-
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-}
