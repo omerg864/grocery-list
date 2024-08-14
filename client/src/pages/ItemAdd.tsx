@@ -9,13 +9,14 @@ import GlassButton from "../components/GlassButton/GlassButton";
 import { MdAdd } from "react-icons/md";
 import ListItem from "../interface/ListItemInterface";
 import { useRecoilState } from "recoil";
-import { itemAtom } from "../recoil/atoms";
+import { itemAtom, listsState } from "../recoil/atoms";
 import { getMinutesBetweenDates } from "../utils/functions";
 import { get, post } from "../utils/apiRequest";
 import Cookies from "universal-cookie";
 import { SelectChangeEvent } from "@mui/material";
 import { motion } from "framer-motion";
 import useWindowDimensions from "../hooks/useWindowDimensions";
+import Lists from "../interface/ListsInterface";
 
 
 
@@ -25,6 +26,7 @@ function ItemAdd() {
   const { t } = useTranslation('translation', { keyPrefix: 'ItemAdd' });
   const navigate = useNavigate();
   const [itemState, setItemState] = useRecoilState<ListItem>(itemAtom);
+  const [lists, setLists] = useRecoilState<Lists[]>(listsState);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const cookies = new Cookies();
   const dimensions = useWindowDimensions();
@@ -114,6 +116,11 @@ function ItemAdd() {
         unit: 'pc',
         description: '',
       });
+      const listFound = lists.find((list) => list._id === id);
+      if (listFound) {
+        const newList: Lists = {...listFound, items: listFound.items + 1};
+        setLists((prev) => [...prev.filter((list) => list._id !== id), newList])
+      }
       toast.success(t('ItemAdded'));
       navigate(`/lists/${id}/select`);
     }, {
