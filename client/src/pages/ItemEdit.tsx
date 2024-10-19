@@ -115,13 +115,14 @@ function ItemEdit() {
     if (typeof itemState === 'object' && 'amount' in itemState) {
       formData.append('amount', itemState.amount ? itemState.amount.toString() : "");
     }
-    await put(api_url, formData, (_) => {
+    await put(api_url, formData, async (_) => {
       if (item) {
         navigate(`/lists/${id}/item/${item}`);
       } else {
+        await getItems();
         navigate(`/items/${id}`);
       }
-      toast.success('itemUpdated')
+      toast.success(t('itemUpdated'))
     }, {
       'Authorization': `Bearer ${cookies.get('userToken')}`,
       'Content-Type': 'multipart/form-data',
