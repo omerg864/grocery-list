@@ -10,10 +10,7 @@ import ListItem from '../models/listItemModel';
 import Bundle from '../models/bundleModel';
 import { ItemDocument } from '../interface/itemInterface';
 import { ListItemDocument } from '../interface/listItemInterface';
-import {
-	deleteFromCloudinary,
-	uploadToCloudinary,
-} from '../config/cloud';
+import { deleteFromCloudinary, uploadToCloudinary } from '../config/cloud';
 import { deleteImage } from '../utils/functions';
 import Receipt from '../models/receiptModel';
 import { ReceiptDocument } from '../interface/receiptInterface';
@@ -330,9 +327,9 @@ const addList = asyncHandler(
 			}
 		}
 		if (promises.length > 0) {
-			promises.push(list.save());
 			await Promise.all(promises);
 		}
+		await list.save();
 		res.status(200).json({
 			success: true,
 			list,
@@ -361,11 +358,13 @@ const createListItem = async (
 				amount,
 				category,
 				list,
-			}), uploadToCloudinary(
+			}),
+			uploadToCloudinary(
 				img.buffer,
 				`${process.env.CLOUDINARY_BASE_FOLDER}/items`,
 				`${imageID}`
-			)]);
+			),
+		]);
 		newItem.img = imageUrl;
 		await newItem.save();
 	} else {
@@ -546,7 +545,7 @@ const checkList = async (
 		throw new Error('Not Authorized');
 	}
 	return list;
-}
+};
 
 const checkListItem = async (
 	id: string,
@@ -558,17 +557,17 @@ const checkListItem = async (
 		throw new Error('Item Not Found');
 	}
 	return listItem;
-}
+};
 
 const checkListAndItem = async (
 	listId: string,
 	itemId: string,
 	res: Response,
 	userId: unknown
-): Promise<{list: ListDocument, listItem: ListItemDocument}> => {
+): Promise<{ list: ListDocument; listItem: ListItemDocument }> => {
 	const [list, listItem] = await Promise.all([
 		checkList(listId, res, userId),
-		checkListItem(itemId, res)
+		checkListItem(itemId, res),
 	]);
 	return { list, listItem };
 };
@@ -693,7 +692,7 @@ const addBundleItems = asyncHandler(
 			res.status(404);
 			throw new Error('Bundle Not Found');
 		}
-		const promises = []
+		const promises = [];
 		for (let i = 0; i < bundleContext.items.length; i++) {
 			const item = bundleContext.items[i] as ItemDocument;
 			const info = amounts.find(
@@ -724,7 +723,9 @@ const deleteForAll = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const { id } = req.params;
-		const list: ListDocument | null = await List.findById(id).populate('users');
+		const list: ListDocument | null = await List.findById(id).populate(
+			'users'
+		);
 		if (!list) {
 			res.status(404);
 			throw new Error('List Not Found');
@@ -858,7 +859,11 @@ const deleteListReceipts = async (listId: unknown) => {
 	await Promise.all(promises);
 };
 
-const deleteList = async (list: ListDocument, owner: boolean, userId: unknown) => {
+const deleteList = async (
+	list: ListDocument,
+	owner: boolean,
+	userId: unknown
+) => {
 	const promises = [];
 	if (owner) {
 		// full delete
@@ -895,7 +900,7 @@ const deleteList = async (list: ListDocument, owner: boolean, userId: unknown) =
 		);
 		await list.save();
 	}
-}
+};
 
 const deletePermanently = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {

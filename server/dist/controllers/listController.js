@@ -304,9 +304,9 @@ const addList = (0, express_async_handler_1.default)((req, res, next) => __await
         }
     }
     if (promises.length > 0) {
-        promises.push(list.save());
         yield Promise.all(promises);
     }
+    yield list.save();
     res.status(200).json({
         success: true,
         list,
@@ -326,7 +326,8 @@ const createListItem = (name, description, unit, amount, category, list, img) =>
                 amount,
                 category,
                 list,
-            }), (0, cloud_1.uploadToCloudinary)(img.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${imageID}`)
+            }),
+            (0, cloud_1.uploadToCloudinary)(img.buffer, `${process.env.CLOUDINARY_BASE_FOLDER}/items`, `${imageID}`),
         ]);
         newItem.img = imageUrl;
         yield newItem.save();
@@ -471,7 +472,7 @@ const checkListItem = (id, res) => __awaiter(void 0, void 0, void 0, function* (
 const checkListAndItem = (listId, itemId, res, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const [list, listItem] = yield Promise.all([
         checkList(listId, res, userId),
-        checkListItem(itemId, res)
+        checkListItem(itemId, res),
     ]);
     return { list, listItem };
 });
