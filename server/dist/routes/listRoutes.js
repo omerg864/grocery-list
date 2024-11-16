@@ -12,6 +12,7 @@ const router = express_1.default.Router();
 router.get('/', authMiddleware_1.protectUser, listController_1.getLists);
 router.post('/', authMiddleware_1.protectUser, listController_1.addList);
 router.get('/deleted', authMiddleware_1.protectUser, listController_1.getDeletedLists);
+router.get('/archived', authMiddleware_1.protectUser, listController_1.getArchivedLists);
 router.put('/:id', authMiddleware_1.protectUser, listController_1.changeListTitle);
 router.delete('/:id/user/:userId', authMiddleware_1.protectUser, listController_1.removeUserFromList);
 router.get('/:id', authMiddleware_1.protectUser, listController_1.getList);
@@ -30,4 +31,6 @@ router.delete('/:id/permanently', authMiddleware_1.protectUser, listController_1
 router.get('/:token/shared', authMiddleware_1.protectUser, listController_1.getSharedList);
 router.post('/:token/share', authMiddleware_1.protectUser, listController_1.shareList);
 router.put('/:id/share', authMiddleware_1.protectUser, listController_1.resetListShareToken);
+router.get('/:id/archive', authMiddleware_1.protectUser, listController_1.archiveList);
+router.get('/:id/unarchive', authMiddleware_1.protectUser, listController_1.unarchiveList);
 exports.default = router;

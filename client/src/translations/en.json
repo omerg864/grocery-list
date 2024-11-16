@@ -30,7 +30,10 @@
         "deleteListContent": "Are you sure you want to delete this list? \n delete for all users will remove the list for all users. \n delete for me will remove the list only for you.",
         "cancel": "Cancel",
         "deleteForAll": "Delete for all users",
-        "deleteForMe": "Delete for me"
+        "deleteForMe": "Delete for me",
+        "variance": "Variance",
+        "deleted": "Deleted Lists",
+        "archived": "Archived Lists"
     },
     "NavBar": {
         "lists": "Lists",
@@ -307,5 +310,8 @@
         "addToBundles": "Add to Bundles and Items",
         "description": "Description",
         "items": "Items"
+    },
+    "ListsArchived": {
+        "archived":"Archived Lists"
     }
 }

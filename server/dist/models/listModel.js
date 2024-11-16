@@ -73,6 +73,10 @@ const ListScheme = new mongoose.Schema({
     token: {
         type: String,
         required: true,
-    }
+    },
+    archived: {
+        type: Boolean,
+        default: false,
+    },
 }, { timestamps: true });
 exports.default = mongoose.model('List', ListScheme);

@@ -23,6 +23,9 @@ import {
 	createShareToken,
 	changeListTitle,
 	removeUserFromList,
+	archiveList,
+	unarchiveList,
+	getArchivedLists
 } from '../controllers/listController';
 import { upload } from '../config/cloud';
 
@@ -32,6 +35,7 @@ const router = express.Router();
 router.get('/', protectUser, getLists);
 router.post('/', protectUser, addList);
 router.get('/deleted', protectUser, getDeletedLists);
+router.get('/archived', protectUser, getArchivedLists);
 router.put('/:id', protectUser, changeListTitle);
 router.delete('/:id/user/:userId', protectUser, removeUserFromList);
 router.get('/:id', protectUser, getList);
@@ -50,5 +54,7 @@ router.delete('/:id/permanently', protectUser, deletePermanently);
 router.get('/:token/shared', protectUser, getSharedList);
 router.post('/:token/share', protectUser, shareList);
 router.put('/:id/share', protectUser, resetListShareToken);
+router.get('/:id/archive', protectUser, archiveList);
+router.get('/:id/unarchive', protectUser, unarchiveList);
 
 export default router;

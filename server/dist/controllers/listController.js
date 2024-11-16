@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeUserFromList = exports.createShareToken = exports.getSharedList = exports.resetListShareToken = exports.shareList = exports.deleteAllListsUserDeleted = exports.deletePermanently = exports.restoreList = exports.getDeletedLists = exports.deleteForMe = exports.deleteForAll = exports.addBundleItems = exports.restoreFromBought = exports.restoreFromDeleted = exports.sendToBought = exports.sendToDeleted = exports.addExistingItem = exports.addNewItem = exports.changeListTitle = exports.addList = exports.getList = exports.getLists = void 0;
+exports.getArchivedLists = exports.unarchiveList = exports.archiveList = exports.removeUserFromList = exports.createShareToken = exports.getSharedList = exports.resetListShareToken = exports.shareList = exports.deleteAllListsUserDeleted = exports.deletePermanently = exports.restoreList = exports.getDeletedLists = exports.deleteForMe = exports.deleteForAll = exports.addBundleItems = exports.restoreFromBought = exports.restoreFromDeleted = exports.sendToBought = exports.sendToDeleted = exports.addExistingItem = exports.addNewItem = exports.changeListTitle = exports.addList = exports.getList = exports.getLists = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const listModel_1 = __importDefault(require("../models/listModel"));
@@ -26,7 +26,7 @@ const uuid_1 = require("uuid");
 const getLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const lists = yield listModel_1.default.aggregate([
-        { $match: { users: user._id } },
+        { $match: { users: user._id, archived: { $not: { $eq: true } } } },
         { $sort: { updatedAt: -1 } },
         {
             $project: {
@@ -194,17 +194,7 @@ const changeListTitle = (0, express_async_handler_1.default)((req, res, next) =>
         res.status(404);
         throw new Error('List Not Found');
     }
-    let found = false;
-    list.users.forEach((listUser) => {
-        if (listUser.toString() ===
-            user._id.toString()) {
-            found = true;
-        }
-    });
-    if (!found) {
-        res.status(403);
-        throw new Error('Not Authorized');
-    }
+    yield checkAuthorization(list, user, res);
     list.title = title;
     yield list.save();
     res.status(200).json({
@@ -373,17 +363,7 @@ const addNewItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         res.status(404);
         throw new Error('List Not Found');
     }
-    let found = false;
-    list.users.forEach((listUser) => {
-        if (listUser.toString() ===
-            user._id.toString()) {
-            found = true;
-        }
-    });
-    if (!found) {
-        res.status(403);
-        throw new Error('Not Authorized');
-    }
+    yield checkAuthorization(list, user, res);
     let listItem, item;
     if (saveItem) {
         item = yield createItem(name, description, unit, category, user._id, req.file);
@@ -409,17 +389,7 @@ const addExistingItem = (0, express_async_handler_1.default)((req, res, next) =>
         res.status(404);
         throw new Error('List Not Found');
     }
-    let found = false;
-    list.users.forEach((listUser) => {
-        if (listUser.toString() ===
-            user._id.toString()) {
-            found = true;
-        }
-    });
-    if (!found) {
-        res.status(403);
-        throw new Error('Not Authorized');
-    }
+    yield checkAuthorization(list, user, res);
     const ItemContext = yield itemModel_1.default.findById(item);
     if (!ItemContext) {
         res.status(404);
@@ -537,17 +507,7 @@ const addBundleItems = (0, express_async_handler_1.default)((req, res, next) => 
         res.status(404);
         throw new Error('List Not Found');
     }
-    let found = false;
-    list.users.forEach((listUser) => {
-        if (listUser.toString() ===
-            user._id.toString()) {
-            found = true;
-        }
-    });
-    if (!found) {
-        res.status(403);
-        throw new Error('Not Authorized');
-    }
+    yield checkAuthorization(list, user, res);
     const bundleContext = yield bundleModel_1.default.findById(bundle).populate('items');
     if (!bundleContext) {
         res.status(404);
@@ -599,17 +559,7 @@ const deleteForMe = (0, express_async_handler_1.default)((req, res, next) => __a
         res.status(404);
         throw new Error('List Not Found');
     }
-    let found = false;
-    list.users.forEach((listUser) => {
-        if (listUser.toString() ===
-            user._id.toString()) {
-            found = true;
-        }
-    });
-    if (!found) {
-        res.status(403);
-        throw new Error('Not Authorized');
-    }
+    yield checkAuthorization(list, user, res);
     let owner = false;
     if (list.owner.toString() === user._id.toString()) {
         owner = true;
@@ -628,6 +578,19 @@ const deleteForMe = (0, express_async_handler_1.default)((req, res, next) => __a
     });
 }));
 exports.deleteForMe = deleteForMe;
+const checkAuthorization = (list, user, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let found = false;
+    list.users.forEach((listUser) => {
+        if (listUser.toString() ===
+            user._id.toString()) {
+            found = true;
+        }
+    });
+    if (!found) {
+        res.status(403);
+        throw new Error('Not Authorized');
+    }
+});
 const getDeletedLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const lists = yield listModel_1.default.find({ deletedUsers: user._id });
@@ -765,6 +728,65 @@ const createShareToken = (0, express_async_handler_1.default)((req, res, next) =
     });
 }));
 exports.createShareToken = createShareToken;
+const archiveList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const user = req.user;
+    const list = yield listModel_1.default.findById(id);
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+    yield checkAuthorization(list, user, res);
+    list.archived = true;
+    yield list.save();
+    res.status(200).json({
+        success: true,
+    });
+}));
+exports.archiveList = archiveList;
+const unarchiveList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const user = req.user;
+    const list = yield listModel_1.default.findById(id);
+    if (!list) {
+        res.status(404);
+        throw new Error('List Not Found');
+    }
+    yield checkAuthorization(list, user, res);
+    list.archived = false;
+    yield list.save();
+    res.status(200).json({
+        success: true,
+    });
+}));
+exports.unarchiveList = unarchiveList;
+const getArchivedLists = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const lists = yield listModel_1.default.aggregate([
+        { $match: { users: user._id, archived: true } },
+        { $sort: { updatedAt: -1 } },
+        {
+            $project: {
+                _id: 1,
+                title: 1,
+                updatedAt: 1,
+                createdAt: 1,
+                users: { $size: '$users' },
+                items: { $size: '$items' },
+                deletedItems: { $size: '$deletedItems' },
+                boughtItems: { $size: '$boughtItems' },
+                owner: {
+                    $eq: [{ $toString: '$owner' }, { $toString: user._id }],
+                },
+            },
+        },
+    ]);
+    res.status(200).json({
+        success: true,
+        lists,
+    });
+}));
+exports.getArchivedLists = getArchivedLists;
 const getSharedList = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = req.params;
     const list = yield listModel_1.default.findOne({ token }).populate('users');

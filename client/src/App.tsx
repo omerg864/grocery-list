@@ -42,6 +42,8 @@ import { prefixer } from 'stylis';
 import rtlPlugin from 'stylis-plugin-rtl';
 import Page404 from './pages/Page404.tsx';
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import ListsVariance from './pages/ListsVariance.tsx';
+import ListsArchived from './pages/ListsArchived.tsx';
 
 function App() {
 
@@ -98,8 +100,10 @@ function App() {
       <Routes>
         {/* lists routes */}
         <Route path="/" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Lists /></ProtectedRoute>} /> 
+        <Route path="/lists/variance" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListsVariance /></ProtectedRoute>} />
         <Route path="/lists/new" element={<ProtectedRoute isAuthenticated={isAuthenticated}><NewList /></ProtectedRoute>} />
         <Route path="/lists/deleted" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListsDeleted /></ProtectedRoute>} />
+        <Route path="/lists/archived" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListsArchived /></ProtectedRoute>} />
         <Route path="/lists/:id" element={<ProtectedRoute isAuthenticated={isAuthenticated}><List /></ProtectedRoute>} />
         <Route path="/lists/:id/receipts" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ListReceipts /></ProtectedRoute>} /> 
         <Route path="/lists/:id/item/:item" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ItemDisplay /></ProtectedRoute>} />

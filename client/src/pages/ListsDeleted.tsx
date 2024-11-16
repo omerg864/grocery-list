@@ -72,7 +72,7 @@ function ListsDeleted() {
     }
 
     const back = () => {
-        navigate('/');
+        navigate('/lists/variance');
     }
 
     const getLists = async (loading?: boolean) => {

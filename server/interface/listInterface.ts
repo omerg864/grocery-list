@@ -13,6 +13,7 @@ export interface List {
     owner: ObjectId | UserDocument;
 	deletedUsers: ObjectId[] | UserDocument[];
 	token: string;
+	archived: boolean;
 }
 
 export interface ListDocument extends List, Document {}

@@ -22,7 +22,7 @@ function ListHeader(props: ListHeaderProps) {
   const endIcon = props.endIcon || <IoMdAdd size={"1.5rem"} color='black'/>;
 
   return (
-    <div className='list-header'>
+    <div className='list-header' >
         <div className='list-header-title'>
           {props.onBack ? <IconButton onClick={props.onBack} > 
             <ArrowBack color='white'/>

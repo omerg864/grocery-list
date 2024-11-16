@@ -15,6 +15,7 @@ import Cookies from "universal-cookie";
 import ListsInterface, { listsDefault } from "../interface/ListsInterface.ts";
 import { getMinutesBetweenDates } from "../utils/functions.ts";
 import { LuRefreshCw } from "react-icons/lu";
+import { CgMoreO } from "react-icons/cg";
 
 function Lists() {
 
@@ -33,8 +34,8 @@ function Lists() {
       navigate('/lists/new');
     }
 
-    const goToDeleted = () => {
-      navigate('/lists/deleted');
+    const goToVariance = () => {
+      navigate('/lists/variance');
     }
 
     const handleClose = () => {
@@ -46,6 +47,17 @@ function Lists() {
       const listFound = lists.find((list) => list._id === id)!;
       setList(listFound);
       setDialog({open: true, id: id});
+    }
+
+    const archiveList = (id: string) => {
+      setIsLoading(true);
+      get(`/api/list/${id}/archive`, (_) => {
+        setIsLoading(false);
+        setLists((prev) => prev.filter((list) => list._id !== id));
+        setListsDisplayed((prev) => prev.filter((list) => list._id !== id));
+      }, {
+        'Authorization': `Bearer ${cookies.get('userToken')}`,
+      });
     }
 
     const onSearch = (search: string) => {
@@ -107,8 +119,8 @@ function Lists() {
 
   return (
     <main>
-        <Header buttonTitle={t("addList")} title={t("lists")} buttonClick={newList} sideButton={<Tooltip title={t('recentlyDeleted')}><IconButton onClick={goToDeleted} >
-          <MdOutlineAutoDelete color="white"/>
+        <Header buttonTitle={t("addList")} title={t("lists")} buttonClick={newList} sideButton={<Tooltip title={t('variance')}><IconButton onClick={goToVariance} >
+          <CgMoreO color="white"/>
         </IconButton></Tooltip>} />
         <ConfirmationDialog  handleClose={handleClose} open={dialog.open} title={t('deleteList')} content={t('deleteListContent')} 
           buttons={<div className='dialog-buttons'>
@@ -124,7 +136,7 @@ function Lists() {
           </IconButton>
           <SearchBar placeholder={t("search")} onSearch={onSearch}/>
         </div>
-        <ListsList onClick={onClick} deleteList={openDialog} lists={listsDisplayed} />
+        <ListsList onClick={onClick} deleteList={openDialog} archiveList={archiveList} lists={listsDisplayed} />
     </main>
   )
 }

@@ -10,11 +10,13 @@ import Cookies from 'universal-cookie';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
+import { IoArchive } from "react-icons/io5";
 
 
 interface ListsListProps {
     lists: Lists[];
-    deleteList: (id: string) => void;
+    deleteList?: (id: string) => void;
+    archiveList?: (id: string) => void;
     onClick: (id: string) => void;
 }
 function ListsList(props: ListsListProps) {
@@ -32,6 +34,14 @@ function ListsList(props: ListsListProps) {
         )
     }
 
+    const rightButton = (): React.ReactNode => {
+        return (
+            <div className='swipe-content'>
+                <IoArchive size={"1.5rem"} color='white' />
+            </div>
+        )
+    }
+
     const user = cookies.get('user');
     const fullSwipe = user && user.fullSwipe ? true : false;
 
@@ -43,7 +53,7 @@ function ListsList(props: ListsListProps) {
             <img alt="No bundles" style={{width: '60%'}} src="/shopping-cart-icon.png" />
             <Typography variant="h5">{t('noLists')}</Typography>
             </div>  : props.lists.map((list: Lists) => (
-                <SwipeItem open={open} setOpen={setOpen} fullSwipe={fullSwipe} leftBtnClass='swipe-left-btn' animateDivClass='list-view' threshold={0.06} onSwipedRight={() => props.deleteList(list._id)} leftBtnChildren={leftButton()} leftBtnOpenWidth={80} mainItemClick={() => props.onClick(list._id)} key={list._id} id={list._id} >
+                <SwipeItem open={open} setOpen={setOpen} fullSwipe={fullSwipe} leftBtnClass={props.deleteList ? 'swipe-left-btn' : ''} rightBtnClass={props.archiveList ? 'swipe-right-btn' : ''} animateDivClass='list-view' threshold={0.06} onSwipedLeft={props.archiveList ? () => props.archiveList!(list._id) : undefined} onSwipedRight={props.deleteList ? () => props.deleteList!(list._id) : undefined} leftBtnChildren={props.deleteList ? leftButton() : undefined} rightBtnChildren={props.archiveList ? rightButton() : undefined} rightBtnOpenWidth={props.archiveList ? 80 : undefined} leftBtnOpenWidth={props.deleteList ? 80 : 0} mainItemClick={() => props.onClick(list._id)} key={list._id} id={list._id} >
                     <CardActionArea className='list-container'>
                         <div className='list-view' style={{ padding: '0 0.5rem' }}>
                             <div className='list-details'>

@@ -51,7 +51,11 @@ const ListScheme = new mongoose.Schema<ListDocument>(
 		token: {
 			type: String,
 			required: true,
-		}
+		},
+		archived: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{ timestamps: true }
 );

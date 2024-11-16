@@ -20,7 +20,7 @@ const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const lists = await List.aggregate([
-			{ $match: { users: user._id } },
+			{ $match: { users: user._id, archived: { $not: {$eq: true} } } },
 			{ $sort: { updatedAt: -1 } },
 			{
 				$project: {
@@ -192,19 +192,7 @@ const changeListTitle = asyncHandler(
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		let found = false;
-		list.users.forEach((listUser) => {
-			if (
-				(listUser as ObjectId).toString() ===
-				(user._id as ObjectId).toString()
-			) {
-				found = true;
-			}
-		});
-		if (!found) {
-			res.status(403);
-			throw new Error('Not Authorized');
-		}
+		await checkAuthorization(list, user, res);
 		list.title = title;
 		await list.save();
 		res.status(200).json({
@@ -423,19 +411,7 @@ const addNewItem = asyncHandler(
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		let found = false;
-		list.users.forEach((listUser) => {
-			if (
-				(listUser as ObjectId).toString() ===
-				(user._id as ObjectId).toString()
-			) {
-				found = true;
-			}
-		});
-		if (!found) {
-			res.status(403);
-			throw new Error('Not Authorized');
-		}
+		await checkAuthorization(list, user, res);
 		let listItem, item;
 		if (saveItem) {
 			item = await createItem(
@@ -485,19 +461,7 @@ const addExistingItem = asyncHandler(
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		let found = false;
-		list.users.forEach((listUser) => {
-			if (
-				(listUser as ObjectId).toString() ===
-				(user._id as ObjectId).toString()
-			) {
-				found = true;
-			}
-		});
-		if (!found) {
-			res.status(403);
-			throw new Error('Not Authorized');
-		}
+		await checkAuthorization(list, user, res);
 		const ItemContext = await Item.findById(item);
 		if (!ItemContext) {
 			res.status(404);
@@ -674,19 +638,7 @@ const addBundleItems = asyncHandler(
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		let found = false;
-		list.users.forEach((listUser) => {
-			if (
-				(listUser as ObjectId).toString() ===
-				(user._id as ObjectId).toString()
-			) {
-				found = true;
-			}
-		});
-		if (!found) {
-			res.status(403);
-			throw new Error('Not Authorized');
-		}
+		await checkAuthorization(list, user, res);
 		const bundleContext = await Bundle.findById(bundle).populate('items');
 		if (!bundleContext) {
 			res.status(404);
@@ -754,19 +706,7 @@ const deleteForMe = asyncHandler(
 			res.status(404);
 			throw new Error('List Not Found');
 		}
-		let found = false;
-		list.users.forEach((listUser) => {
-			if (
-				(listUser as ObjectId).toString() ===
-				(user._id as ObjectId).toString()
-			) {
-				found = true;
-			}
-		});
-		if (!found) {
-			res.status(403);
-			throw new Error('Not Authorized');
-		}
+		await checkAuthorization(list, user, res);
 		let owner = false;
 		if (list.owner.toString() === (user._id as ObjectId).toString()) {
 			owner = true;
@@ -791,6 +731,26 @@ const deleteForMe = asyncHandler(
 		});
 	}
 );
+
+const checkAuthorization = async (
+	list: ListDocument,
+	user: UserDocument,
+	res: Response
+) => {
+	let found = false;
+	list.users.forEach((listUser) => {
+		if (
+			(listUser as ObjectId).toString() ===
+			(user._id as ObjectId).toString()
+		) {
+			found = true;
+		}
+	});
+	if (!found) {
+		res.status(403);
+		throw new Error('Not Authorized');
+	}
+};
 
 const getDeletedLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -971,6 +931,71 @@ const createShareToken = asyncHandler(
 	}
 );
 
+const archiveList = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { id } = req.params;
+		const user = (req as RequestWithUser).user;
+		const list = await List.findById(id);
+		if (!list) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
+		await checkAuthorization(list, user, res);
+		list.archived = true;
+		await list.save();
+		res.status(200).json({
+			success: true,
+		});
+	}
+);
+
+const unarchiveList = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { id } = req.params;
+		const user = (req as RequestWithUser).user;
+		const list = await List.findById(id);
+		if (!list) {
+			res.status(404);
+			throw new Error('List Not Found');
+		}
+		await checkAuthorization(list, user, res);
+		list.archived = false;
+		await list.save();
+		res.status(200).json({
+			success: true,
+		});
+	}
+);
+
+const getArchivedLists = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as RequestWithUser).user;
+		const lists = await List.aggregate([
+			{ $match: { users: user._id, archived: true } },
+			{ $sort: { updatedAt: -1 } },
+			{
+				$project: {
+					_id: 1,
+					title: 1,
+					updatedAt: 1,
+					createdAt: 1,
+					users: { $size: '$users' },
+					items: { $size: '$items' },
+					deletedItems: { $size: '$deletedItems' },
+					boughtItems: { $size: '$boughtItems' },
+					owner: {
+						$eq: [{ $toString: '$owner' }, { $toString: user._id }],
+					},
+				},
+			},
+		]);
+		res.status(200).json({
+			success: true,
+			lists,
+		});
+	}
+);
+
 const getSharedList = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const { token } = req.params;
@@ -1096,4 +1121,7 @@ export {
 	getSharedList,
 	createShareToken,
 	removeUserFromList,
+	archiveList,
+	unarchiveList,
+	getArchivedLists
 };

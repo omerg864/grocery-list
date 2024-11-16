@@ -11,6 +11,7 @@ interface Lists {
     createdAt: string;
 	owner: boolean;
 	stateUpdated?: Date;
+	archived?: boolean;
 }
 
 export const listsDefault: Lists = {
