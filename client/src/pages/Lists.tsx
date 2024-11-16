@@ -6,7 +6,6 @@ import ListsList from "../components/ListLists/ListsList.tsx";
 import SearchBar from "../components/SearchBar/SearchBar.tsx";
 import { useRecoilState } from "recoil";
 import { listsState, updatedListsAtom } from "../recoil/atoms.ts";
-import { MdOutlineAutoDelete } from "react-icons/md";
 import { Button, IconButton, Tooltip } from "@mui/material";
 import ConfirmationDialog from "../components/ConfirmationDialog/ConfirmationDialog.tsx";
 import Loading from "../components/Loading/Loading.tsx";
