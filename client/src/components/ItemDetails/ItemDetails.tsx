@@ -41,7 +41,7 @@ function ItemDetails(props: ItemDetailsProps) {
     const outerTheme = useTheme();
     const dimensions = useWindowDimensions();
 
-    const units = ['pc', 'kg', 'g', 'l', 'ml', ''];
+    const units = ['pc', 'kg', 'g', 'l', 'ml', 'no', 'pk'];
 
     const showDefaultIcon = (props.disabled && !props.amountEdit && !props.share) ? true : false;
 
@@ -133,7 +133,7 @@ function ItemDetails(props: ItemDetailsProps) {
                 /> : 
                 <TextField name="category" color='success' className='white-color-input' fullWidth value={props.item.category} InputLabelProps={{ disabled: props.disabled}} label={t('category')} onChange={props.onChange} disabled={props.disabled} variant="outlined" />}
                 {props.amountEdit ? <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'}}>
-                {props.item.unit !== '' && (props.item.unit === 'pc' ? <Counter handleChange={props.onChange} addCounter={props.addCounter} removeCounter={props.removeCounter} count={(props.item as ListItem).amount!} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false} />: 
+                {props.item.unit !== 'no' && ((props.item.unit === 'pc' || props.item.unit === 'pk') ? <Counter handleChange={props.onChange} addCounter={props.addCounter} removeCounter={props.removeCounter} count={(props.item as ListItem).amount!} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false} />: 
                         <TextField required name="amount" onChange={props.onChange} color='success' type="number" className='white-color-input' fullWidth value={(props.item as ListItem).amount} label={t('amount')} disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled ) : false}  variant="outlined" />)}
                         <FormControl fullWidth>
                             <InputLabel disabled={props.disabled ? (props.enableAmount ? !props.enableAmount : props.disabled) : false} color="success" id="unit-label">{t('unit')}</InputLabel>

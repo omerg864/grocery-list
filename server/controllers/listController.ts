@@ -20,7 +20,7 @@ const getLists = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const user = (req as RequestWithUser).user;
 		const lists = await List.aggregate([
-			{ $match: { users: user._id, archived: { $not: {$eq: true} } } },
+			{ $match: { users: user._id, archived: { $not: { $eq: true } } } },
 			{ $sort: { updatedAt: -1 } },
 			{
 				$project: {
@@ -1123,5 +1123,5 @@ export {
 	removeUserFromList,
 	archiveList,
 	unarchiveList,
-	getArchivedLists
+	getArchivedLists,
 };

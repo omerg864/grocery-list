@@ -1,317 +1,319 @@
 {
-    "List": {
-        "addItem": "Add Item",
-        "search": "Search",
-        "deleteUserTitle": "Are you sure you want to delete this user?",
-        "deleteUserContent": "This user will no longer be able to access this list.",
-        "shareTitle": "List Sharing",
-        "shareText": "Share this link with other users to give them access to this list.",
-        "linkCopied": "Link copied to clipboard. Share it with other users to give them access to this list.",
-        "receipts": "Receipts",
-        "newTokenGenerated": "New token generated",
-        "resetShareToken": "Reset Share Token",
-        "resetShareTokenContent": "Are you sure you want to reset the share token? This will generate a new token and the old one will no longer work.",
-        "titleDialog": "Change list title",
-        "titleDialogContent": "",
-        "title": "Title",
-        "change": "Change",
-        "cancel": "Cancel"
-    },
-    "UsersList": {
-        "sharedWith": "Shared with",
-        "usersInList": "Users in list"
-    },
-    "Lists": {
-        "lists": "Lists",
-        "addList": "Add List",
-        "search": "Search",
-        "recentlyDeleted": "Recently Deleted",
-        "deleteList": "Delete List",
-        "deleteListContent": "Are you sure you want to delete this list? \n delete for all users will remove the list for all users. \n delete for me will remove the list only for you.",
-        "cancel": "Cancel",
-        "deleteForAll": "Delete for all users",
-        "deleteForMe": "Delete for me",
-        "variance": "Variance",
-        "deleted": "Deleted Lists",
-        "archived": "Archived Lists"
-    },
-    "NavBar": {
-        "lists": "Lists",
-        "items": "Items",
-        "profile": "Profile",
-        "notifications": "Notifications",
-        "bundles": "Bundles"
-    },
-    "NewList": {
-        "newList": "New List",
-        "name": "Name",
-        "description": "Description",
-        "shareWith": "Share with",
-        "create": "Create List",
-        "titleRequired": "Title is required"
-    },
-    "ListForm": {
-        "title": "Title",
-        "previousListItems": "Add Previous List Items",
-        "defaultItems": "Add Default Items",
-        "addUsers": "Add Users",
-        "search": "Search",
-        "none": "None",
-        "prevListItemExplanation": "*Add items that wasn't deleted or bought from a previous list to this list."
-    },
-    "Generic": {
-        "save": "Save",
-        "cancel": "Cancel",
-        "delete": "Delete",
-        "edit": "Edit",
-        "close": "Close",
-        "loading": "Loading",
-        "noData": "No data",
-        "noResults": "No results",
-        "noItems": "No items Here",
-        "noLists": "No lists Here",
-        "noUsers": "No users",
-        "confirm": "Confirm",
-        "noBundles": "No bundles Here",
-        "title": "Title",
-        "google": "Continue with Google"
-    },
-    "Login": {
-        "login": "Login",
-        "email": "Email",
-        "password": "Password",
-        "forgotPassword": "Forgot password?",
-        "noAccount": "Don't have an account?",
-        "verifyEmailResend": "please verify your email address to login. you can resend the verification email here.",
-        "resetPasswordToLogin": "Please reset your password in the profile tab to login without a google account."
-    },
-    "Register": {
-        "register": "Register",
-        "email": "Email",
-        "password": "Password",
-        "firstName": "First Name",
-        "lastName": "Last Name",
-        "confirmPassword": "Confirm Password",
-        "haveAccount": "Already have an account?",
-        "pleaseVerify": "Please verify your email address to login.",
-        "passwordsDontMatch": "Passwords don't match",
-        "invalidEmail": "Invalid email",
-        "invalidPassword": "Invalid password"
-    },
-    "Profile": {
-        "profile": "Profile",
-        "personalDetails": "Personal Details",
-        "password": "Password",
-        "preferences": "Preferences",
-        "logout": "Logout",
-        "firstName": "First Name",
-        "lastName": "Last Name",
-        "email": "Email",
-        "update": "Update",
-        "change": "Change",
-        "fullSwipe": "Full Swipe items",
-        "language": "Language",
-        "english": "English",
-        "hebrew": "Hebrew",
-        "detailsUpdated": "Details updated",
-        "passwordUpdated": "Password updated",
-        "passwordsDontMatch": "Passwords don't match",
-        "invalidEmail": "Invalid email",
-        "invalidPassword": "Invalid password",
-        "preferencesChanged": "Preferences changed",
-        "fillAllFields": "Please fill all fields"
-    },
-    "Items": {
-        "items": "Items",
-        "newItem": "New Item",
-        "search": "Search",
-        "deleteItem": "Delete Item",
-        "deleteItemContent": "Are you sure you want to delete this item? This action cannot be undone."
-    },
-    "ForgotPassword": {
-        "resetPasswordRequest": "Reset Password Request",
-        "email": "Email",
-        "sendEmail": "Send Email",
-        "rememberPassword": "I remembered my password",
-        "emailSent": "An email has been sent to you with instructions on how to reset your password.",
-        "emailRequired": "Email is required",
-        "invalidEmail": "Invalid email"
-    },
-    "PasswordRules" : {
-        "start": "Password must be:",
-        "english": "In English",
-        "smallLetter": "At least 1 small letter",
-        "capitalLetter": "At least 1 capital letter",
-        "number": "At least 1 number",
-        "length": "Between 8 and 24 characters"
-    },
-    "ResetPassword": {
-        "resetPassword": "Reset Password",
-        "password": "Password",
-        "confirmPassword": "Confirm Password",
-        "passwordsDontMatch": "Passwords don't match",
-        "invalidPassword": "Invalid password"
-    },
-    "ItemDetails": {
-        "category": "Category",
-        "unit": "Unit",
-        "description": "Description",
-        "amount": "Amount",
-        "kg": "kg",
-        "g": "gram",
-        "l": "Liters",
-        "ml": "ml",
-        "pc": "Pieces",
-        "": "None"
-    },
-    "ItemEdit": {
-        "save": "Save",
-        "name": "Item Name",
-        "nameRequired": "Name is required",
-        "itemUpdated": "Item updated"
-    },
-    "ItemDisplay": {
-        "edit": "Edit",
-        "linkCopied": "Link copied to clipboard. Share it with other users for them to get this item.",
-        "shareTitle": "Item Sharing",
-        "shareText": "Share this link with other users for them to get this item."
-    },
-    "ItemNew": {
-        "name": "Name",
-        "newItem": "New Item",
-        "create": "Create Item",
-        "saveItem": "Save Item",
-        "itemAdded": "Item added to the list",
-        "nameRequired": "Name is required"
-    },
-    "ItemAdd": {
-        "add": "Add Item",
-        "shareTitle": "Item Sharing",
-        "shareText": "Share this link with other users for them to get this item.",
-        "linkCopied": "Link copied to clipboard. Share it with other users for them to get this item.",
-        "ItemAdded": "Item added to the list"
-    },
-    "Bundles": {
-        "bundles": "Bundles",
-        "newBundle": "New Bundle",
-        "search": "Search",
-        "deleteBundle": "Delete Bundle",
-        "deleteBundleContent": "Are you sure you want to delete this bundle? This action cannot be undone."
-    },
-    "BundleEdit": {
-        "title": "Title",
-        "save": "Save",
-        "addItem": "Add Item",
-        "titleRequired": "Title is required",
-        "itemsRequired": "At least one item is required",
-        "description": "Description"
-    },
-    "BundleDisplay": {
-        "edit": "Edit",
-        "linkCopied": "Link copied to clipboard. Share it with other users for them to get this bundle.",
-        "shareTitle": "Bundle Sharing",
-        "shareText": "Share this link with other users for them to get this bundle.",
-        "shareBundle": "Share Bundle",
-        "description": "Description",
-        "items": "Items"
-    },
-    "ItemSelect": {
-        "search": "Search",
-        "noItems": "No items",
-        "noResults": "No results",
-        "selectItem": "Select Item"
-    },
-    "ShareItem": {
-        "itemAdded": "Item added to your items",
-        "addToItems": "Add to Items"
-    },
-    "BundleNew": {
-        "newBundle": "New Bundle",
-        "title": "Title",
-        "description": "Description",
-        "addItem":"Add Item",
-        "create": "Create Bundle",
-        "titleRequired": "Title is required",
-        "itemsRequired": "At least one item is required"
-    },
-    "BundleSelect": {
-        "search": "Search",
-        "noBundles": "No bundles",
-        "noResults": "No results",
-        "selectBundle": "Select Bundle"
-    },
-    "Selection": {
-        "selectItem": "Select Item",
-        "newItem": "New Item",
-        "allItems": "All Items",
-        "allBundles": "All Bundles",
-        "items": "Items",
-        "bundles": "Bundles"
-    },
-    "ItemsList": {
-        "amount": "Amount",
-        "unit": "Unit",
-        "kg": "kg",
-        "g": "gram",
-        "l": "Liters",
-        "ml": "ml",
-        "pc": "Pieces",
-        "": "None"
-    },
-    "BundleAdd": {
-        "addBundle": "Add Bundle"
-    },
-    "ListsDeleted": {
-        "recentlyDeleted": "Recently Deleted",
-        "deleteAll": "Delete All",
-        "deleteAllContent": "Are you sure you want to delete all these list? This action cannot be undone.",
-        "restoreList": "Restore List",
-        "restoreListContent": "Are you sure you want to restore this list?",
-        "deleteList": "Delete List",
-        "deleteListContent": "Are you sure you want to delete this list? This action cannot be undone."
-    },
-    "ListReceipts": {
-        "receipts": "Receipts",
-        "noReceipts": "No receipts",
-        "uploadReceipt": "Upload Receipt",
-        "upload": "Upload",
-        "cancel": "Cancel",
-        "delete": "Delete",
-        "deleteReceipt": "Receipt will be deleted",
-        "deleteReceiptContent": "Are you sure you want to delete this receipt?",
-        "receiptType": "Receipt Type",
-        "image": "Image",
-        "url": "URL"
-    },
-    "VerifyEmail": {
-        "verifyEmail": "Verify Email",
-        "emailVerified": "Your email has been verified. You can now login to the app.",
-        "verifying": "Verifying email...",
-        "notVerified": "Your email has cannot be verified.",
-        "clickHereToSendAgain": "Click here to send the verification email again."
-    },
-    "VerifyEmailResend": {
-        "verifyEmailResend": "Verify Email Resend",
-        "email": "Email",
-        "send": "Send"
-    },
-    "Page404": {
-        "notFound": "Page not found",
-        "pageNotFound": "The page you are looking for does not exist"
-    },
-    "JoinList": {
-        "joinList": "Join List",
-        "itemsInList": "Items in list",
-        "updatedAt": "Last Updated at",
-        "createdAt": "Created at"
-    },
-    "ShareBundle": {
-        "bundleAdded": "Bundle added to your bundles",
-        "addToBundles": "Add to Bundles and Items",
-        "description": "Description",
-        "items": "Items"
-    },
-    "ListsArchived": {
-        "archived":"Archived Lists"
-    }
+	"List": {
+		"addItem": "Add Item",
+		"search": "Search",
+		"deleteUserTitle": "Are you sure you want to delete this user?",
+		"deleteUserContent": "This user will no longer be able to access this list.",
+		"shareTitle": "List Sharing",
+		"shareText": "Share this link with other users to give them access to this list.",
+		"linkCopied": "Link copied to clipboard. Share it with other users to give them access to this list.",
+		"receipts": "Receipts",
+		"newTokenGenerated": "New token generated",
+		"resetShareToken": "Reset Share Token",
+		"resetShareTokenContent": "Are you sure you want to reset the share token? This will generate a new token and the old one will no longer work.",
+		"titleDialog": "Change list title",
+		"titleDialogContent": "",
+		"title": "Title",
+		"change": "Change",
+		"cancel": "Cancel"
+	},
+	"UsersList": {
+		"sharedWith": "Shared with",
+		"usersInList": "Users in list"
+	},
+	"Lists": {
+		"lists": "Lists",
+		"addList": "Add List",
+		"search": "Search",
+		"recentlyDeleted": "Recently Deleted",
+		"deleteList": "Delete List",
+		"deleteListContent": "Are you sure you want to delete this list? \n delete for all users will remove the list for all users. \n delete for me will remove the list only for you.",
+		"cancel": "Cancel",
+		"deleteForAll": "Delete for all users",
+		"deleteForMe": "Delete for me",
+		"variance": "Variance",
+		"deleted": "Deleted Lists",
+		"archived": "Archived Lists"
+	},
+	"NavBar": {
+		"lists": "Lists",
+		"items": "Items",
+		"profile": "Profile",
+		"notifications": "Notifications",
+		"bundles": "Bundles"
+	},
+	"NewList": {
+		"newList": "New List",
+		"name": "Name",
+		"description": "Description",
+		"shareWith": "Share with",
+		"create": "Create List",
+		"titleRequired": "Title is required"
+	},
+	"ListForm": {
+		"title": "Title",
+		"previousListItems": "Add Previous List Items",
+		"defaultItems": "Add Default Items",
+		"addUsers": "Add Users",
+		"search": "Search",
+		"none": "None",
+		"prevListItemExplanation": "*Add items that wasn't deleted or bought from a previous list to this list."
+	},
+	"Generic": {
+		"save": "Save",
+		"cancel": "Cancel",
+		"delete": "Delete",
+		"edit": "Edit",
+		"close": "Close",
+		"loading": "Loading",
+		"noData": "No data",
+		"noResults": "No results",
+		"noItems": "No items Here",
+		"noLists": "No lists Here",
+		"noUsers": "No users",
+		"confirm": "Confirm",
+		"noBundles": "No bundles Here",
+		"title": "Title",
+		"google": "Continue with Google"
+	},
+	"Login": {
+		"login": "Login",
+		"email": "Email",
+		"password": "Password",
+		"forgotPassword": "Forgot password?",
+		"noAccount": "Don't have an account?",
+		"verifyEmailResend": "please verify your email address to login. you can resend the verification email here.",
+		"resetPasswordToLogin": "Please reset your password in the profile tab to login without a google account."
+	},
+	"Register": {
+		"register": "Register",
+		"email": "Email",
+		"password": "Password",
+		"firstName": "First Name",
+		"lastName": "Last Name",
+		"confirmPassword": "Confirm Password",
+		"haveAccount": "Already have an account?",
+		"pleaseVerify": "Please verify your email address to login.",
+		"passwordsDontMatch": "Passwords don't match",
+		"invalidEmail": "Invalid email",
+		"invalidPassword": "Invalid password"
+	},
+	"Profile": {
+		"profile": "Profile",
+		"personalDetails": "Personal Details",
+		"password": "Password",
+		"preferences": "Preferences",
+		"logout": "Logout",
+		"firstName": "First Name",
+		"lastName": "Last Name",
+		"email": "Email",
+		"update": "Update",
+		"change": "Change",
+		"fullSwipe": "Full Swipe items",
+		"language": "Language",
+		"english": "English",
+		"hebrew": "Hebrew",
+		"detailsUpdated": "Details updated",
+		"passwordUpdated": "Password updated",
+		"passwordsDontMatch": "Passwords don't match",
+		"invalidEmail": "Invalid email",
+		"invalidPassword": "Invalid password",
+		"preferencesChanged": "Preferences changed",
+		"fillAllFields": "Please fill all fields"
+	},
+	"Items": {
+		"items": "Items",
+		"newItem": "New Item",
+		"search": "Search",
+		"deleteItem": "Delete Item",
+		"deleteItemContent": "Are you sure you want to delete this item? This action cannot be undone."
+	},
+	"ForgotPassword": {
+		"resetPasswordRequest": "Reset Password Request",
+		"email": "Email",
+		"sendEmail": "Send Email",
+		"rememberPassword": "I remembered my password",
+		"emailSent": "An email has been sent to you with instructions on how to reset your password.",
+		"emailRequired": "Email is required",
+		"invalidEmail": "Invalid email"
+	},
+	"PasswordRules": {
+		"start": "Password must be:",
+		"english": "In English",
+		"smallLetter": "At least 1 small letter",
+		"capitalLetter": "At least 1 capital letter",
+		"number": "At least 1 number",
+		"length": "Between 8 and 24 characters"
+	},
+	"ResetPassword": {
+		"resetPassword": "Reset Password",
+		"password": "Password",
+		"confirmPassword": "Confirm Password",
+		"passwordsDontMatch": "Passwords don't match",
+		"invalidPassword": "Invalid password"
+	},
+	"ItemDetails": {
+		"category": "Category",
+		"unit": "Unit",
+		"description": "Description",
+		"amount": "Amount",
+		"kg": "kg",
+		"g": "gram",
+		"l": "Liters",
+		"ml": "ml",
+		"pc": "Pieces",
+		"no": "None",
+		"pk": "Package"
+	},
+	"ItemEdit": {
+		"save": "Save",
+		"name": "Item Name",
+		"nameRequired": "Name is required",
+		"itemUpdated": "Item updated"
+	},
+	"ItemDisplay": {
+		"edit": "Edit",
+		"linkCopied": "Link copied to clipboard. Share it with other users for them to get this item.",
+		"shareTitle": "Item Sharing",
+		"shareText": "Share this link with other users for them to get this item."
+	},
+	"ItemNew": {
+		"name": "Name",
+		"newItem": "New Item",
+		"create": "Create Item",
+		"saveItem": "Save Item",
+		"itemAdded": "Item added to the list",
+		"nameRequired": "Name is required"
+	},
+	"ItemAdd": {
+		"add": "Add Item",
+		"shareTitle": "Item Sharing",
+		"shareText": "Share this link with other users for them to get this item.",
+		"linkCopied": "Link copied to clipboard. Share it with other users for them to get this item.",
+		"ItemAdded": "Item added to the list"
+	},
+	"Bundles": {
+		"bundles": "Bundles",
+		"newBundle": "New Bundle",
+		"search": "Search",
+		"deleteBundle": "Delete Bundle",
+		"deleteBundleContent": "Are you sure you want to delete this bundle? This action cannot be undone."
+	},
+	"BundleEdit": {
+		"title": "Title",
+		"save": "Save",
+		"addItem": "Add Item",
+		"titleRequired": "Title is required",
+		"itemsRequired": "At least one item is required",
+		"description": "Description"
+	},
+	"BundleDisplay": {
+		"edit": "Edit",
+		"linkCopied": "Link copied to clipboard. Share it with other users for them to get this bundle.",
+		"shareTitle": "Bundle Sharing",
+		"shareText": "Share this link with other users for them to get this bundle.",
+		"shareBundle": "Share Bundle",
+		"description": "Description",
+		"items": "Items"
+	},
+	"ItemSelect": {
+		"search": "Search",
+		"noItems": "No items",
+		"noResults": "No results",
+		"selectItem": "Select Item"
+	},
+	"ShareItem": {
+		"itemAdded": "Item added to your items",
+		"addToItems": "Add to Items"
+	},
+	"BundleNew": {
+		"newBundle": "New Bundle",
+		"title": "Title",
+		"description": "Description",
+		"addItem": "Add Item",
+		"create": "Create Bundle",
+		"titleRequired": "Title is required",
+		"itemsRequired": "At least one item is required"
+	},
+	"BundleSelect": {
+		"search": "Search",
+		"noBundles": "No bundles",
+		"noResults": "No results",
+		"selectBundle": "Select Bundle"
+	},
+	"Selection": {
+		"selectItem": "Select Item",
+		"newItem": "New Item",
+		"allItems": "All Items",
+		"allBundles": "All Bundles",
+		"items": "Items",
+		"bundles": "Bundles"
+	},
+	"ItemsList": {
+		"amount": "Amount",
+		"unit": "Unit",
+		"kg": "kg",
+		"g": "gram",
+		"l": "Liters",
+		"ml": "ml",
+		"pc": "Pieces",
+		"no": "None",
+		"pkg": "Package"
+	},
+	"BundleAdd": {
+		"addBundle": "Add Bundle"
+	},
+	"ListsDeleted": {
+		"recentlyDeleted": "Recently Deleted",
+		"deleteAll": "Delete All",
+		"deleteAllContent": "Are you sure you want to delete all these list? This action cannot be undone.",
+		"restoreList": "Restore List",
+		"restoreListContent": "Are you sure you want to restore this list?",
+		"deleteList": "Delete List",
+		"deleteListContent": "Are you sure you want to delete this list? This action cannot be undone."
+	},
+	"ListReceipts": {
+		"receipts": "Receipts",
+		"noReceipts": "No receipts",
+		"uploadReceipt": "Upload Receipt",
+		"upload": "Upload",
+		"cancel": "Cancel",
+		"delete": "Delete",
+		"deleteReceipt": "Receipt will be deleted",
+		"deleteReceiptContent": "Are you sure you want to delete this receipt?",
+		"receiptType": "Receipt Type",
+		"image": "Image",
+		"url": "URL"
+	},
+	"VerifyEmail": {
+		"verifyEmail": "Verify Email",
+		"emailVerified": "Your email has been verified. You can now login to the app.",
+		"verifying": "Verifying email...",
+		"notVerified": "Your email has cannot be verified.",
+		"clickHereToSendAgain": "Click here to send the verification email again."
+	},
+	"VerifyEmailResend": {
+		"verifyEmailResend": "Verify Email Resend",
+		"email": "Email",
+		"send": "Send"
+	},
+	"Page404": {
+		"notFound": "Page not found",
+		"pageNotFound": "The page you are looking for does not exist"
+	},
+	"JoinList": {
+		"joinList": "Join List",
+		"itemsInList": "Items in list",
+		"updatedAt": "Last Updated at",
+		"createdAt": "Created at"
+	},
+	"ShareBundle": {
+		"bundleAdded": "Bundle added to your bundles",
+		"addToBundles": "Add to Bundles and Items",
+		"description": "Description",
+		"items": "Items"
+	},
+	"ListsArchived": {
+		"archived": "Archived Lists"
+	}
 }
