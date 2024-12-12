@@ -19,4 +19,8 @@ router.put('/update-password', authMiddleware_1.protectUser, userController_1.up
 router.put('/', authMiddleware_1.protectUser, cloud_1.upload.single('file'), userController_1.updateUser);
 router.put('/preferences', authMiddleware_1.protectUser, userController_1.updatePreferences);
 router.post('/google', userController_1.googleAuth);
+router.get('/sharing-token', authMiddleware_1.protectUser, userController_1.createSharingToken);
+router.get('/sharing-token/:token', authMiddleware_1.protectUser, userController_1.getUserDataByToken);
+router.post('/share/:token', authMiddleware_1.protectUser, userController_1.shareWithUser);
+router.delete('/share/:id', authMiddleware_1.protectUser, userController_1.deleteSharedUser);
 exports.default = router;

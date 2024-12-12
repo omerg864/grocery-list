@@ -27,38 +27,49 @@ const mongoose = __importStar(require("mongoose"));
 const UserScheme = new mongoose.Schema({
     f_name: {
         type: String,
-        required: true
+        required: true,
     },
     l_name: {
         type: String,
-        required: true
+        required: true,
     },
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
     },
     password: {
         type: String,
-        required: true
+        required: true,
     },
     isVerified: {
         type: Boolean,
-        default: false
+        default: false,
     },
     resetPasswordToken: {
-        type: String
+        type: String,
     },
     avatar: {
-        type: String
+        type: String,
     },
+    sharingToken: {
+        type: String,
+        unique: true,
+    },
+    sharedWith: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            default: [],
+        },
+    ],
     fullSwipe: {
         type: Boolean,
-        default: false
+        default: false,
     },
     language: {
         type: String,
-        default: 'en'
-    }
+        default: 'en',
+    },
 }, { timestamps: true });
 exports.default = mongoose.model('User', UserScheme);

@@ -19,7 +19,7 @@ const getItems = asyncHandler(
 			addCategories = false;
 		}
 		const items = await Item.find({
-			user: user._id,
+			user: { $in: [user._id, ...user.sharedWith] },
 		})
 			.select(itemExclude)
 			.limit(limit ? parseInt(limit as string) : 0);
@@ -122,7 +122,7 @@ const updateItem = asyncHandler(
 			res.status(404);
 			throw new Error('Item Not Found');
 		}
-		if (item.user.toString() !== (user._id as ObjectId).toString()) {
+		if (item.user.toString() !== (user._id as ObjectId).toString() && !user.sharedWith.includes((item.user as ObjectId))) {
 			res.status(401);
 			throw new Error('Not authorized');
 		}

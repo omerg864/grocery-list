@@ -12,6 +12,10 @@ import {
 	resendVerificationEmail,
 	updatePreferences,
 	googleAuth,
+	createSharingToken,
+	getUserDataByToken,
+	shareWithUser,
+	deleteSharedUser
 } from '../controllers/userController';
 import { upload } from '../config/cloud';
 
@@ -28,5 +32,9 @@ router.put('/update-password', protectUser, updateUserPassword);
 router.put('/', protectUser, upload.single('file'), updateUser);
 router.put('/preferences', protectUser, updatePreferences);
 router.post('/google', googleAuth);
+router.get('/sharing-token', protectUser, createSharingToken);
+router.get('/sharing-token/:token', protectUser, getUserDataByToken);
+router.post('/share/:token', protectUser, shareWithUser);
+router.delete('/share/:id', protectUser, deleteSharedUser);
 
 export default router;

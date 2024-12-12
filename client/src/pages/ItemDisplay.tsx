@@ -28,6 +28,7 @@ function ItemDisplay() {
     name: '',
     category: "",
     img: "",
+    user: "",
     description: "",
     unit: "",
     amount: 0
@@ -93,6 +94,7 @@ function ItemDisplay() {
         setItem(itemState);
         navigate(`/items/${id}/edit`)
       }
+      if (itemState)
       side = {sideButton: <IconButton onClick={edit}>
       <MdModeEditOutline color="white"/>
     </IconButton>}

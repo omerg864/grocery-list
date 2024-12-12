@@ -1,318 +1,327 @@
 {
-    "List": {
-        "addItem": "הוסף פריט",
-        "search": "חיפוש",
-        "deleteUserTitle": "האם אתה בטוח שברצונך להסיר משתמש זה מהרשימה?",
-        "deleteUserContent": "הסרת משתמש זה תסיר את המשתמש מהרשימה והוא לא יוכל לצפות בה יותר.",
-        "shareTitle": "שיתוף רשימה",
-        "shareText": "שתף קישור זה עם משתמשים אחרים כדי שיהיה להם גישה לרשימה זו.",
-        "linkCopied": "קישור הועתק ללוח. שתף אותו עם משתמשים אחרים כדי שיהיה להם גישה לרשימה זו.",
-        "receipts": "קבלות",
-        "newTokenGenerated": "קוד שיתוף חדש נוצר",
-        "resetShareToken": "איפוס קוד שיתוף",
-        "resetShareTokenContent": "האם אתה בטוח שברצונך לאפס את קוד השיתוף של הרשימה? הקוד הישן יפסיק לעבוד ולא יוכל לשמש לשיתוף רשימה זו.",
-        "titleDialog": "שנה כותרת לרשימה",
-        "titleDialogContent": "",
-        "title": "כותרת",
-        "change": "שנה",
-        "cancel": "ביטול"
-    },
-    "UsersList": {
-        "sharedWith": "שותף עם",
-        "usersInList": "משתמשים ברשימה"
-    },
-    "Lists": {
-        "lists": "רשימות",
-        "addList": "הוסף רשימה",
-        "search": "חיפוש",
-        "recentlyDeleted": "נמחקו לאחרונה",
-        "deleteList": "מחק רשימה",
-        "deleteListContent": "האם אתה בטוח שאתה רוצה למחוק רשימה זו? \n מחיקה לכולם תסיר את כל המשתמשים לרשימה \n מחיקה לעצמי תסיר את הרשימה רק ממך. \n הרשימה תעבור לנמחקו לאחרונה",
-        "cancel": "ביטול",
-        "deleteForAll": "מחק לכולם",
-        "deleteForMe": "מחק לעצמי",
-        "variance": "שונות",
-        "deleted": "רשימות שנמחקו",
-        "archived": "רשימות בארכיון"
-    },
-    "NavBar": {
-        "lists": "רשימות",
-        "items": "פריטים",
-        "profile": "פרופיל",
-        "bundles": "חבילות"
-    },
-    "NewList": {
-        "newList": "רשימה חדשה",
-        "name": "שם",
-        "description": "תיאור",
-        "shareWith": "שתף",
-        "create": "צור רשימה",
-        "titleRequired": "שדה כותרת הינו שדה חובה"
-    },
-    "ListForm": {
-        "title": "כותרת",
-        "previousListItems": "הוסף פריטים מרשימה קודמת",
-        "defaultItems": "פריטים ברירת מחדל",
-        "addUsers": "הוסף משתמשים",
-        "search": "חיפוש",
-        "none": "אין",
-        "prevListItemExplanation": "ֿ*פריטים שלא נקנו או נמחקו מרשימה קודמת יופיעו ברשימה החדשה"
-    },
-    "Generic": {
-        "save": "שמור",
-        "cancel": "ביטול",
-        "delete": "מחק",
-        "edit": "ערוך",
-        "close": "סגור",
-        "loading": "טוען",
-        "noData": "אין נתונים",
-        "noResults": "אין תוצאות",
-        "noItems": "אין פריטים פה",
-        "noLists": "אין רשימות פה",
-        "noUsers": "אין משתמשים פה",
-        "confirm": "אישור",
-        "noBundles": "אין חבילות פה",
-        "title": "כותרת",
-        "google": "המשך עם גוגל"
-    },
-    "Login": {
-        "login": "התחברות",
-        "email": "אימייל",
-        "password": "סיסמה",
-        "forgotPassword": "שכחת סיסמה?",
-        "noAccount": "אין לך חשבון?",
-        "verifyEmailResend": "בבקשה אמת את האימייל שלך כדי להתחבר. אתה יכול לשלוח אימייל חדש פה.",
-        "resetPasswordToLogin": "אתה יכול לאפס את הסיסמה שלך בפרופיל כדי להתחבר בלי גוגל."
-    },
-    "Register": {
-        "register": "הרשמה",
-        "email": "אימייל",
-        "password": "סיסמה",
-        "firstName": "שם פרטי",
-        "lastName": "שם משפחה",
-        "confirmPassword": "אימות סיסמה",
-        "haveAccount": "יש לך חשבון?",
-        "pleaseVerify": "אנא אמת את האימייל שלך כדי להתחבר.",
-        "passwordsDontMatch": "הסיסמאות אינן תואמות",
-        "invalidEmail": "אימייל לא תקין",
-        "invalidPassword": "סיסמה לא תקינה"
-    },
-    "Profile": {
-        "profile": "פרופיל",
-        "personalDetails": "פרטים אישיים",
-        "password": "סיסמה",
-        "preferences": "העדפות",
-        "logout": "התנתקות",
-        "firstName": "שם פרטי",
-        "lastName": "שם משפחה",
-        "email": "אימייל",
-        "update": "עדכן",
-        "change": "שנה",
-        "fullSwipe": "החלקה מלאה של מוצר",
-        "language": "שפה",
-        "english": "אנגלית",
-        "hebrew": "עברית",
-        "detailsUpdated": "פרטים עודכנו",
-        "passwordUpdated": "סיסמה עודכנה",
-        "passwordsDontMatch": "הסיסמאות אינן תואמות",
-        "invalidEmail": "אימייל לא תקין",
-        "invalidPassword": "סיסמה לא תקינה",
-        "preferencesChanged": "העדפות שונו",
-        "fillAllFields": "אנא מלא את כל השדות"
-    },
-    "Items": {
-        "items": "פריטים",
-        "newItem": "פריט חדש",
-        "search": "חיפוש",
-        "deleteItem": "מחק פריט",
-        "deleteItemContent": "האם אתה בטוח שברצונך למחוק פריט זה? פעולה זו לא ניתנת לביטול."
-    },
-    "ForgotPassword": {
-        "resetPasswordRequest": "איפוס סיסמה",
-        "email": "אימייל",
-        "sendEmail": "שלח אימייל",
-        "rememberPassword": "זוכק את הסיסמה שלך? התחבר כאן.",
-        "emailSent": "אימייל נשלח אלייך עם הוראות לאיפוס סיסמה.",
-        "emailRequired": "אימייל הינו שדה חובה",
-        "invalidEmail": "אימייל לא תקין"
-    },
-    "PasswordRules" : {
-        "start": "הסיסמה חייבת להיות:",
-        "english": "באנגלית",
-        "smallLetter": "לפחות אות קטנה אחת",
-        "capitalLetter": "לפחות אות גדולה אחת",
-        "number": "לפחות מספר אחד",
-        "length": "להכיל בין 8 ל-24 תווים"
-    },
-    "ResetPassword": {
-        "resetPassword": "איפוס סיסמה",
-        "password": "סיסמה",
-        "confirmPassword": "אימות סיסמה",
-        "passwordsDontMatch": "הסיסמאות אינן תואמות",
-        "invalidPassword": "סיסמה לא תקינה"
-    },
-    "ItemDetails": {
-        "category": "קטגוריה",
-        "unit": "יחידה",
-        "description": "תיאור",
-        "amount": "כמות",
-        "kg": "קילוגרם",
-        "g": "גרם",
-        "l": "ליטר",
-        "ml": "מיליליטר",
-        "pc": "יחידות",
-        "no": "ללא",
-        "pk": "חבילה"
-    },
-    "ItemEdit": {
-        "save": "שמור",
-        "name": "שם",
-        "nameRequired": "שדה שם הינו שדה חובה",
-        "itemUpdated": "פריט עודכן"
-    },
-    "ItemDisplay": {
-        "edit": "ערוך",
-        "linkCopied": "קישור הועתק ללוח. שתף אותו עם משתמשים אחרים כדי שיהיה להם גישה לפריט זה.",
-        "shareTitle": "שיתוף פריט",
-        "shareText": "שתף קישור זה עם משתמשים אחרים כדי שיהיה להם גישה לפריט זה."
-    },
-    "ItemNew": {
-        "name": "שם",
-        "newItem": "פריט חדש",
-        "create": "צור פריט",
-        "saveItem": "שמור פריט",
-        "itemAdded": "פריט נוסף לרשימה",
-        "nameRequired": "שדה שם הינו שדה חובה"
-    },
-    "ItemAdd": {
-        "add": "הוסף פריט",
-        "linkCopied": "קישור הועתק ללוח. שתף אותו עם משתמשים אחרים כדי שיהיה להם גישה לפריט זה.",
-        "shareTitle": "שיתוף פריט",
-        "shareText": "שתף קישור זה עם משתמשים אחרים כדי שיהיה להם גישה לפריט זה.",
-        "ItemAdded": "פריט נוסף לרשימה"
-    },
-    "Bundles": {
-        "bundles": "חבילות",
-        "newBundle": "חבילה חדשה",
-        "search": "חיפוש",
-        "deleteBundle": "מחק חבילה",
-        "deleteBundleContent": "האם אתה בטוח שברצונך למחוק חבילה זו? פעולה זו לא ניתנת לביטול."
-    },
-    "BundleEdit": {
-        "title": "כותרת",
-        "save": "שמור",
-        "addItem": "הוסף פריט",
-        "titleRequired": "שדה כותרת הינו שדה חובה",
-        "itemsRequired": "חובה להוסיף לפחות פריט אחד",
-        "description": "תיאור"
-    },
-    "BundleDisplay": {
-        "edit": "ערוך",
-        "linkCopied": "קישור הועתק ללוח. שתף אותו עם משתמשים אחרים כדי שיהיה להם גישה לחבילה זו.",
-        "shareTitle": "שיתוף חבילה",
-        "shareText": "שתף קישור זה עם משתמשים אחרים כדי שיהיה להם גישה לחבילה זו.",
-        "shareBundle": "שיתוף חבילה",
-        "description": "תיאור",
-        "items": "פריטים"
-    },
-    "ItemSelect": {
-        "search": "חיפוש",
-        "noItems": "אין פריטים",
-        "noResults": "אין תוצאות",
-        "selectItem": "בחר פריט"
-    },
-    "ShareItem": {
-        "itemAdded": "פריט נוסף לפריטים שלך",
-        "addToItems": "הוסף לפריטים שלי"
-    },
-    "BundleNew": {
-        "newBundle": "חבילה חדשה",
-        "title": "כותרת",
-        "description": "תיאור",
-        "addItem":"הוסף פריט",
-        "create": "צור חבילה",
-        "titleRequired": "שדה כותרת הינו שדה חובה",
-        "itemsRequired": "חובה להוסיף לפחות פריט אחד"
-    },
-    "BundleSelect": {
-        "search": "חיפוש",
-        "noBundles": "אין חבילות",
-        "noResults": "אין תוצאות",
-        "selectBundle": "בחר חבילה"
-    },
-    "Selection": {
-        "selectItem": "בחר פריט",
-        "newItem": "פריט חדש",
-        "allItems": "כל הפריטים",
-        "allBundles": "כל החבילות",
-        "items": "פריטים",
-        "bundles": "חבילות"
-    },
-    "ItemsList": {
-        "amount": "כמות",
-        "unit": "יחידה",
-        "kg": "קילוגרם",
-        "g": "גרם",
-        "l": "ליטר",
-        "ml": "מיליליטר",
-        "pc": "יחידות",
-        "no": "ללא",
-        "pk": "חבילה"
-    },
-    "BundleAdd": {
-        "addBundle": "הוסף חבילה"
-    },
-    "ListsDeleted": {
-        "recentlyDeleted": "נמחקו לאחרונה",
-        "deleteAll": "מחק הכל",
-        "deleteAllContent": "האם אתה בטוח שברצונך למחוק את כל הרשימות שנמחקו לאחרונה? פעולה זו לא ניתנת לביטול.",
-        "restoreList": "שחזר רשימה",
-        "restoreListContent": "האם אתה בטוח שברצונך לשחזר רשימה זו?",
-        "deleteList": "מחק רשימה",
-        "deleteListContent": "האם אתה בטוח שברצונך למחוק רשימה זו? פעולה זו לא ניתנת לביטול."
-    },
-    "ListReceipts": {
-        "receipts": "קבלות",
-        "noReceipts": "אין קבלות",
-        "uploadReceipt": "העלה קבלה חדשה",
-        "upload": "העלה",
-        "cancel": "ביטול",
-        "delete": "מחק",
-        "deleteReceipt": "מחק קבלה",
-        "deleteReceiptContent": "האם אתה בטוח שברצונך למחוק קבלה זו? פעולה זו לא ניתנת לביטול.",
-        "receiptType": "סוג קבלה",
-        "image": "תמונה",
-        "url": "קישור"
-    },
-    "VerifyEmail": {
-        "verifyEmail": "אימות אימייל",
-        "emailVerified": "האימייל שלך אומת בהצלחה. ניתן להתחבר כעת.",
-        "verifying": "מאמת...",
-        "notVerified": "האימייל שלך טרם אומת. נא לאמת את האימייל שלך כדי להתחבר.",
-        "clickHereToSendAgain": "לחץ כאן כדי לשלוח שוב"
-    },
-    "VerifyEmailResend": {
-        "verifyEmailResend": "אימות אימייל",
-        "email": "אימייל",
-        "send": "שלח"
-    },
-    "Page404": {
-        "notFound": "עמוד לא נמצא",
-        "pageNotFound": "העמוד שחיפשת לא קיים."
-    },
-    "JoinList": {
-        "joinList": "הצטרף לרשימה",
-        "itemsInList": "פריטים ברשימה",
-        "updatedAt": "עודכן ב",
-        "createdAt": "נוצר ב"
-    },
-    "ShareBundle": {
-        "bundleAdded": "חבילה נוספה לחבילות שלך",
-        "addToBundles": "הוסף לחבילות והפריטים שלי",
-        "description": "תיאור",
-        "items": "פריטים"
-    },
-    "ListsArchived": {
-        "archived":"רשימות בארכיון"
-    }
+	"List": {
+		"addItem": "הוסף פריט",
+		"search": "חיפוש",
+		"deleteUserTitle": "האם אתה בטוח שברצונך להסיר משתמש זה מהרשימה?",
+		"deleteUserContent": "הסרת משתמש זה תסיר את המשתמש מהרשימה והוא לא יוכל לצפות בה יותר.",
+		"shareTitle": "שיתוף רשימה",
+		"shareText": "שתף קישור זה עם משתמשים אחרים כדי שיהיה להם גישה לרשימה זו.",
+		"linkCopied": "קישור הועתק ללוח. שתף אותו עם משתמשים אחרים כדי שיהיה להם גישה לרשימה זו.",
+		"receipts": "קבלות",
+		"newTokenGenerated": "קוד שיתוף חדש נוצר",
+		"resetShareToken": "איפוס קוד שיתוף",
+		"resetShareTokenContent": "האם אתה בטוח שברצונך לאפס את קוד השיתוף של הרשימה? הקוד הישן יפסיק לעבוד ולא יוכל לשמש לשיתוף רשימה זו.",
+		"titleDialog": "שנה כותרת לרשימה",
+		"titleDialogContent": "",
+		"title": "כותרת",
+		"change": "שנה",
+		"cancel": "ביטול"
+	},
+	"UsersList": {
+		"sharedWith": "שותף עם",
+		"usersInList": "משתמשים ברשימה"
+	},
+	"Lists": {
+		"lists": "רשימות",
+		"addList": "הוסף רשימה",
+		"search": "חיפוש",
+		"recentlyDeleted": "נמחקו לאחרונה",
+		"deleteList": "מחק רשימה",
+		"deleteListContent": "האם אתה בטוח שאתה רוצה למחוק רשימה זו? \n מחיקה לכולם תסיר את כל המשתמשים לרשימה \n מחיקה לעצמי תסיר את הרשימה רק ממך. \n הרשימה תעבור לנמחקו לאחרונה",
+		"cancel": "ביטול",
+		"deleteForAll": "מחק לכולם",
+		"deleteForMe": "מחק לעצמי",
+		"variance": "שונות",
+		"deleted": "רשימות שנמחקו",
+		"archived": "רשימות בארכיון"
+	},
+	"NavBar": {
+		"lists": "רשימות",
+		"items": "פריטים",
+		"profile": "פרופיל",
+		"bundles": "חבילות"
+	},
+	"NewList": {
+		"newList": "רשימה חדשה",
+		"name": "שם",
+		"description": "תיאור",
+		"shareWith": "שתף",
+		"create": "צור רשימה",
+		"titleRequired": "שדה כותרת הינו שדה חובה"
+	},
+	"ListForm": {
+		"title": "כותרת",
+		"previousListItems": "הוסף פריטים מרשימה קודמת",
+		"defaultItems": "פריטים ברירת מחדל",
+		"addUsers": "הוסף משתמשים",
+		"search": "חיפוש",
+		"none": "אין",
+		"prevListItemExplanation": "ֿ*פריטים שלא נקנו או נמחקו מרשימה קודמת יופיעו ברשימה החדשה"
+	},
+	"Generic": {
+		"save": "שמור",
+		"cancel": "ביטול",
+		"delete": "מחק",
+		"edit": "ערוך",
+		"close": "סגור",
+		"loading": "טוען",
+		"noData": "אין נתונים",
+		"noResults": "אין תוצאות",
+		"noItems": "אין פריטים פה",
+		"noLists": "אין רשימות פה",
+		"noUsers": "אין משתמשים פה",
+		"confirm": "אישור",
+		"noBundles": "אין חבילות פה",
+		"title": "כותרת",
+		"google": "המשך עם גוגל"
+	},
+	"Login": {
+		"login": "התחברות",
+		"email": "אימייל",
+		"password": "סיסמה",
+		"forgotPassword": "שכחת סיסמה?",
+		"noAccount": "אין לך חשבון?",
+		"verifyEmailResend": "בבקשה אמת את האימייל שלך כדי להתחבר. אתה יכול לשלוח אימייל חדש פה.",
+		"resetPasswordToLogin": "אתה יכול לאפס את הסיסמה שלך בפרופיל כדי להתחבר בלי גוגל."
+	},
+	"Register": {
+		"register": "הרשמה",
+		"email": "אימייל",
+		"password": "סיסמה",
+		"firstName": "שם פרטי",
+		"lastName": "שם משפחה",
+		"confirmPassword": "אימות סיסמה",
+		"haveAccount": "יש לך חשבון?",
+		"pleaseVerify": "אנא אמת את האימייל שלך כדי להתחבר.",
+		"passwordsDontMatch": "הסיסמאות אינן תואמות",
+		"invalidEmail": "אימייל לא תקין",
+		"invalidPassword": "סיסמה לא תקינה"
+	},
+	"Profile": {
+		"profile": "פרופיל",
+		"personalDetails": "פרטים אישיים",
+		"password": "סיסמה",
+		"preferences": "העדפות",
+		"logout": "התנתקות",
+		"firstName": "שם פרטי",
+		"lastName": "שם משפחה",
+		"email": "אימייל",
+		"update": "עדכן",
+		"change": "שנה",
+		"fullSwipe": "החלקה מלאה של מוצר",
+		"language": "שפה",
+		"english": "אנגלית",
+		"hebrew": "עברית",
+		"detailsUpdated": "פרטים עודכנו",
+		"passwordUpdated": "סיסמה עודכנה",
+		"passwordsDontMatch": "הסיסמאות אינן תואמות",
+		"invalidEmail": "אימייל לא תקין",
+		"invalidPassword": "סיסמה לא תקינה",
+		"preferencesChanged": "העדפות שונו",
+		"fillAllFields": "אנא מלא את כל השדות",
+		"sharing": "שיתוף",
+        "shareTitle": "שיתוף פריטים",
+		"shareText": "שתף קישור זה עם משתמשים אחרים כדי שיהיה להם גישה לפריטים שלך.",
+        "stoppedSharing": "הפסקת שיתוף פריטים עם משתמש זה"
+	},
+	"Items": {
+		"items": "פריטים",
+		"newItem": "פריט חדש",
+		"search": "חיפוש",
+		"deleteItem": "מחק פריט",
+		"deleteItemContent": "האם אתה בטוח שברצונך למחוק פריט זה? פעולה זו לא ניתנת לביטול."
+	},
+	"ForgotPassword": {
+		"resetPasswordRequest": "איפוס סיסמה",
+		"email": "אימייל",
+		"sendEmail": "שלח אימייל",
+		"rememberPassword": "זוכק את הסיסמה שלך? התחבר כאן.",
+		"emailSent": "אימייל נשלח אלייך עם הוראות לאיפוס סיסמה.",
+		"emailRequired": "אימייל הינו שדה חובה",
+		"invalidEmail": "אימייל לא תקין"
+	},
+	"PasswordRules": {
+		"start": "הסיסמה חייבת להיות:",
+		"english": "באנגלית",
+		"smallLetter": "לפחות אות קטנה אחת",
+		"capitalLetter": "לפחות אות גדולה אחת",
+		"number": "לפחות מספר אחד",
+		"length": "להכיל בין 8 ל-24 תווים"
+	},
+	"ResetPassword": {
+		"resetPassword": "איפוס סיסמה",
+		"password": "סיסמה",
+		"confirmPassword": "אימות סיסמה",
+		"passwordsDontMatch": "הסיסמאות אינן תואמות",
+		"invalidPassword": "סיסמה לא תקינה"
+	},
+	"ItemDetails": {
+		"category": "קטגוריה",
+		"unit": "יחידה",
+		"description": "תיאור",
+		"amount": "כמות",
+		"kg": "קילוגרם",
+		"g": "גרם",
+		"l": "ליטר",
+		"ml": "מיליליטר",
+		"pc": "יחידות",
+		"no": "ללא",
+		"pk": "חבילה"
+	},
+	"ItemEdit": {
+		"save": "שמור",
+		"name": "שם",
+		"nameRequired": "שדה שם הינו שדה חובה",
+		"itemUpdated": "פריט עודכן"
+	},
+	"ItemDisplay": {
+		"edit": "ערוך",
+		"linkCopied": "קישור הועתק ללוח. שתף אותו עם משתמשים אחרים כדי שיהיה להם גישה לפריט זה.",
+		"shareTitle": "שיתוף פריט",
+		"shareText": "שתף קישור זה עם משתמשים אחרים כדי שיהיה להם גישה לפריט זה."
+	},
+	"ItemNew": {
+		"name": "שם",
+		"newItem": "פריט חדש",
+		"create": "צור פריט",
+		"saveItem": "שמור פריט",
+		"itemAdded": "פריט נוסף לרשימה",
+		"nameRequired": "שדה שם הינו שדה חובה"
+	},
+	"ItemAdd": {
+		"add": "הוסף פריט",
+		"linkCopied": "קישור הועתק ללוח. שתף אותו עם משתמשים אחרים כדי שיהיה להם גישה לפריט זה.",
+		"shareTitle": "שיתוף פריט",
+		"shareText": "שתף קישור זה עם משתמשים אחרים כדי שיהיה להם גישה לפריט זה.",
+		"ItemAdded": "פריט נוסף לרשימה"
+	},
+	"Bundles": {
+		"bundles": "חבילות",
+		"newBundle": "חבילה חדשה",
+		"search": "חיפוש",
+		"deleteBundle": "מחק חבילה",
+		"deleteBundleContent": "האם אתה בטוח שברצונך למחוק חבילה זו? פעולה זו לא ניתנת לביטול."
+	},
+	"BundleEdit": {
+		"title": "כותרת",
+		"save": "שמור",
+		"addItem": "הוסף פריט",
+		"titleRequired": "שדה כותרת הינו שדה חובה",
+		"itemsRequired": "חובה להוסיף לפחות פריט אחד",
+		"description": "תיאור"
+	},
+	"BundleDisplay": {
+		"edit": "ערוך",
+		"linkCopied": "קישור הועתק ללוח. שתף אותו עם משתמשים אחרים כדי שיהיה להם גישה לחבילה זו.",
+		"shareTitle": "שיתוף חבילה",
+		"shareText": "שתף קישור זה עם משתמשים אחרים כדי שיהיה להם גישה לחבילה זו.",
+		"shareBundle": "שיתוף חבילה",
+		"description": "תיאור",
+		"items": "פריטים"
+	},
+	"ItemSelect": {
+		"search": "חיפוש",
+		"noItems": "אין פריטים",
+		"noResults": "אין תוצאות",
+		"selectItem": "בחר פריט"
+	},
+	"ShareItem": {
+		"itemAdded": "פריט נוסף לפריטים שלך",
+		"addToItems": "הוסף לפריטים שלי"
+	},
+	"BundleNew": {
+		"newBundle": "חבילה חדשה",
+		"title": "כותרת",
+		"description": "תיאור",
+		"addItem": "הוסף פריט",
+		"create": "צור חבילה",
+		"titleRequired": "שדה כותרת הינו שדה חובה",
+		"itemsRequired": "חובה להוסיף לפחות פריט אחד"
+	},
+	"BundleSelect": {
+		"search": "חיפוש",
+		"noBundles": "אין חבילות",
+		"noResults": "אין תוצאות",
+		"selectBundle": "בחר חבילה"
+	},
+	"Selection": {
+		"selectItem": "בחר פריט",
+		"newItem": "פריט חדש",
+		"allItems": "כל הפריטים",
+		"allBundles": "כל החבילות",
+		"items": "פריטים",
+		"bundles": "חבילות"
+	},
+	"ItemsList": {
+		"amount": "כמות",
+		"unit": "יחידה",
+		"kg": "קילוגרם",
+		"g": "גרם",
+		"l": "ליטר",
+		"ml": "מיליליטר",
+		"pc": "יחידות",
+		"no": "ללא",
+		"pk": "חבילה"
+	},
+	"BundleAdd": {
+		"addBundle": "הוסף חבילה"
+	},
+	"ListsDeleted": {
+		"recentlyDeleted": "נמחקו לאחרונה",
+		"deleteAll": "מחק הכל",
+		"deleteAllContent": "האם אתה בטוח שברצונך למחוק את כל הרשימות שנמחקו לאחרונה? פעולה זו לא ניתנת לביטול.",
+		"restoreList": "שחזר רשימה",
+		"restoreListContent": "האם אתה בטוח שברצונך לשחזר רשימה זו?",
+		"deleteList": "מחק רשימה",
+		"deleteListContent": "האם אתה בטוח שברצונך למחוק רשימה זו? פעולה זו לא ניתנת לביטול."
+	},
+	"ListReceipts": {
+		"receipts": "קבלות",
+		"noReceipts": "אין קבלות",
+		"uploadReceipt": "העלה קבלה חדשה",
+		"upload": "העלה",
+		"cancel": "ביטול",
+		"delete": "מחק",
+		"deleteReceipt": "מחק קבלה",
+		"deleteReceiptContent": "האם אתה בטוח שברצונך למחוק קבלה זו? פעולה זו לא ניתנת לביטול.",
+		"receiptType": "סוג קבלה",
+		"image": "תמונה",
+		"url": "קישור"
+	},
+	"VerifyEmail": {
+		"verifyEmail": "אימות אימייל",
+		"emailVerified": "האימייל שלך אומת בהצלחה. ניתן להתחבר כעת.",
+		"verifying": "מאמת...",
+		"notVerified": "האימייל שלך טרם אומת. נא לאמת את האימייל שלך כדי להתחבר.",
+		"clickHereToSendAgain": "לחץ כאן כדי לשלוח שוב"
+	},
+	"VerifyEmailResend": {
+		"verifyEmailResend": "אימות אימייל",
+		"email": "אימייל",
+		"send": "שלח"
+	},
+	"Page404": {
+		"notFound": "עמוד לא נמצא",
+		"pageNotFound": "העמוד שחיפשת לא קיים."
+	},
+	"JoinList": {
+		"joinList": "הצטרף לרשימה",
+		"itemsInList": "פריטים ברשימה",
+		"updatedAt": "עודכן ב",
+		"createdAt": "נוצר ב"
+	},
+	"ShareBundle": {
+		"bundleAdded": "חבילה נוספה לחבילות שלך",
+		"addToBundles": "הוסף לחבילות והפריטים שלי",
+		"description": "תיאור",
+		"items": "פריטים"
+	},
+	"ListsArchived": {
+		"archived": "רשימות בארכיון"
+	},
+	"SharingItems": {
+		"shareItems": "שיתוף פריטים",
+		"shareItemsText": "אישור זה ישתף את הפריטים שלך עם המשתמש ששיתף אותך בפריטים.",
+		"accept": "אישור"
+	}
 }

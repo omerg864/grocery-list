@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.googleAuth = exports.updatePreferences = exports.resendVerificationEmail = exports.updateUser = exports.resetPasswordEmail = exports.resetPasswordToken = exports.updateUserPassword = exports.getUser = exports.register = exports.verify = exports.login = void 0;
+exports.deleteSharedUser = exports.getUserDataByToken = exports.shareWithUser = exports.createSharingToken = exports.googleAuth = exports.updatePreferences = exports.resendVerificationEmail = exports.updateUser = exports.resetPasswordEmail = exports.resetPasswordToken = exports.updateUserPassword = exports.getUser = exports.register = exports.verify = exports.login = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -93,6 +93,7 @@ const register = (0, express_async_handler_1.default)((req, res, next) => __awai
         l_name,
         email: email,
         password: hashedPassword,
+        sharingToken: (0, uuid_1.v4)(),
     });
     let success;
     try {
@@ -114,7 +115,13 @@ const register = (0, express_async_handler_1.default)((req, res, next) => __awai
 exports.register = register;
 const getUser = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userReq = req.user;
-    const user = yield userModel_1.default.findById(userReq._id).select(modelsConst_1.userExclude);
+    const user = yield userModel_1.default.findById(userReq._id)
+        .select(modelsConst_1.userExclude)
+        .populate('sharedWith');
+    if (!(user === null || user === void 0 ? void 0 : user.sharingToken)) {
+        user.sharingToken = (0, uuid_1.v4)();
+        yield user.save();
+    }
     res.status(200).json({
         success: true,
         user,
@@ -317,6 +324,75 @@ const updatePreferences = (0, express_async_handler_1.default)((req, res, next) 
     });
 }));
 exports.updatePreferences = updatePreferences;
+const getUserDataByToken = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.params;
+    const user = yield userModel_1.default.findOne({
+        sharingToken: token,
+    });
+    if (!user) {
+        res.status(400);
+        throw new Error('Invalid token');
+    }
+    const userEx = yield userModel_1.default.findById(user._id).select(modelsConst_1.userExclude);
+    res.status(200).json({
+        success: true,
+        user: userEx,
+    });
+}));
+exports.getUserDataByToken = getUserDataByToken;
+const createSharingToken = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userReq = req.user;
+    const token = (0, uuid_1.v4)();
+    userReq.sharingToken = token;
+    yield userReq.save();
+    res.status(200).json({
+        success: true,
+        token,
+    });
+}));
+exports.createSharingToken = createSharingToken;
+const shareWithUser = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.params;
+    const userReq = req.user;
+    const user = yield userModel_1.default.findOne({
+        sharingToken: token,
+    });
+    if (!user) {
+        res.status(400);
+        throw new Error('Invalid token');
+    }
+    if (userReq.sharedWith.find((u) => u.toString() ===
+        user._id.toString())) {
+        res.status(400);
+        throw new Error('Already shared with this user');
+    }
+    userReq.sharedWith.push(user._id);
+    user.sharedWith.push(userReq._id);
+    let promises = [user.save(), userReq.save()];
+    yield Promise.all(promises);
+    res.status(200).json({
+        success: true,
+    });
+}));
+exports.shareWithUser = shareWithUser;
+const deleteSharedUser = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const userReq = req.user;
+    const user = yield userModel_1.default.findById(id);
+    if (!user) {
+        res.status(400);
+        throw new Error('Invalid user');
+    }
+    userReq.sharedWith = userReq.sharedWith.filter((u) => u.toString() !== id);
+    user.sharedWith = user.sharedWith.filter((u) => u.toString() !==
+        userReq._id.toString());
+    let promises = [user.save(), userReq.save()];
+    yield Promise.all(promises);
+    res.status(200).json({
+        success: true,
+    });
+}));
+exports.deleteSharedUser = deleteSharedUser;
 const googleAuth = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { code } = req.body;
     if (!code) {

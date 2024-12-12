@@ -6,6 +6,7 @@ interface Item {
 	description?: string;
 	unit: string;
 	img?: string;
+	user?: string;
 	category?: string;
 	imageMemo?: ReactNode;
 	stateUpdated?: Date;
@@ -16,6 +17,7 @@ export const itemDefault: Item = {
 	_id: '',
 	name: '',
 	unit: 'pc',
+	user: '',
 	default: false
 };
 

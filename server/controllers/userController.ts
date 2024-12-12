@@ -86,6 +86,7 @@ const register = asyncHandler(async (req, res, next) => {
 		l_name,
 		email: email,
 		password: hashedPassword,
+		sharingToken: uuid4(),
 	});
 	let success;
 	try {
@@ -111,7 +112,13 @@ const register = asyncHandler(async (req, res, next) => {
 const getUser = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const userReq = (req as RequestWithUser).user;
-		const user = await User.findById(userReq._id).select(userExclude);
+		const user = await User.findById(userReq._id)
+			.select(userExclude)
+			.populate('sharedWith');
+		if (!user?.sharingToken) {
+			user!.sharingToken = uuid4();
+			await user!.save();
+		}
 		res.status(200).json({
 			success: true,
 			user,
@@ -335,6 +342,93 @@ const updatePreferences = asyncHandler(
 	}
 );
 
+const getUserDataByToken = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { token } = req.params;
+		const user = await User.findOne({
+			sharingToken: token,
+		});
+		if (!user) {
+			res.status(400);
+			throw new Error('Invalid token');
+		}
+		const userEx = await User.findById(user._id).select(userExclude);
+		res.status(200).json({
+			success: true,
+			user: userEx,
+		});
+	}
+);
+
+const createSharingToken = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const userReq = (req as RequestWithUser).user;
+		const token = uuid4();
+		userReq.sharingToken = token;
+		await userReq.save();
+		res.status(200).json({
+			success: true,
+			token,
+		});
+	}
+);
+
+const shareWithUser = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { token } = req.params;
+		const userReq = (req as RequestWithUser).user;
+		const user: UserDocument | null = await User.findOne({
+			sharingToken: token,
+		});
+		if (!user) {
+			res.status(400);
+			throw new Error('Invalid token');
+		}
+		if (
+			userReq.sharedWith.find(
+				(u) =>
+					(u as ObjectId).toString() ===
+					(user._id as ObjectId).toString()
+			)
+		) {
+			res.status(400);
+			throw new Error('Already shared with this user');
+		}
+		userReq.sharedWith.push(user._id as ObjectId);
+		user.sharedWith.push(userReq._id as ObjectId);
+		let promises = [user.save(), userReq.save()];
+		await Promise.all(promises);
+		res.status(200).json({
+			success: true,
+		});
+	}
+);
+
+const deleteSharedUser = asyncHandler(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { id } = req.params;
+		const userReq = (req as RequestWithUser).user;
+		const user: UserDocument | null = await User.findById(id);
+		if (!user) {
+			res.status(400);
+			throw new Error('Invalid user');
+		}
+		userReq.sharedWith = userReq.sharedWith.filter(
+			(u) => (u as ObjectId).toString() !== id
+		);
+		user.sharedWith = user.sharedWith.filter(
+			(u) =>
+				(u as ObjectId).toString() !==
+				(userReq._id as ObjectId).toString()
+		);
+		let promises = [user.save(), userReq.save()];
+		await Promise.all(promises);
+		res.status(200).json({
+			success: true,
+		});
+	}
+);
+
 const googleAuth = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const { code } = req.body;
@@ -407,4 +501,8 @@ export {
 	resendVerificationEmail,
 	updatePreferences,
 	googleAuth,
+	createSharingToken,
+	shareWithUser,
+	getUserDataByToken,
+	deleteSharedUser,
 };

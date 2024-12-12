@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document, ObjectId } from 'mongoose';
 
 export interface User {
     f_name: string;
@@ -8,6 +8,8 @@ export interface User {
     isVerified: boolean;
     resetPasswordToken?: string;
     avatar?: string;
+    sharingToken?: string;
+    sharedWith: ObjectId[];
     fullSwipe: boolean;
     language: string;
 }

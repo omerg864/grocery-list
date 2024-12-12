@@ -28,7 +28,7 @@ const getItems = (0, express_async_handler_1.default)((req, res, next) => __awai
         addCategories = false;
     }
     const items = yield itemModel_1.default.find({
-        user: user._id,
+        user: { $in: [user._id, ...user.sharedWith] },
     })
         .select(modelsConst_1.itemExclude)
         .limit(limit ? parseInt(limit) : 0);
@@ -115,7 +115,7 @@ const updateItem = (0, express_async_handler_1.default)((req, res, next) => __aw
         res.status(404);
         throw new Error('Item Not Found');
     }
-    if (item.user.toString() !== user._id.toString()) {
+    if (item.user.toString() !== user._id.toString() && !user.sharedWith.includes(item.user)) {
         res.status(401);
         throw new Error('Not authorized');
     }

@@ -119,7 +119,11 @@
 		"invalidEmail": "Invalid email",
 		"invalidPassword": "Invalid password",
 		"preferencesChanged": "Preferences changed",
-		"fillAllFields": "Please fill all fields"
+		"fillAllFields": "Please fill all fields",
+		"sharing": "Sharing",
+		"shareTitle": "Items Sharing",
+		"shareText": "Share this link with other users to give them access to your items.",
+		"stoppedSharing": "Stopped sharing items with user"
 	},
 	"Items": {
 		"items": "Items",
@@ -315,5 +319,10 @@
 	},
 	"ListsArchived": {
 		"archived": "Archived Lists"
+	},
+	"SharingItems": {
+		"shareItems": "Share Items",
+		"shareItemsText": "Accepting this will share your items with the user that shared the items with you.",
+		"accept": "Accept"
 	}
 }
