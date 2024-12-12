@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie';
 import { toast } from 'react-toastify';
 import Loading from '../components/Loading/Loading';
 import Header from '../components/Header/Header';
-import { Avatar, IconButton } from '@mui/material';
+import { Avatar } from '@mui/material';
 import GlassButton from '../components/GlassButton/GlassButton';
 import { IoMdAdd } from 'react-icons/io';
 import { motion } from 'framer-motion';
@@ -57,7 +57,7 @@ const ShareItems = () => {
 		await post(
 			`/api/user/share/${token}`,
 			{},
-			(data) => {
+			(_: any) => {
 				toast.success(t('itemsShared'));
 				setItems({
 					items: [],
@@ -87,7 +87,7 @@ const ShareItems = () => {
 			<form
 				className="list-form"
 				style={{ position: 'relative', paddingTop: '5.5rem' }}
-                onSubmit={shareItems}
+				onSubmit={shareItems}
 			>
 				<div className="item-display-img-container">
 					{user.avatar ? (
