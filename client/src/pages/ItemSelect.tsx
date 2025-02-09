@@ -96,6 +96,7 @@ function ItemSelect() {
 
     let path = window.location.pathname.split('/')[1];
     let back;
+    let headerButton;
     switch (path) {
         case 'bundles':
             back = {
@@ -112,6 +113,10 @@ function ItemSelect() {
             back = {
                 onBack: () => navigate(`/lists/${id}/select`)
             }
+            headerButton = {
+                buttonClick: () => navigate(`/lists/${id}/new/item`),
+                buttonTitle: t('newItem')
+            }
             break;
     }
 
@@ -120,7 +125,7 @@ function ItemSelect() {
     }
   return (
     <main>
-        <Header title={t('selectItem')} {...back} />
+        <Header title={t('selectItem')} {...back} {...headerButton} />
         <SearchBar onSearch={filterItems} placeholder={t("search")} />
         <CategoryList containerStyle={{padding: '8px'}} categories={categories} selectedCategory={selectedCategory} onSelect={onSelect} />
         <ItemsList onItemClicked={onItemClicked} items={displayedItems} />

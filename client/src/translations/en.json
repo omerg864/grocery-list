@@ -224,7 +224,8 @@
 		"search": "Search",
 		"noItems": "No items",
 		"noResults": "No results",
-		"selectItem": "Select Item"
+		"selectItem": "Select Item",
+		"newItem": "New Item"
 	},
 	"ShareItem": {
 		"itemAdded": "Item added to your items",

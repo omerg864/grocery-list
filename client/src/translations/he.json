@@ -120,9 +120,9 @@
 		"preferencesChanged": "העדפות שונו",
 		"fillAllFields": "אנא מלא את כל השדות",
 		"sharing": "שיתוף",
-        "shareTitle": "שיתוף פריטים",
+		"shareTitle": "שיתוף פריטים",
 		"shareText": "שתף קישור זה עם משתמשים אחרים כדי שיהיה להם גישה לפריטים שלך.",
-        "stoppedSharing": "הפסקת שיתוף פריטים עם משתמש זה"
+		"stoppedSharing": "הפסקת שיתוף פריטים עם משתמש זה"
 	},
 	"Items": {
 		"items": "פריטים",
@@ -223,7 +223,8 @@
 		"search": "חיפוש",
 		"noItems": "אין פריטים",
 		"noResults": "אין תוצאות",
-		"selectItem": "בחר פריט"
+		"selectItem": "בחר פריט",
+		"newItem": "פריט חדש"
 	},
 	"ShareItem": {
 		"itemAdded": "פריט נוסף לפריטים שלך",
